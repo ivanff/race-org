@@ -1,1 +1,25 @@
+<mat-toolbar color="primary">
+    <mat-toolbar-row>
+        <span>SportTrack</span>
+        <!--        <span class="example-spacer"></span>-->
+        <!--        <mat-icon class="example-icon" aria-hidden="false" aria-label="Example heart icon">favorite</mat-icon>-->
+        <!--        <mat-icon class="example-icon" aria-hidden="false" aria-label="Example delete icon">delete</mat-icon>-->
+        <mat-menu #appMenu="matMenu">
+            <button mat-menu-item [routerLink]="['results']">Результаты</button>
+            <button mat-menu-item [routerLink]="['settings']">Настройки</button>
+            <button mat-menu-item>Помощ</button>
+        </mat-menu>
+
+        <button mat-icon-button [matMenuTriggerFor]="appMenu">
+            <mat-icon>more_vert</mat-icon>
+        </button>
+    </mat-toolbar-row>
+</mat-toolbar>
+<section class="mat-typography" style="padding: 20px">
+    <h2 class="mat-h2">
+        Прототип приложения для организации соревнований, процесс прохождения которого связан с отметками времени на
+        контрольных точках. Победителями считаются атлеты
+        прошедшие большее (все) кол-во контрольных точек за заменьшее кол-во времени, в порядке следования точек.
+    </h2>
+</section>
 <router-outlet></router-outlet>

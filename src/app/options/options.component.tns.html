@@ -1,0 +1,29 @@
+<ActionBar [title]="'Competition options'|L">
+    <NavigationButton icon="res://round_menu_black_24"
+                      (tap)="onDrawerButtonTap()"></NavigationButton>
+</ActionBar>
+
+<ScrollView>
+    <ListView height="100%"
+              itemTap="onItemTap"
+              [items]="checkpoints"
+              (itemTap)="onItemTap($event)">
+        <ng-template let-cp="item" let-i="index" let-odd="odd" let-even="even">
+            <StackLayout [class.active]="settings.checkpoint.key == cp.key" class="p-l-5 p-r-5">
+                <Label class="title">
+                    <FormattedString>
+                        <Span [text]="cp.key + ':  '" style="font-weight: bold; font-size: 15em"></Span>
+                        <Span [text]="cp.name"></Span>
+                    </FormattedString>
+                </Label>
+                <FlexboxLayout flexDirection="row">
+                    <Label [text]="cp.marshal + '; '" class="info"></Label>
+                    <Label [text]="cp.kind + '; '" class="info"></Label>
+                    <Label [text]="cp.device ? 'Считыватель назначен' : 'Считыватель не назначено'"
+                           [class.setup]="cp.device"
+                           class="info"></Label>
+                </FlexboxLayout>
+            </StackLayout>
+        </ng-template>
+    </ListView>
+</ScrollView>

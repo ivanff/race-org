@@ -1,0 +1,14 @@
+.side-title {
+  padding: 10;
+  text-align: center;
+}
+.side-label{
+  padding: 10;
+  font-size: 16;
+  &.active {
+    background-color: #aee406
+  }
+}
+
+
+

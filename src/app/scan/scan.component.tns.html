@@ -1,0 +1,31 @@
+<ActionBar [title]="'Athlets'|L">
+    <NavigationButton icon="res://round_menu_black_24"
+                      (tap)="onDrawerButtonTap()"></NavigationButton>
+</ActionBar>
+<GridLayout rows="auto, auto, *" columns="*">
+    <StackLayout *ngIf="current_checkpoint" row="0" col="0" class="p-t-10">
+        <Label class="text-center" textWrap="true">
+            <FormattedString>
+                <span [text]="current_checkpoint.key + '&#xa;'" class="font-weight-bold"></span>
+                <span [text]="current_checkpoint.name + '&#xa;'"></span>
+            </FormattedString>
+        </Label>
+    </StackLayout>
+    <Button [text]="activityIndicator.busy ? 'Прекратить сканирование NFC': 'Сканировать метку NFC'|L"
+            (tap)="(activityIndicator.busy = !activityIndicator.busy)"
+            row="1"
+            col="0"
+            [class.btn-primary]="!activityIndicator.busy"
+            class="btn btn-primary btn-active"></Button>
+    <ActivityIndicator row="2"
+                       col="0"
+                       height="200"
+                       width="200"
+                       verticalAlignment="center"
+                       horizontalAlignment="center"
+                       #activityIndicator
+                       busy="true"
+                       (busyChange)="onBusyChanged($event)"
+                       class="activity-indicator"></ActivityIndicator>
+
+</GridLayout>

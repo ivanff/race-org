@@ -1,0 +1,39 @@
+<ActionBar [title]="'Athlets'|L">
+    <NavigationButton icon="res://round_menu_black_24"
+                      (tap)="onDrawerButtonTap()"></NavigationButton>
+</ActionBar>
+<GridLayout rows="auto, *" columns="*">
+    <StackLayout row="0" col="0">
+        <Label [text]="athlet.fio" textWrap="true"></Label>
+        <Label [text]="athlet.phone" textWrap="true"></Label>
+        <Label [text]="athlet.city" textWrap="true"></Label>
+        <Label [text]="athlet.bike" textWrap="true"></Label>
+        <Label [text]="athlet.nfc_id" style="color: red; font-weight: bold"></Label>
+        <Button [text]="'Clear Nfc'|L"
+                (tap)="onClearNfc()"
+                class="btn btn-primary"></Button>
+    </StackLayout>
+    <ScrollView row="1" col="0">
+        <ListView height="100%"
+                  itemTap="onItemTap"
+                  [items]="athlet.checkpoints">
+            <ng-template let-mark="item" let-i="index" let-odd="odd" let-even="even">
+                <GridLayout columns="*, auto" rows="*, *" class="p-l-5 p-r-5">
+                    <Label col="0" row="0" [text]="mark.key" style="font-weight: bold; font-size: 15em"
+                           class="title"></Label>
+                    <Label col="0" row="1" [text]="mark.created|date:'hh:mm:ss'" class="info"></Label>
+                    <Label (tap)="onRemoveCp($event, i)"
+                           [class.scale-active]="i == tap_remove_index"
+                           text="&#xf2ed;"
+                           col="1"
+                           row="0"
+                           rowSpan="2"
+                           class="far p-l-8 p-r-8"
+                           verticalAlignment="center"
+                           style="font-size: 18em"></Label>
+
+                </GridLayout>
+            </ng-template>
+        </ListView>
+    </ScrollView>
+</GridLayout>

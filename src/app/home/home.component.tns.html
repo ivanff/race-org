@@ -1,5 +1,9 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<ActionBar [title]="title"></ActionBar>
-<StackLayout >
-    <Label text="Welcome to {{ title }}!" textWrap="true"></Label>
+<ActionBar [title]="'Race org'">
+    <NavigationButton icon="res://round_menu_black_24"
+                      (tap)="onDrawerButtonTap()"></NavigationButton>
+</ActionBar>
+<StackLayout>
+    <router-outlet>
+<!--        <Label text="home"></Label>-->
+    </router-outlet>
 </StackLayout>
