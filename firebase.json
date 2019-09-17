@@ -1,0 +1,10 @@
+{
+  "hosting": {
+    "public": "dist/race-org",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}

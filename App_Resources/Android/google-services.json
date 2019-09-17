@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "599442157307",
+    "firebase_url": "https://race-org.firebaseio.com",
+    "project_id": "race-org",
+    "storage_bucket": "race-org.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:599442157307:android:b018609ecef5267b3bca5e",
+        "android_client_info": {
+          "package_name": "org.nativescript.raceorg"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "599442157307-45fsb2so69baqpeudf4i0tf3kh2v8mvm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.nativescript.raceorg",
+            "certificate_hash": "e8dfb32cfb3e9109285129a83d599fdd92d4861b"
+          }
+        },
+        {
+          "client_id": "599442157307-mcf5nnjghu6lgff46pp3915lhc7v79pc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBB0uXA30zCSjMYkHqv9vUGqDUwQTxlOiI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "599442157307-mcf5nnjghu6lgff46pp3915lhc7v79pc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
