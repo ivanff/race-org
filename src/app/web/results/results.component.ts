@@ -47,6 +47,9 @@ export class ResultsComponent implements OnInit, AfterViewInit {
 
     constructor(private firestore: AngularFirestore, private route: ActivatedRoute) {
         this.hide_start_time = route.snapshot.data['hide_start_time']
+        if (this.hide_start_time) {
+            this.displayedColumns.shift()
+        }
     }
 
     private range = (start, end, delta) => {

@@ -23,7 +23,7 @@
 
 
 <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
-    <ng-container matColumnDef="place">
+    <ng-container *ngIf="!hide_start_time" matColumnDef="place">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Place</th>
         <td mat-cell *matCellDef="let element" [class.highlight]="element.place <= 3"> {{ element.place }} </td>
     </ng-container>
