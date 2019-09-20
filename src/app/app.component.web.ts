@@ -8,7 +8,7 @@ import {filter, take} from "rxjs/operators"
     styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-    private _activatedUrl: string
+    _activatedUrl: string
 
     constructor(public zone: NgZone,
                 private router: Router,
