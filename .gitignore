@@ -5,6 +5,7 @@
 /tmp
 /out-tsc
 /key_store
+/~*
 
 # dependencies
 /node_modules

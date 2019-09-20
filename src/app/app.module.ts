@@ -11,12 +11,18 @@ import {NgxMaterialTimepickerModule} from "ngx-material-timepicker"
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations"
 import {AppComponent} from "@src/app/app.component.web"
 import {SettingsComponent} from "@src/app/web/settings/settings.component"
+import {RegisterComponent} from "@src/app/web/access/register/register.component"
+import {FormsModule, ReactiveFormsModule} from "@angular/forms"
+import {HttpClientModule} from "@angular/common/http"
+import {HelpComponent} from "@src/app/web/help/help.component"
 
 
 @NgModule({
     declarations: [
         AppComponent,
         ResultsComponent,
+        RegisterComponent,
+        HelpComponent,
         SettingsComponent,
     ],
     imports: [
@@ -24,8 +30,11 @@ import {SettingsComponent} from "@src/app/web/settings/settings.component"
         AngularFirestoreModule,
         BrowserModule,
         BrowserAnimationsModule,
+        FormsModule,
+        ReactiveFormsModule,
         AppRoutingModule,
         DemoMaterialModule,
+        HttpClientModule,
         NgxMaterialTimepickerModule.setLocale('RU')
     ],
     providers: [],

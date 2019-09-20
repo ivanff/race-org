@@ -7,6 +7,7 @@ import {AthletResolve} from "@src/app/athlets/athlet.resolver"
 import {OptionsComponent} from "@src/app/options/options.component"
 import {TestComponent} from "@src/app/home/test/test.component"
 import {Test2Component} from "@src/app/home/test2/test2.component"
+import {CompetitionComponent} from "@src/app/competition/competition.component"
 
 export const routes: Routes = [
     {
@@ -44,6 +45,11 @@ export const routes: Routes = [
     {
         path: "options",
         component: OptionsComponent,
+    },
+    {
+        path: "competition",
+        component: CompetitionComponent,
+        outlet: "root"
     }
 ]
 

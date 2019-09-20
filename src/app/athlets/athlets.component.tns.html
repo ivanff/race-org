@@ -49,7 +49,9 @@
                         <Label [text]="'назначено' ? athlet.nfc_id : 'не назначено'" class="info"
                                style="color: red; font-weight: bold"></Label>
                     </FlexboxLayout>
-                    <Label [text]="'Пройдено отметок: ' + athlet.checkpoints.length" class="info"></Label>
+                    <Label *ngIf="athlet.checkpoints"
+                           [text]="'Пройдено отметок: ' + athlet.checkpoints.length"
+                           class="info"></Label>
                 </StackLayout>
             </ng-template>
         </ListView>

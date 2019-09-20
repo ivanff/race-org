@@ -1,4 +1,5 @@
 export const environment = {
+  sms_gateway: 'https://agestart.ru/js_api/mobile',
   production: true,
   firebase: {
     apiKey: "AIzaSyAKQN8eQ3HmfKE78qfczd6DLjKyRiS4ewA",

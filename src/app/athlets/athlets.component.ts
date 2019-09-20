@@ -8,8 +8,6 @@ import {BaseComponent} from "@src/app/shared/base.component"
 import {NfcService} from "@src/app/shared/nfc.service"
 import {Athlet} from "@src/app/home/athlet"
 import {ActivatedRoute} from "@angular/router"
-import {RadSideDrawer} from "nativescript-ui-sidedrawer"
-import {getRootView} from "tns-core-modules/application"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
@@ -79,13 +77,13 @@ export class AthletsComponent extends BaseComponent implements OnInit, OnDestroy
 
     ngOnInit() {
         // remove
-        // for (const athlet of initial) {
-        //     firebase.firestore().collection('athlets').doc(athlet.phone + '').get().then((doc: firestore.DocumentSnapshot) => {
-        //         if (!doc.exists) {
-        //             firebase.firestore().collection('athlets').doc(athlet.phone + '').set(athlet, {merge: true})
-        //         }
-        //     })
-        // }
+        for (const athlet of initial) {
+            firebase.firestore().collection('athlets').doc(athlet.phone + '').get().then((doc: firestore.DocumentSnapshot) => {
+                if (!doc.exists) {
+                    firebase.firestore().collection('athlets').doc(athlet.phone + '').set(athlet, {merge: true})
+                }
+            })
+        }
     }
 
     ngOnDestroy(): void {

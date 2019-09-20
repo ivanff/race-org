@@ -1,0 +1,12 @@
+<ActionBar [title]="'Create competition'|L">
+    <NavigationButton (tap)="goBack()"
+                      text="Back"
+                      android.systemIcon="ic_menu_back"></NavigationButton>
+</ActionBar>
+
+<StackLayout>
+    <Label [text]="'Competition name: ' + competition.name" class="p-10"></Label>
+    <Button (tap)="onSetAdmin()" [text]="'Set this device to admin'"></Button>
+    <Button (tap)="onJoin()" [text]="'Join'"></Button>
+</StackLayout>
+

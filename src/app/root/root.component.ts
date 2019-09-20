@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {RouterExtensions} from "nativescript-angular"
+import {ModalDialogParams, RouterExtensions} from "nativescript-angular"
 import {ActivatedRoute} from "@angular/router"
 
 @Component({
@@ -10,11 +10,12 @@ import {ActivatedRoute} from "@angular/router"
 export class RootComponent implements OnInit {
 
     constructor(private _routerExtensions: RouterExtensions,
-                private activeRoute: ActivatedRoute) {
+                private activeRoute: ActivatedRoute,
+                private params: ModalDialogParams) {
     }
 
     ngOnInit(): void {
-        this._routerExtensions.navigate([{outlets: {root: ["athlets"]}}], {relativeTo: this.activeRoute});
+        this._routerExtensions.navigate([{outlets: {root: this.params.context.path}}], {relativeTo: this.activeRoute});
     }
 
 }

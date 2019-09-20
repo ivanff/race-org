@@ -14,6 +14,8 @@
                 <Label [text]="'Test'|L" (tap)="navigateTo('home')" [class.active]="_activatedUrl === '/home/test'" class="side-label"></Label>
                 <Label [text]="'Test2'|L" (tap)="navigateTo('home/test2')" [class.active]="_activatedUrl === '/home/test'" class="side-label"></Label>
                 <StackLayout class="m-10"></StackLayout>
+                <Label [text]="'Join competition'|L" (tap)="openModal('competition')" class="side-label"></Label>
+                <StackLayout class="m-10"></StackLayout>
                 <Label [text]="'Back'|L" class="side-label" (tap)="onCloseDrawerTap()"></Label>
                 <Label [text]="'Exit'|L" class="side-label" (tap)="onExit()"></Label>
             </StackLayout>

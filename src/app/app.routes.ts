@@ -1,20 +1,30 @@
 import {Routes} from '@angular/router'
 import {ResultsComponent} from "@src/app/web/results/results.component"
 import {SettingsComponent} from "@src/app/web/settings/settings.component"
+import {RegisterComponent} from "@src/app/web/access/register/register.component"
+import {HelpComponent} from "@src/app/web/help/help.component"
 
 export const routes: Routes = [
     {
         path: '',
-        redirectTo: '/results',
+        redirectTo: '/access/register',
         pathMatch: 'full',
     },
+    // {
+    //     path: 'results',
+    //     component: ResultsComponent
+    // },
+    // {
+    //     path: 'settings',
+    //     component: SettingsComponent
+    // },
     {
-        path: 'results',
-        component: ResultsComponent
+        path: 'access/register',
+        component: RegisterComponent
     },
     {
-        path: 'settings',
-        component: SettingsComponent
+        path: 'help',
+        component: HelpComponent
     },
 ]
 

@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewContainerRef, ViewChild, OnDestroy, AfterViewInit} from "@angular/core";
+import {Component, OnInit, ViewContainerRef, ViewChild, OnDestroy, AfterViewInit, NgZone} from "@angular/core";
 import {ModalDialogOptions, ModalDialogService} from "nativescript-angular/modal-dialog";
 import {RouterExtensions} from "nativescript-angular/router";
 import {RadSideDrawerComponent} from "nativescript-ui-sidedrawer/angular";
@@ -25,7 +25,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     constructor(private routerExtensions: RouterExtensions,
                 private modalService: ModalDialogService,
                 private vcRef: ViewContainerRef,
-                private router: Router) {
+                private router: Router,
+                private zone: NgZone) {
         this._activatedUrl = "/home"
     }
 
@@ -47,23 +48,20 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     openModal(path: string): void {
         const options: ModalDialogOptions = {
             fullscreen: true,
-            viewContainerRef: this.vcRef
+            viewContainerRef: this.vcRef,
+            context: {
+                path: [path]
+            }
         };
 
-        this.modalService.showModal(RootComponent, options);
+        this.modalService.showModal(RootComponent, options).then((result) => {
+            this.onBackPressed()
+        })
+        this.sideDrawerComponent.sideDrawer.closeDrawer()
     }
 
     async ngOnInit(): Promise<void> {
-        application.android.on(application.AndroidApplication.activityBackPressedEvent, (args: any) => {
-                args.cancel = true
-                if (this.routerExtensions.canGoBack()) {
-                    this.routerExtensions.back()
-                    this.sideDrawerComponent.sideDrawer.closeDrawer()
-                } else {
-                    this.onExit()
-                }
-            }
-        )
+        this.onBackPressed()
         await firebase.init({
             //local cache
             persist: true,
@@ -75,6 +73,25 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             }
         })
     }
+
+    onBackPressed():void {
+        console.log(
+            'onBackPressed'
+        )
+        application.android.on(application.AndroidApplication.activityBackPressedEvent, (args: any) => {
+                args.cancel = true
+                this.zone.run(() => {
+                    if (this.routerExtensions.canGoBack()) {
+                        this.routerExtensions.back()
+                        this.sideDrawerComponent.sideDrawer.closeDrawer()
+                    } else {
+                        this.onExit()
+                    }
+                })
+            }
+        )
+    }
+
 
     onCloseDrawerTap(): void {
         this.sideDrawerComponent.sideDrawer.closeDrawer()

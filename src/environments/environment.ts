@@ -4,6 +4,8 @@
 
 export const environment = {
   production: false,
+  // sms_gateway: 'https://agestart.ru/js_api/mobile',
+  sms_gateway: 'http://local.agestart.ru:8003/js_api/mobile',
   firebase: {
     apiKey: "AIzaSyAKQN8eQ3HmfKE78qfczd6DLjKyRiS4ewA",
     authDomain: "race-org.firebaseapp.com",

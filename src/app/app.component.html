@@ -1,13 +1,14 @@
 <mat-toolbar color="primary">
     <mat-toolbar-row>
-        <span>SportTrack</span>
+        <span>Race Org - гонка "Сурские зори"</span>
         <!--        <span class="example-spacer"></span>-->
         <!--        <mat-icon class="example-icon" aria-hidden="false" aria-label="Example heart icon">favorite</mat-icon>-->
         <!--        <mat-icon class="example-icon" aria-hidden="false" aria-label="Example delete icon">delete</mat-icon>-->
         <mat-menu #appMenu="matMenu">
-            <button mat-menu-item [routerLink]="['results']">Результаты</button>
-            <button mat-menu-item [routerLink]="['settings']">Настройки</button>
-            <button mat-menu-item>Помощ</button>
+<!--            <button mat-menu-item [routerLink]="['results']">Результаты</button>-->
+<!--            <button mat-menu-item [routerLink]="['settings']">Настройки</button>-->
+            <button mat-menu-item [routerLink]="['access/register']">Регистрация участников</button>
+            <button mat-menu-item [routerLink]="['help']">Помощ</button>
         </mat-menu>
 
         <button mat-icon-button [matMenuTriggerFor]="appMenu">

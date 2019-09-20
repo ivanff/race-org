@@ -16,6 +16,7 @@ import {ScanComponent} from "@src/app/scan/scan.component"
 import {OptionsComponent} from "@src/app/options/options.component"
 import {TestComponent} from "@src/app/home/test/test.component"
 import {Test2Component} from "@src/app/home/test2/test2.component"
+import {CompetitionComponent} from "@src/app/competition/competition.component"
 
 
 // Uncomment and add to NgModule imports if you need to use two-way binding
@@ -34,6 +35,7 @@ import {Test2Component} from "@src/app/home/test2/test2.component"
         DetailComponent,
         ScanComponent,
         OptionsComponent,
+        CompetitionComponent,
         RootComponent,
         TestComponent,
         Test2Component,
