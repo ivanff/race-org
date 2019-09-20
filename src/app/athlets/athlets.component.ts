@@ -77,13 +77,14 @@ export class AthletsComponent extends BaseComponent implements OnInit, OnDestroy
 
     ngOnInit() {
         // remove
-        for (const athlet of initial) {
-            firebase.firestore().collection('athlets').doc(athlet.phone + '').get().then((doc: firestore.DocumentSnapshot) => {
-                if (!doc.exists) {
-                    firebase.firestore().collection('athlets').doc(athlet.phone + '').set(athlet, {merge: true})
-                }
-            })
-        }
+        // WARNING CHECK COLLECTION
+        // for (const athlet of initial) {
+        //     firebase.firestore().collection('athlets').doc(athlet.phone + '').get().then((doc: firestore.DocumentSnapshot) => {
+        //         if (!doc.exists) {
+        //             firebase.firestore().collection('athlets').doc(athlet.phone + '').set(athlet, {merge: true})
+        //         }
+        //     })
+        // }
     }
 
     ngOnDestroy(): void {

@@ -93,6 +93,7 @@ export class OptionsComponent extends BaseComponent implements OnInit, OnDestroy
 
   ngOnInit() {
     // remove
+    // WARNING CHECK COLLECTION
     // for (const checkpoint of initial) {
     //   firebase.firestore().collection('checkpoints').add(checkpoint)
     // }

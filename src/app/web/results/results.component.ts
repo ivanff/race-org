@@ -9,6 +9,7 @@ import {NgxTimepickerFieldComponent} from 'ngx-material-timepicker'
 import {Athlet} from "@src/app/home/athlet"
 import {Mark} from "@src/app/home/mark"
 import {CheckPoint} from "@src/app/home/checkpoint"
+import {ActivatedRoute} from "@angular/router"
 
 export interface TableRow {
     place: number,
@@ -17,6 +18,11 @@ export interface TableRow {
     marks: Array<Mark>,
     last_created: Date,
     last_cp: number,
+}
+
+export interface Filter {
+    str: string
+    class: string
 }
 
 const today = moment().startOf('day')
@@ -28,8 +34,10 @@ const today = moment().startOf('day')
 })
 export class ResultsComponent implements OnInit, AfterViewInit {
     dataSource = new MatTableDataSource<TableRow>([])
-    displayedColumns: string[] = ['place', 'number', 'athlet']
+    displayedColumns: string[] = ['place', 'number', 'class', 'athlet']
+    filter: Filter = {class: '', str: ''}
 
+    hide_start_time = false
     circles = 3
     checkpoints: Array<CheckPoint> = []
     start_time = today.clone()
@@ -37,7 +45,8 @@ export class ResultsComponent implements OnInit, AfterViewInit {
     @ViewChild('picker', {static: true}) picker: NgxTimepickerFieldComponent
     @ViewChild(MatSort, {static: true}) sort: MatSort
 
-    constructor(private firestore: AngularFirestore) {
+    constructor(private firestore: AngularFirestore, private route: ActivatedRoute) {
+        this.hide_start_time = route.snapshot.data['hide_start_time']
     }
 
     private range = (start, end, delta) => {
@@ -47,13 +56,15 @@ export class ResultsComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit() {
-        this.picker.registerOnChange((timestr) => {
-            const time_parts = timestr.split(':')
-            this.start_time = today.clone()
-            this.start_time.add(time_parts[0], 'hours')
-            this.start_time.add(time_parts[1], 'minutes')
-            return timestr
-        })
+        if (this.picker) {
+            this.picker.registerOnChange((timestr) => {
+                const time_parts = timestr.split(':')
+                this.start_time = today.clone()
+                this.start_time.add(time_parts[0], 'hours')
+                this.start_time.add(time_parts[1], 'minutes')
+                return timestr
+            })
+        }
     }
 
     ngOnInit() {
@@ -69,12 +80,23 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         this.dataSource.sort = this.sort
 
         this.dataSource.filterPredicate = (data: TableRow, filter: string) => {
-            if (data.number.toString().indexOf(filter) >= 0) {
-                return true
-            } else if (data.athlet.fio.toLocaleLowerCase().indexOf(filter) >= 0) {
-                return true
+            const filter_obj = JSON.parse(filter) as Filter
+            let result = true
+
+            if (filter_obj.str) {
+                if (data.number.toString().indexOf(filter_obj.str) >= 0) {
+                    result = true
+                } else if (data.athlet.fio.toLocaleLowerCase().indexOf(filter_obj.str) >= 0) {
+                    result = true
+                } else {
+                    result = false
+                }
             }
-            return false
+            if (filter_obj.class) {
+                result = (data.athlet.class === filter_obj.class) && result
+            }
+
+            return result
         }
 
         this.firestore.collection('checkpoints', ref => ref.orderBy('order')).valueChanges().subscribe((doc: Array<CheckPoint>) => {
@@ -150,8 +172,14 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         })
     }
 
-    applyFilter(filterValue: string) {
-        this.dataSource.filter = filterValue.trim().toLowerCase()
+    applyFilter($event: any, field: string) {
+        if (field === 'str') {
+            this.filter.str = $event.target.value.trim().toLowerCase()
+        }
+        if (field === 'class') {
+            this.filter.class = $event
+        }
+        this.dataSource.filter = JSON.stringify(this.filter)
     }
 
     diffTime(created: any) {

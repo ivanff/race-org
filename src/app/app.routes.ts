@@ -10,10 +10,17 @@ export const routes: Routes = [
         redirectTo: '/access/register',
         pathMatch: 'full',
     },
-    // {
-    //     path: 'results',
-    //     component: ResultsComponent
-    // },
+    {
+        path: 'results',
+        component: ResultsComponent
+    },
+    {
+        path: 'list',
+        component: ResultsComponent,
+        data: {
+            hide_start_time: true
+        }
+    },
     // {
     //     path: 'settings',
     //     component: SettingsComponent

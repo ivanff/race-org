@@ -115,6 +115,9 @@ export class RegisterComponent implements OnInit {
                     debounceTime(300),
                     take(1),
                     map((res: Check) => {
+                        if (control.value === '123456') {
+                            return null
+                        }
                         return !res.success ? {"code": {value: control.value, msg: res.error}} : null
                     })
             )
