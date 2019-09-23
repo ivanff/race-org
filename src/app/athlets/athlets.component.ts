@@ -55,6 +55,7 @@ export class AthletsComponent extends BaseComponent implements OnInit, OnDestroy
     athlets: Array<Athlet> = []
     searchPhrase = ''
     @ViewChild('activityIndicator', {static: false}) activityIndicatorRef: ElementRef
+    private unsubscribe: any
 
     constructor(public routerExtensions: RouterExtensions,
                 private zone: NgZone,
@@ -64,7 +65,7 @@ export class AthletsComponent extends BaseComponent implements OnInit, OnDestroy
 
         const $zone = this.zone
         const collectionRef: firestore.Query = firebase.firestore().collection('athlets')
-        collectionRef.onSnapshot({includeMetadataChanges: true}, (snapshot: firestore.QuerySnapshot) => {
+        this.unsubscribe = collectionRef.onSnapshot({includeMetadataChanges: true}, (snapshot: firestore.QuerySnapshot) => {
             $zone.run(() => {
                 this.athlets = []
                 snapshot.forEach((doc: firestore.DocumentSnapshot) => {
@@ -91,6 +92,7 @@ export class AthletsComponent extends BaseComponent implements OnInit, OnDestroy
         if (this.activityIndicatorRef.nativeElement.busy) {
             this.nfc.doStopTagListener()
         }
+        this.unsubscribe()
     }
 
     onItemTap(athlet: Athlet): void {

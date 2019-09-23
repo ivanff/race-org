@@ -70,6 +70,7 @@ export class OptionsComponent extends BaseComponent implements OnInit, OnDestroy
   }
   checkpoints: Array<CheckPoint> = []
   collection: firestore.CollectionReference = firebase.firestore().collection('checkpoints')
+  unsubscribe: any
 
   constructor(public routerExtensions: RouterExtensions,
               private zone: NgZone,
@@ -79,7 +80,7 @@ export class OptionsComponent extends BaseComponent implements OnInit, OnDestroy
     const $zone = this.zone
     const collectionRef: firestore.Query = this.collection.orderBy('order', 'desc')
 
-    collectionRef.onSnapshot({includeMetadataChanges: true}, (snapshot: firestore.QuerySnapshot) => {
+    this.unsubscribe = collectionRef.onSnapshot({includeMetadataChanges: true}, (snapshot: firestore.QuerySnapshot) => {
       $zone.run(() => {
         this.checkpoints = []
         snapshot.forEach((doc: firestore.DocumentSnapshot) => {
@@ -105,7 +106,8 @@ export class OptionsComponent extends BaseComponent implements OnInit, OnDestroy
     // }
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
+    this.unsubscribe()
   }
 
   onItemTap($event) {

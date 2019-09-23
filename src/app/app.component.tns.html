@@ -1,7 +1,7 @@
 <RadSideDrawer #sideDrawer>
     <GridLayout tkDrawerContent rows="56, *">
-        <StackLayout *ngIf="settings.competition" class="side-title">
-            <Label [text]="'<' + settings.competition.name + '>'" class="h2"></Label>
+        <StackLayout class="side-title">
+            <Label [text]="'<' + settings?.competition?.name + '>'" class="h2"></Label>
         </StackLayout>
         <ScrollView row="1">
             <StackLayout>
