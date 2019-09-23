@@ -29,7 +29,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
 
     ngAfterViewInit() {
         if (this.activityIndicatorRef.nativeElement.busy) {
-            this.zone.runOutsideAngular(() => this.nfc.doStartTagListener(this.setNfcId.bind(this)))
+            this.zone.runOutsideAngular(() => this.nfc.doStartTagListener(this.setNfcMark.bind(this)))
         }
     }
 
@@ -50,7 +50,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
         this.nfc.doStopTagListener()
     }
 
-    setNfcId(data: NfcTagData) {
+    setNfcMark(data: NfcTagData) {
         const athlets = firebase.firestore().collection('athlets')
             .where('nfc_id', '==', data.id).get()
         athlets.then((snapshot: firestore.QuerySnapshot) => {
@@ -61,6 +61,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
                         this.last_athlet = doc.data() as Athlet
                         const checkpoints: Array<any> = this.last_athlet.checkpoints
                         alert(this.last_athlet.fio)
+                        this.activityIndicatorRef.nativeElement.busy = false
                         checkpoints.push({
                             key: key,
                             created: new Date()
@@ -68,9 +69,9 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
                         firebase.firestore().collection('athlets').doc(doc.id).update({
                             checkpoints: checkpoints
                         }).then(() => {
-                            this.activityIndicatorRef.nativeElement.busy = false
                         }, (err) => {
-                            this.activityIndicatorRef.nativeElement.busy = false
+                        }).catch((err) => {
+                            console.log(`Transaction error: ${err}`)
                         })
                     })
                 } else {
@@ -86,7 +87,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
 
     onBusyChanged($event) {
         if ($event.object.busy) {
-            this.zone.runOutsideAngular(() => this.nfc.doStartTagListener(this.setNfcId.bind(this)))
+            this.zone.runOutsideAngular(() => this.nfc.doStartTagListener(this.setNfcMark.bind(this)))
         } else {
             this.nfc.doStopTagListener()
         }

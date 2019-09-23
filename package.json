@@ -40,6 +40,7 @@
     "nativescript-exit": "^1.0.1",
     "nativescript-localize": "^4.2.0",
     "nativescript-nfc": "^4.0.3",
+    "nativescript-phone": "^1.4.0",
     "nativescript-plugin-firebase": "^9.1.1",
     "nativescript-theme-core": "^2.0.20",
     "nativescript-ui-listview": "^7.0.5",

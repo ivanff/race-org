@@ -1,7 +1,7 @@
 <RadSideDrawer #sideDrawer>
     <GridLayout tkDrawerContent rows="56, *">
-        <StackLayout class="side-title">
-            <Label text="Application section" class="h2"></Label>
+        <StackLayout *ngIf="settings.competition" class="side-title">
+            <Label [text]="'<' + settings.competition.name + '>'" class="h2"></Label>
         </StackLayout>
         <ScrollView row="1">
             <StackLayout>
@@ -11,10 +11,10 @@
                 <Label [text]="'Home'|L" (tap)="navigateTo('home', {clearHistory: true})" [class.active]="_activatedUrl === '/home'" class="side-label"></Label>
                 <Label [text]="'Athlets'|L" (tap)="navigateTo('athlets')" [class.active]="_activatedUrl.indexOf('/athlets') === 0" class="side-label"></Label>
                 <Label [text]="'Options'|L" (tap)="navigateTo('options')" [class.active]="_activatedUrl === '/options'" class="side-label"></Label>
-                <Label [text]="'Test'|L" (tap)="navigateTo('home')" [class.active]="_activatedUrl === '/home/test'" class="side-label"></Label>
-                <Label [text]="'Test2'|L" (tap)="navigateTo('home/test2')" [class.active]="_activatedUrl === '/home/test'" class="side-label"></Label>
+<!--                <Label [text]="'Test'|L" (tap)="navigateTo('home')" [class.active]="_activatedUrl === '/home/test'" class="side-label"></Label>-->
+<!--                <Label [text]="'Test2'|L" (tap)="navigateTo('home/test2')" [class.active]="_activatedUrl === '/home/test'" class="side-label"></Label>-->
                 <StackLayout class="m-10"></StackLayout>
-                <Label [text]="'Join competition'|L" (tap)="openModal('competition')" class="side-label"></Label>
+                <Label [text]="'Join to competition'|L" (tap)="openModal('competition')" class="side-label"></Label>
                 <StackLayout class="m-10"></StackLayout>
                 <Label [text]="'Back'|L" class="side-label" (tap)="onCloseDrawerTap()"></Label>
                 <Label [text]="'Exit'|L" class="side-label" (tap)="onExit()"></Label>

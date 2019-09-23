@@ -93,8 +93,7 @@ export class AthletsComponent extends BaseComponent implements OnInit, OnDestroy
         }
     }
 
-    onItemTap($event) {
-        const athlet = this.athlets[$event.index]
+    onItemTap(athlet: Athlet): void {
         this.activityIndicatorRef.nativeElement.busy = false
         this.routerExtensions.navigate([athlet.phone], {relativeTo: this.activeRoute})
     }
@@ -133,7 +132,6 @@ export class AthletsComponent extends BaseComponent implements OnInit, OnDestroy
             if (snapshot.docs.length) {
                 snapshot.forEach((doc: firestore.DocumentSnapshot) => {
                     const athlet = doc.data() as Athlet
-                    this.activityIndicatorRef.nativeElement.busy = false
                     this.routerExtensions.navigate([athlet.phone], {relativeTo: this.activeRoute})
                 })
             } else {

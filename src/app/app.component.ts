@@ -8,9 +8,10 @@ import {exit} from "nativescript-exit"
 import {RootComponent} from "./root/root.component"
 import {NavigationEnd, Router} from "@angular/router"
 import {filter} from "rxjs/operators"
+import {SettingsService} from "./shared/settings.service"
 
 const firebase = require('nativescript-plugin-firebase')
-
+const firebase_app = require('nativescript-plugin-firebase/app')
 
 @Component({
     selector: 'app-root',
@@ -26,7 +27,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                 private modalService: ModalDialogService,
                 private vcRef: ViewContainerRef,
                 private router: Router,
-                private zone: NgZone) {
+                private zone: NgZone,
+                private settings: SettingsService) {
         this._activatedUrl = "/home"
     }
 
@@ -62,17 +64,28 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     async ngOnInit(): Promise<void> {
         this.onBackPressed()
-        await firebase.init({
-            //local cache
-            persist: true,
-            onAuthStateChanged: function (data) {
-                console.log(
-                    'AppComponent onAuthStateChanged',
-                    JSON.stringify(data)
-                )
-            }
-        })
+        try {
+            await firebase.init({
+                //local cache
+                persist: true,
+                onAuthStateChanged: function (data) {
+                    console.log(
+                        'AppComponent onAuthStateChanged',
+                        JSON.stringify(data)
+                    )
+                }
+            })
+        } catch (e) {
+
+        } finally {
+            await firebase_app.firestore().collection('competitions')
+                .doc('4O12e8JOUoR96idKit6d').get().then((doc) => {
+                    const id = doc.id
+                    this.settings.competition$.next({id,...doc.data()})
+                })
+        }
     }
+
 
     onBackPressed():void {
         console.log(

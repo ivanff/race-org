@@ -1,4 +1,4 @@
-import {Component, NgZone, OnDestroy, OnInit} from '@angular/core'
+import {Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core'
 import {Nfc, NfcTagData} from 'nativescript-nfc'
 import {RouterExtensions} from 'nativescript-angular'
 import {firestore} from 'nativescript-plugin-firebase'
@@ -11,6 +11,7 @@ import {NfcService} from "@src/app/shared/nfc.service"
 import {Mark} from "@src/app/home/mark"
 
 const firebase = require('nativescript-plugin-firebase/app')
+const phone = require( "nativescript-phone" )
 
 @Component({
     selector: 'app-detail',
@@ -20,6 +21,7 @@ const firebase = require('nativescript-plugin-firebase/app')
 export class DetailComponent extends BaseComponent implements OnInit, OnDestroy {
     athlet: Athlet
     tap_remove_index: number
+    @ViewChild('activityIndicator', {static: false}) activityIndicatorRef: ElementRef
 
     constructor(public routerExtensions: RouterExtensions,
                 private zone: NgZone,
@@ -30,9 +32,7 @@ export class DetailComponent extends BaseComponent implements OnInit, OnDestroy 
         this.athlet = this.activeRoute.snapshot.data['athlet']
     }
 
-    ngOnInit() {
-        this.zone.runOutsideAngular(() => this.nfc.doStartTagListener(this.setNfcId.bind(this)))
-    }
+    ngOnInit() {}
 
     ngOnDestroy(): void {
         this.nfc.doStopTagListener()
@@ -51,10 +51,13 @@ export class DetailComponent extends BaseComponent implements OnInit, OnDestroy 
                 nfc_id: data.id
             })
 
+            this.activityIndicatorRef.nativeElement.busy = false
             batch.commit().then(() => {
                 alert('Nfc метка назначена')
                 this.athlet.nfc_id = data.id
-            }).catch(error => console.log('Batch error: ' + error))
+            }).then(res => this.activityIndicatorRef.nativeElement.busy = false).catch(error => {
+                console.log('Batch error: ' + error)
+            })
         })
     }
 
@@ -93,5 +96,20 @@ export class DetailComponent extends BaseComponent implements OnInit, OnDestroy 
                 })
             }
         })
+    }
+
+    onBusyChanged($event): void {
+        if ($event.object.busy) {
+            this.zone.runOutsideAngular(() => this.nfc.doStartTagListener(this.setNfcId.bind(this)))
+        } else {
+            this.nfc.doStopTagListener()
+        }
+    }
+
+    onPhone(): void {
+        phone.dial('+7' + this.athlet.phone)
+    }
+    onSms(): void {
+        phone.sms('+7' + this.athlet.phone)
     }
 }

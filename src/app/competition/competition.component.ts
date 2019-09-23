@@ -8,6 +8,7 @@ import * as dialogs from "tns-core-modules/ui/dialogs"
 import {PromptResult} from "tns-core-modules/ui/dialogs"
 import {firestore} from "nativescript-plugin-firebase"
 import QueryDocumentSnapshot = firestore.QueryDocumentSnapshot
+import {SettingsService} from "@src/app/shared/settings.service"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
@@ -45,11 +46,10 @@ const initial: Competition = {
 })
 export class CompetitionComponent  implements OnInit, OnDestroy {
   collection: firestore.CollectionReference = firebase.firestore().collection('competitions')
-  competition: Competition
   device_obj: any
+  device_uuid: string
 
-  constructor(private params: ModalDialogParams) {
-    this.competition = initial
+  constructor(private params: ModalDialogParams, public settings: SettingsService) {
     this.device_obj = {
       manufacturer: device.manufacturer,
       model: device.model,
@@ -59,6 +59,7 @@ export class CompetitionComponent  implements OnInit, OnDestroy {
       language: device.language,
       region: device.region,
     }
+    this.device_uuid = device.uuid
   }
 
   ngOnInit() {
@@ -83,6 +84,12 @@ export class CompetitionComponent  implements OnInit, OnDestroy {
     })
   }
 
+  checkExists(devices: Array<Device>): boolean {
+    return devices.filter((device: Device) => {
+      return device.uuid === this.device_uuid
+    }).length == 0
+  }
+
   onJoin(): void {
     dialogs.prompt("Enter secret key to JOIN into competition", "").then((r: PromptResult) => {
       if (r.result && initial.secret === r.text){
@@ -91,9 +98,6 @@ export class CompetitionComponent  implements OnInit, OnDestroy {
           const current_devices = competition.devices.filter((item: Device) => item.uuid == device.uuid)
           if (!current_devices.length) {
             competition.devices.push({...this.device_obj})
-            console.log(
-                competition.devices.length
-            )
             this.collection.doc(doc.id).update({
               devices: competition.devices
             }).then(value => alert('Success'))

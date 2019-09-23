@@ -1,12 +1,21 @@
-<ActionBar [title]="'Create competition'|L">
+<ActionBar [title]="'Options of competition'|L">
     <NavigationButton (tap)="goBack()"
                       text="Back"
                       android.systemIcon="ic_menu_back"></NavigationButton>
 </ActionBar>
 
 <StackLayout>
-    <Label [text]="'Competition name: ' + competition.name" class="p-10"></Label>
-    <Button (tap)="onSetAdmin()" [text]="'Set this device to admin'"></Button>
-    <Button (tap)="onJoin()" [text]="'Join'"></Button>
+    <Label [text]="'UUID Device: ' + device_uuid" class="p-10 font-weight-bold"></Label>
+    <Label [text]="'Competition name: ' + settings.competition.name" class="p-10"></Label>
+    <Label [text]="'Count of devices: ' + settings.competition.devices.length" class="p-10"></Label>
+    <Label [text]="'This is admin device: ' + (settings.competition.admin_device.uuid == device_uuid)" class="p-10"></Label>
+    <Label [text]="'Завершение соревнований: ' + (settings.competition.finish|date)" class="p-10"></Label>
+
+    <Button (tap)="onSetAdmin()"
+            [text]="'Set this device to admin'"
+            [isEnabled]="settings.competition.admin_device.uuid != device_uuid" class="btn btn-primary"></Button>
+    <Button (tap)="onJoin()"
+            [text]="'Join' + checkExists(settings.competition.devices)"
+            [isEnabled]="checkExists(settings.competition.devices)" class="btn btn-primary"></Button>
 </StackLayout>
 

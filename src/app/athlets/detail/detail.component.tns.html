@@ -2,21 +2,48 @@
     <NavigationButton icon="res://round_menu_black_24"
                       (tap)="onDrawerButtonTap()"></NavigationButton>
 </ActionBar>
-<GridLayout rows="auto, *" columns="*">
+<GridLayout rows="auto, auto, *" columns="*" class="p-l-10 p-r-10">
     <StackLayout row="0" col="0">
-        <Label [text]="athlet.fio" textWrap="true"></Label>
-        <Label [text]="athlet.phone" textWrap="true"></Label>
-        <Label [text]="athlet.city" textWrap="true"></Label>
-        <Label [text]="athlet.bike" textWrap="true"></Label>
-        <Label [text]="athlet.nfc_id" style="color: red; font-weight: bold"></Label>
-        <Button [text]="'Clear Nfc'|L"
+
+        <GridLayout columns="auto, auto, auto" rows="auto">
+            <Label [text]="'Телефон: +7' + athlet.phone" col="0" verticalAlignment="center"></Label>
+            <Button text="&#xf095;" (tap)="onPhone()" class="btn btn-primary fas" col="1"></Button>
+            <Button text="&#xf7cd;" (tap)="onSms()" class="btn btn-primary fas " col="2"></Button>
+        </GridLayout>
+
+        <Label [text]="'Имя: ' + athlet.fio"></Label>
+
+        <Label [text]="'Город: ' + athlet.city"></Label>
+        <Label [text]="'Мотоцикл: ' + athlet.bike"></Label>
+        <Label [text]="'NFC: ' + (athlet.nfc_id ? athlet.nfc_id : 'не назначено')"
+               [class.alert]="!athlet.nfc_id"
+               class="font-weight-bold"></Label>
+        <Button *ngIf="athlet.nfc_id"
+                [text]="'Очистить метку Nfc'|L"
                 (tap)="onClearNfc()"
                 class="btn btn-primary"></Button>
     </StackLayout>
-    <ScrollView row="1" col="0">
-        <ListView height="100%"
-                  itemTap="onItemTap"
-                  [items]="athlet.checkpoints">
+    <StackLayout row="1" col="0">
+        <Button [text]="activityIndicator.busy ? ('Остановить сканировение'|L) :('Назначить метку NFC'|L) "
+                (tap)="(activityIndicator.busy = !activityIndicator.busy)"
+                [class.btn-primary]="!activityIndicator.busy"
+                row="0"
+                col="0"
+                class="btn btn-active">
+        </Button>
+        <StackLayout horizontalAlignment="center" [visibility]="activityIndicator.busy ? 'visible' : 'collapse'" verticalAlignment="center">
+            <ActivityIndicator height="20"
+                               width="20"
+                               #activityIndicator
+                               (busyChange)="onBusyChanged($event)"
+                               style="color: red;"
+                               verticalAlignment="center"
+                               horizontalAlignment="center"
+                               class="activity-indicator m-15"></ActivityIndicator>
+        </StackLayout>
+    </StackLayout>
+    <ScrollView row="2" col="0">
+        <ListView height="100%" [items]="athlet.checkpoints">
             <ng-template let-mark="item" let-i="index" let-odd="odd" let-even="even">
                 <GridLayout columns="*, auto" rows="*, *" class="p-l-5 p-r-5">
                     <Label col="0" row="0" [text]="mark.key" style="font-weight: bold; font-size: 15em"

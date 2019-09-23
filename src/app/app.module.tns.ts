@@ -1,4 +1,4 @@
-import {NgModule, NO_ERRORS_SCHEMA} from '@angular/core'
+import {APP_INITIALIZER, NgModule, NO_ERRORS_SCHEMA} from '@angular/core'
 import {NativeScriptModule} from 'nativescript-angular/nativescript.module'
 
 import {AppRoutingModule} from '@src/app/app-routing.module'
@@ -17,6 +17,7 @@ import {OptionsComponent} from "@src/app/options/options.component"
 import {TestComponent} from "@src/app/home/test/test.component"
 import {Test2Component} from "@src/app/home/test2/test2.component"
 import {CompetitionComponent} from "@src/app/competition/competition.component"
+import {SettingsService} from "@src/app/shared/settings.service"
 
 
 // Uncomment and add to NgModule imports if you need to use two-way binding
@@ -50,7 +51,8 @@ import {CompetitionComponent} from "@src/app/competition/competition.component"
         AppRoutingModule,
     ],
     providers: [
-        AthletResolve
+        AthletResolve,
+        SettingsService,
     ],
     bootstrap: [AppComponent],
     schemas: [NO_ERRORS_SCHEMA]
