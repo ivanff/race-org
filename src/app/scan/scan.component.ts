@@ -1,7 +1,16 @@
-import {AfterViewInit, Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core'
+import {
+    AfterViewInit,
+    Component,
+    ElementRef,
+    NgZone,
+    OnDestroy,
+    OnInit,
+    ViewChild,
+    ViewContainerRef
+} from '@angular/core'
 import {firestore} from 'nativescript-plugin-firebase'
 import {getString} from 'tns-core-modules/application-settings'
-import {RouterExtensions} from 'nativescript-angular'
+import {ModalDialogOptions, ModalDialogService, RouterExtensions} from 'nativescript-angular'
 import {NfcTagData} from 'nativescript-nfc'
 import {BaseComponent} from "@src/app/shared/base.component"
 import {Athlet} from "@src/app/home/athlet"
@@ -9,6 +18,8 @@ import {NfcService} from "@src/app/shared/nfc.service"
 import {Mark} from "@src/app/home/mark"
 import {CheckPoint} from "@src/app/home/checkpoint"
 import {device} from "tns-core-modules/platform"
+import {FoundDialogComponent} from "@src/app/scan/found-dialog/found-dialog.component"
+import {ActivatedRoute} from "@angular/router"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
@@ -23,7 +34,12 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
 
     @ViewChild('activityIndicator', {static: false}) activityIndicatorRef: ElementRef
 
-    constructor(public routerExtensions: RouterExtensions, private zone: NgZone, public nfc: NfcService) {
+    constructor(public routerExtensions: RouterExtensions,
+                private zone: NgZone,
+                public nfc: NfcService,
+                private modalService: ModalDialogService,
+                private viewContainerRef: ViewContainerRef,
+                private activeRoute: ActivatedRoute) {
         super(routerExtensions)
     }
 
@@ -44,11 +60,32 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
                 })
             }
         })
+        // this.onFound({phone: '9603273301'} as Athlet
     }
 
     ngOnDestroy(): void {
         this.nfc.doStopTagListener()
     }
+
+    onFound(athlet: Athlet): void {
+        const options: ModalDialogOptions = {
+            context: {
+                athlet: athlet
+            },
+            viewContainerRef: this.viewContainerRef,
+            fullscreen: false
+        };
+
+        this.modalService.showModal(FoundDialogComponent, options).then((path: Array<string> | null) => {
+            if (path) {
+                setTimeout(() =>
+                    this.routerExtensions.navigate(path,{relativeTo: this.activeRoute})
+                , 100)
+            }
+            return
+        })
+    }
+
 
     setNfcMark(data: NfcTagData) {
         const athlets = firebase.firestore().collection('athlets')
@@ -60,8 +97,9 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
                     snapshot.forEach((doc: firestore.DocumentSnapshot) => {
                         this.last_athlet = doc.data() as Athlet
                         const checkpoints: Array<any> = this.last_athlet.checkpoints
-                        alert(this.last_athlet.fio)
                         this.activityIndicatorRef.nativeElement.busy = false
+                        this.onFound(this.last_athlet)
+
                         checkpoints.push({
                             key: key,
                             created: new Date()

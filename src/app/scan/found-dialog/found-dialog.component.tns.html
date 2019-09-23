@@ -1,0 +1,9 @@
+<StackLayout margin="24" horizontalAlignment="center" verticalAlignment="center">
+    <Label [text]="'Номер: ' + athlet.number" class="number p-b-12" horizontalAlignment="center"></Label>
+    <Label [text]="'Имя: ' + athlet.fio"></Label>
+    <Label [text]="'Класс: ' + athlet.class"></Label>
+    <StackLayout orientation="horizontal" marginTop="12">
+        <Button [text]="' Открыть '" (tap)="onOpen()" class="btn"></Button>
+        <Button [text]="' Закрыть '" (tap)="close('Cancel')" class="btn -primary"></Button>
+    </StackLayout>
+</StackLayout>

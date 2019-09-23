@@ -5,15 +5,15 @@
 <GridLayout rows="auto, auto, *" columns="*" class="p-l-10 p-r-10">
     <StackLayout row="0" col="0">
 
-        <GridLayout columns="auto, auto, auto" rows="auto">
-            <Label [text]="'Телефон: +7' + athlet.phone" col="0" verticalAlignment="center"></Label>
-            <Button text="&#xf095;" (tap)="onPhone()" class="btn btn-primary fas" col="1"></Button>
-            <Button text="&#xf7cd;" (tap)="onSms()" class="btn btn-primary fas " col="2"></Button>
+        <GridLayout columns="*, *" rows="auto">
+            <Button text="&#xf095;" (tap)="onPhone()" class="btn fas" col="0"></Button>
+            <Button text="&#xf7cd;" (tap)="onSms()" class="btn fas " col="1"></Button>
         </GridLayout>
 
         <Label [text]="'Имя: ' + athlet.fio"></Label>
-
         <Label [text]="'Город: ' + athlet.city"></Label>
+        <Label [text]="'Класс: ' + athlet.class"></Label>
+        <Label [text]="'Телефон: +7' + athlet.phone" col="0" verticalAlignment="center"></Label>
         <Label [text]="'Мотоцикл: ' + athlet.bike"></Label>
         <Label [text]="'NFC: ' + (athlet.nfc_id ? athlet.nfc_id : 'не назначено')"
                [class.alert]="!athlet.nfc_id"
@@ -21,15 +21,15 @@
         <Button *ngIf="athlet.nfc_id"
                 [text]="'Очистить метку Nfc'|L"
                 (tap)="onClearNfc()"
-                class="btn btn-primary"></Button>
+                class="btn -outline"></Button>
     </StackLayout>
     <StackLayout row="1" col="0">
         <Button [text]="activityIndicator.busy ? ('Остановить сканировение'|L) :('Назначить метку NFC'|L) "
                 (tap)="(activityIndicator.busy = !activityIndicator.busy)"
-                [class.btn-primary]="!activityIndicator.busy"
+                [class.-primary]="!activityIndicator.busy"
                 row="0"
                 col="0"
-                class="btn btn-active">
+                class="btn">
         </Button>
         <StackLayout horizontalAlignment="center" [visibility]="activityIndicator.busy ? 'visible' : 'collapse'" verticalAlignment="center">
             <ActivityIndicator height="20"
@@ -46,11 +46,11 @@
         <ListView height="100%" [items]="athlet.checkpoints">
             <ng-template let-mark="item" let-i="index" let-odd="odd" let-even="even">
                 <GridLayout columns="*, auto" rows="*, *" class="p-l-5 p-r-5">
-                    <Label col="0" row="0" [text]="mark.key" style="font-weight: bold; font-size: 15em"
-                           class="title"></Label>
-                    <Label col="0" row="1" [text]="mark.created|date:'hh:mm:ss'" class="info"></Label>
+                    <Label col="0" row="0" [text]="mark.key" style="font-weight: bold; font-size: 15em"></Label>
+                    <Label col="0" row="1" [text]="mark.created|date:'hh:mm:ss'"></Label>
                     <Label (tap)="onRemoveCp($event, i)"
                            [class.scale-active]="i == tap_remove_index"
+                           [class.disabled]="mark.key != cp"
                            text="&#xf2ed;"
                            col="1"
                            row="0"

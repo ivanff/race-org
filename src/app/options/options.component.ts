@@ -12,9 +12,11 @@ import {
   remove,
   clear
 } from 'tns-core-modules/application-settings'
-import {device} from 'tns-core-modules/platform'
+import {Device, device} from 'tns-core-modules/platform'
 import {BaseComponent} from "@src/app/shared/base.component"
 import {CheckPoint} from "@src/app/home/checkpoint"
+import {SettingsService} from "@src/app/shared/settings.service"
+import {confirm} from "tns-core-modules/ui/dialogs"
 
 
 const firebase = require('nativescript-plugin-firebase/app')
@@ -67,11 +69,15 @@ export class OptionsComponent extends BaseComponent implements OnInit, OnDestroy
     checkpoint: {} as CheckPoint
   }
   checkpoints: Array<CheckPoint> = []
+  collection: firestore.CollectionReference = firebase.firestore().collection('checkpoints')
 
-  constructor(public routerExtensions: RouterExtensions, private zone: NgZone) {
+  constructor(public routerExtensions: RouterExtensions,
+              private zone: NgZone,
+              private app_settings: SettingsService) {
     super(routerExtensions)
+
     const $zone = this.zone
-    const collectionRef: firestore.CollectionReference = firebase.firestore().collection('checkpoints').orderBy('order')
+    const collectionRef: firestore.Query = this.collection.orderBy('order', 'desc')
 
     collectionRef.onSnapshot({includeMetadataChanges: true}, (snapshot: firestore.QuerySnapshot) => {
       $zone.run(() => {
@@ -104,25 +110,45 @@ export class OptionsComponent extends BaseComponent implements OnInit, OnDestroy
 
   onItemTap($event) {
     const checkpoint = this.checkpoints[$event.index]
-    const collection: firestore.CollectionReference = firebase.firestore().collection('checkpoints')
-    const back_checkpoint = {...this.settings.checkpoint}
-    this.settings.checkpoint = {} as CheckPoint
 
-    const checkpoints = collection.where('device', '==', device.uuid).get()
-    let batch = firebase.firestore().batch()
+    const options = {
+      title: '',
+      message: `Назначить это устройство считывателем для контрольной точки ${checkpoint.key}`,
+      okButtonText: 'Да',
+      cancelButtonText: 'Нет',
+    }
+    confirm(options).then((result: boolean) => {
+      if (result) {
+        const back_checkpoint = {...this.settings.checkpoint}
+        const checkpoints = this.collection.where('device', '==', device.uuid).get()
+        let batch = firebase.firestore().batch()
 
-    const back = (err) => this.settings.checkpoint = {...back_checkpoint}
+        const Back = (err) => this.settings.checkpoint = {...back_checkpoint}
 
-    checkpoints.then((snapshot: firestore.QuerySnapshot) => {
-      snapshot.forEach((doc: firestore.DocumentSnapshot) => {
-        batch = batch.update(collection.doc(doc.id), {device: null})
-      })
-      batch = batch.update(collection.doc(checkpoint.id), {device: device.uuid})
+        checkpoints.then((snapshot: firestore.QuerySnapshot) => {
+          snapshot.forEach((doc: firestore.DocumentSnapshot) => {
+            batch = batch.update(this.collection.doc(doc.id), {device: null})
+          })
+          batch = batch.update(this.collection.doc(checkpoint.id), {device: device.uuid})
 
-      batch.commit().then(() => {
-        this.settings.checkpoint = {...checkpoint}
-        setString('cp', checkpoint.key)
-      }, back)
-    }, back)
+          batch.commit().then(() => {
+            this.settings.checkpoint = {...checkpoint}
+            setString('cp', checkpoint.key)
+          }, Back)
+        }, Back)
+      }
+    })
   }
+
+  getDeviceInfo(uuid: string | undefined): string {
+    if (uuid) {
+      const devices = this.app_settings.competition.devices.filter((device: Device) => { return device.uuid === uuid })
+      if (devices.length == 1) {
+        const device = devices[0] as Device
+        return device.model || `${device.deviceType} ОС: ${device.osVersion}`
+      }
+    }
+    return ""
+  }
+
 }

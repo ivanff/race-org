@@ -9,6 +9,7 @@ import {BaseComponent} from "@src/app/shared/base.component"
 import {Athlet} from "@src/app/home/athlet"
 import {NfcService} from "@src/app/shared/nfc.service"
 import {Mark} from "@src/app/home/mark"
+import {getString} from "tns-core-modules/application-settings"
 
 const firebase = require('nativescript-plugin-firebase/app')
 const phone = require( "nativescript-phone" )
@@ -21,6 +22,7 @@ const phone = require( "nativescript-phone" )
 export class DetailComponent extends BaseComponent implements OnInit, OnDestroy {
     athlet: Athlet
     tap_remove_index: number
+    cp: string
     @ViewChild('activityIndicator', {static: false}) activityIndicatorRef: ElementRef
 
     constructor(public routerExtensions: RouterExtensions,
@@ -30,6 +32,7 @@ export class DetailComponent extends BaseComponent implements OnInit, OnDestroy 
     ) {
         super(routerExtensions)
         this.athlet = this.activeRoute.snapshot.data['athlet']
+        this.cp = getString('cp')
     }
 
     ngOnInit() {}
@@ -81,21 +84,26 @@ export class DetailComponent extends BaseComponent implements OnInit, OnDestroy 
 
     onRemoveCp($event: EventData, i: number): void {
         this.tap_remove_index = i
-        const options = {
-            title: '',
-            message: `Удалить прохождени отметки ${this.athlet.checkpoints[i].key}`,
-            okButtonText: 'Yes',
-            cancelButtonText: 'No',
-        }
-        confirm(options).then((result: boolean) => {
-            if (result) {
-                const checkpoints: Mark[] = this.athlet.checkpoints
-                checkpoints.splice(i, 1)
-                firestore.collection('athlets').doc(this.athlet.phone + '').update({
-                    checkpoints: checkpoints
-                })
+        const mark: Mark = this.athlet.checkpoints[i]
+        if (mark.key == this.cp) {
+            const options = {
+                title: '',
+                message: `Удалить прохождени отметки ${mark.key}`,
+                okButtonText: 'Да',
+                cancelButtonText: 'Нет',
             }
-        })
+            confirm(options).then((result: boolean) => {
+                if (result) {
+                    const checkpoints: Array<Mark> = this.athlet.checkpoints
+                    checkpoints.splice(i, 1)
+                    firestore.collection('athlets').doc(this.athlet.phone + '').update({
+                        checkpoints: checkpoints
+                    })
+                }
+            })
+        } else {
+            alert(`This device is't manage checkpoint ${mark.key}`)
+        }
     }
 
     onBusyChanged($event): void {

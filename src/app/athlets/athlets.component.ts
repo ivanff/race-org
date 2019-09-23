@@ -61,9 +61,9 @@ export class AthletsComponent extends BaseComponent implements OnInit, OnDestroy
                 private nfc: NfcService,
                 private activeRoute: ActivatedRoute) {
         super(routerExtensions)
-        const $zone = this.zone
 
-        const collectionRef: firestore.CollectionReference = firebase.firestore().collection('athlets')
+        const $zone = this.zone
+        const collectionRef: firestore.Query = firebase.firestore().collection('athlets')
         collectionRef.onSnapshot({includeMetadataChanges: true}, (snapshot: firestore.QuerySnapshot) => {
             $zone.run(() => {
                 this.athlets = []
@@ -110,7 +110,7 @@ export class AthletsComponent extends BaseComponent implements OnInit, OnDestroy
 
     onTextChanged(args) {
         const searchBar = <SearchBar>args.object
-        if (searchBar.text.length > 2) {
+        if (searchBar.text.length) {
             this.searchPhrase = searchBar.text
         } else {
             this.searchPhrase = ''

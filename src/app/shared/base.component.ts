@@ -16,6 +16,7 @@ export class BaseComponent {
     goBack(): void {
         this.routerExtensions.back()
     }
+
     onDrawerButtonTap(): void {
         const sideDrawer = <RadSideDrawer>getRootView();
         sideDrawer.toggleDrawerState();
