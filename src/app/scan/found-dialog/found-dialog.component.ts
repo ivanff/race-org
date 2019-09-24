@@ -18,7 +18,7 @@ export class FoundDialogComponent implements OnInit {
     ngOnInit() {
     }
 
-    public close() {
+    public onClose() {
         this.params.closeCallback(null)
     }
 

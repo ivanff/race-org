@@ -13,7 +13,7 @@ export class StatComponent implements OnInit, OnDestroy {
   athlets_count: number = 0
   open_count: number = 0
   hobby_count: number = 0
-  unsubscribe: any
+  private unsubscribe: any
 
   constructor(private zone: NgZone,) { }
 

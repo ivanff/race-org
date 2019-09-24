@@ -55,6 +55,7 @@ export class AthletsComponent extends BaseComponent implements OnInit, OnDestroy
     athlets: Array<Athlet> = []
     searchPhrase = ''
     @ViewChild('activityIndicator', {static: false}) activityIndicatorRef: ElementRef
+    @ViewChild('searchBar', {static: false}) searchBarRef: ElementRef
     private unsubscribe: any
 
     constructor(public routerExtensions: RouterExtensions,
@@ -62,7 +63,9 @@ export class AthletsComponent extends BaseComponent implements OnInit, OnDestroy
                 private nfc: NfcService,
                 private activeRoute: ActivatedRoute) {
         super(routerExtensions)
+    }
 
+    ngOnInit() {
         const $zone = this.zone
         const collectionRef: firestore.Query = firebase.firestore().collection('athlets')
         this.unsubscribe = collectionRef.onSnapshot({includeMetadataChanges: true}, (snapshot: firestore.QuerySnapshot) => {
@@ -73,10 +76,6 @@ export class AthletsComponent extends BaseComponent implements OnInit, OnDestroy
                 })
             })
         })
-
-    }
-
-    ngOnInit() {
         // remove
         // WARNING CHECK COLLECTION
         // for (const athlet of initial) {
@@ -96,6 +95,11 @@ export class AthletsComponent extends BaseComponent implements OnInit, OnDestroy
     }
 
     onItemTap(athlet: Athlet): void {
+        this.searchBarRef.nativeElement.dismissSoftInput()
+        if (isAndroid) {
+            this.searchBarRef.nativeElement.android.clearFocus()
+        }
+
         this.activityIndicatorRef.nativeElement.busy = false
         this.routerExtensions.navigate([athlet.phone], {relativeTo: this.activeRoute})
     }

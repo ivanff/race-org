@@ -1,14 +1,22 @@
 <ActionBar [title]="'Athlets'|L">
     <NavigationButton icon="res://round_menu_black_24"
                       (tap)="onDrawerButtonTap()"></NavigationButton>
+    <ActionItem [text]="'Позвонить'|L"
+                (tap)="onPhone()"
+                ios.position="right"
+                android.position="popup"></ActionItem>
+    <ActionItem [text]="'Отправить sms'|L"
+                (tap)="onSms()"
+                ios.position="right"
+                android.position="popup"></ActionItem>
 </ActionBar>
 <GridLayout rows="auto, auto, *" columns="*" class="p-l-10 p-r-10">
     <StackLayout row="0" col="0">
 
-        <GridLayout columns="*, *" rows="auto">
-            <Button text="&#xf095;" (tap)="onPhone()" class="btn fas" col="0"></Button>
-            <Button text="&#xf7cd;" (tap)="onSms()" class="btn fas " col="1"></Button>
-        </GridLayout>
+<!--        <GridLayout columns="*, *" rows="auto">-->
+<!--            <Button text="&#xf095;" (tap)="onPhone()" class="btn fas" col="0"></Button>-->
+<!--            <Button text="&#xf7cd;" (tap)="onSms()" class="btn fas " col="1"></Button>-->
+<!--        </GridLayout>-->
 
         <Label [text]="'Имя: ' + athlet.fio"></Label>
         <Label [text]="'Город: ' + athlet.city"></Label>
@@ -43,14 +51,14 @@
         </StackLayout>
     </StackLayout>
     <ScrollView row="2" col="0">
-        <ListView height="100%" [items]="athlet.checkpoints">
+        <ListView height="100%" [items]="athlet.checkpoints|orderBy:'created':true">
             <ng-template let-mark="item" let-i="index" let-odd="odd" let-even="even">
                 <GridLayout columns="*, auto" rows="*, *" class="p-l-5 p-r-5">
                     <Label col="0" row="0" [text]="mark.key" style="font-weight: bold; font-size: 15em"></Label>
-                    <Label col="0" row="1" [text]="mark.created|date:'hh:mm:ss'"></Label>
-                    <Label (tap)="onRemoveCp($event, i)"
+                    <Label col="0" row="1" [text]="mark.created|date:'dd.MM HH:mm:ss'"></Label>
+                    <Label (tap)="onRemoveCp($event, mark)"
                            [class.scale-active]="i == tap_remove_index"
-                           [class.disabled]="mark.key != cp"
+                           [class.disabled]="mark.key != checkpoint?.key"
                            text="&#xf2ed;"
                            col="1"
                            row="0"

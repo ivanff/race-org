@@ -19,6 +19,8 @@ import {CompetitionComponent} from "@src/app/competition/competition.component"
 import {SettingsService} from "@src/app/shared/settings.service"
 import {FoundDialogComponent} from "@src/app/scan/found-dialog/found-dialog.component"
 import {StatComponent} from "@src/app/home/stat/stat.component"
+import {OrderModule} from "ngx-order-pipe"
+import {AdminResolve} from "@src/app/shared/admin.resolver"
 
 
 // Uncomment and add to NgModule imports if you need to use two-way binding
@@ -52,9 +54,11 @@ import {StatComponent} from "@src/app/home/stat/stat.component"
         NativeScriptUISideDrawerModule,
         NativeScriptModule,
         AppRoutingModule,
+        OrderModule,
     ],
     providers: [
         AthletResolve,
+        AdminResolve,
         SettingsService,
     ],
     bootstrap: [AppComponent],

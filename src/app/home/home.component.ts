@@ -12,7 +12,7 @@ const firebase = require('nativescript-plugin-firebase/app')
 })
 export class HomeComponent extends BaseComponent implements OnInit, OnDestroy {
     pending: boolean = false
-    unsubscribe: any
+    private unsubscribe: any
 
     constructor(public routerExtensions: RouterExtensions, private zone: NgZone,) {
         super(routerExtensions)

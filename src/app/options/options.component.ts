@@ -69,17 +69,20 @@ export class OptionsComponent extends BaseComponent implements OnInit, OnDestroy
     checkpoint: {} as CheckPoint
   }
   checkpoints: Array<CheckPoint> = []
+  current_checkpoint: CheckPoint
   collection: firestore.CollectionReference = firebase.firestore().collection('checkpoints')
-  unsubscribe: any
+  private unsubscribe: any
 
   constructor(public routerExtensions: RouterExtensions,
               private zone: NgZone,
               private app_settings: SettingsService) {
     super(routerExtensions)
 
-    const $zone = this.zone
-    const collectionRef: firestore.Query = this.collection.orderBy('order', 'desc')
+  }
 
+  ngOnInit() {
+    const $zone = this.zone
+    const collectionRef: firestore.Query = this.collection.orderBy('order', 'asc')
     this.unsubscribe = collectionRef.onSnapshot({includeMetadataChanges: true}, (snapshot: firestore.QuerySnapshot) => {
       $zone.run(() => {
         this.checkpoints = []
@@ -88,17 +91,16 @@ export class OptionsComponent extends BaseComponent implements OnInit, OnDestroy
           const checkpoint = <CheckPoint>{id, ...doc.data()}
           this.checkpoints.push(checkpoint)
 
-          if (hasKey('cp')) {
-            if (getString('cp') === checkpoint.key && device.uuid === checkpoint.device) {
-              this.settings.checkpoint = <CheckPoint>{...checkpoint}
+          if (this.app_settings.hasCp()) {
+            this.current_checkpoint = this.app_settings.getCp()
+
+            if (this.current_checkpoint.key === checkpoint.key && device.uuid === checkpoint.device) {
+              this.current_checkpoint = <CheckPoint>{...checkpoint}
             }
           }
         })
       })
     })
-  }
-
-  ngOnInit() {
     // remove
     // WARNING CHECK COLLECTION
     // for (const checkpoint of initial) {
@@ -134,8 +136,8 @@ export class OptionsComponent extends BaseComponent implements OnInit, OnDestroy
           batch = batch.update(this.collection.doc(checkpoint.id), {device: device.uuid})
 
           batch.commit().then(() => {
-            this.settings.checkpoint = {...checkpoint}
-            setString('cp', checkpoint.key)
+            this.current_checkpoint = {...checkpoint}
+            this.app_settings.setCp(checkpoint)
           }, Back)
         }, Back)
       }

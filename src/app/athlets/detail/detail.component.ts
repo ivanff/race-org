@@ -10,9 +10,11 @@ import {Athlet} from "@src/app/home/athlet"
 import {NfcService} from "@src/app/shared/nfc.service"
 import {Mark} from "@src/app/home/mark"
 import {getString} from "tns-core-modules/application-settings"
+import {SettingsService} from "@src/app/shared/settings.service"
+import {CheckPoint} from "@src/app/home/checkpoint"
 
 const firebase = require('nativescript-plugin-firebase/app')
-const phone = require( "nativescript-phone" )
+const phone = require("nativescript-phone")
 
 @Component({
     selector: 'app-detail',
@@ -20,37 +22,50 @@ const phone = require( "nativescript-phone" )
     styleUrls: ['./detail.component.scss']
 })
 export class DetailComponent extends BaseComponent implements OnInit, OnDestroy {
+    private unsubscribe: any
     athlet: Athlet
-    tap_remove_index: number
-    cp: string
+    tap_remove_index: number | null
+    checkpoint: CheckPoint
+    collection: firestore.CollectionReference = firebase.firestore().collection('athlets')
+
     @ViewChild('activityIndicator', {static: false}) activityIndicatorRef: ElementRef
 
     constructor(public routerExtensions: RouterExtensions,
                 private zone: NgZone,
                 private activeRoute: ActivatedRoute,
-                private nfc: NfcService
+                private nfc: NfcService,
+                private app_settings: SettingsService
     ) {
         super(routerExtensions)
-        this.athlet = this.activeRoute.snapshot.data['athlet']
-        this.cp = getString('cp')
     }
 
-    ngOnInit() {}
+    ngOnInit() {
+        this.athlet = this.activeRoute.snapshot.data['athlet']
+        if (this.app_settings.hasCp()) {
+            this.checkpoint = this.app_settings.getCp()
+        }
+
+        this.unsubscribe = this.collection.doc(this.athlet.phone + '').onSnapshot((doc: firestore.DocumentSnapshot) => {
+            if (doc.exists) {
+                this.athlet = {...doc.data()} as Athlet
+            }
+        })
+    }
 
     ngOnDestroy(): void {
         this.nfc.doStopTagListener()
+        this.unsubscribe()
     }
 
     setNfcId(data: NfcTagData) {
         let batch = firebase.firestore().batch()
-        const collection = firebase.firestore().collection('athlets')
-        const athlets = collection.where('nfc_id', '==', data.id).get()
+        const athlets = this.collection.where('nfc_id', '==', data.id).get()
 
         athlets.then((snapshot: firestore.QuerySnapshot) => {
             snapshot.forEach((doc: firestore.DocumentSnapshot) => {
-                batch = batch.update(collection.doc(doc.id), {nfc_id: null})
+                batch = batch.update(this.collection.doc(doc.id), {nfc_id: null})
             })
-            batch.update(collection.doc(this.athlet.phone + ''), {
+            batch.update(this.collection.doc(this.athlet.phone + ''), {
                 nfc_id: data.id
             })
 
@@ -73,7 +88,7 @@ export class DetailComponent extends BaseComponent implements OnInit, OnDestroy 
         }
         confirm(options).then((result: boolean) => {
             if (result) {
-                firebase.firestore().collection('athlets').doc(this.athlet.phone + '').update({
+                this.collection.doc(this.athlet.phone + '').update({
                     nfc_id: null
                 }).then(() => {
                     this.athlet.nfc_id = null
@@ -82,27 +97,38 @@ export class DetailComponent extends BaseComponent implements OnInit, OnDestroy 
         })
     }
 
-    onRemoveCp($event: EventData, i: number): void {
-        this.tap_remove_index = i
-        const mark: Mark = this.athlet.checkpoints[i]
-        if (mark.key == this.cp) {
-            const options = {
-                title: '',
-                message: `Удалить прохождени отметки ${mark.key}`,
-                okButtonText: 'Да',
-                cancelButtonText: 'Нет',
+    onRemoveCp($event: any, mark: Mark): void {
+        this.tap_remove_index = $event.index
+        setTimeout(() => {
+                this.tap_remove_index = null
             }
-            confirm(options).then((result: boolean) => {
-                if (result) {
-                    const checkpoints: Array<Mark> = this.athlet.checkpoints
-                    checkpoints.splice(i, 1)
-                    firestore.collection('athlets').doc(this.athlet.phone + '').update({
-                        checkpoints: checkpoints
-                    })
-                }
-            })
+        , 500)
+
+        if (!this.checkpoint) {
+            alert(`This device is't manage any checkpoint`)
+            return
         } else {
-            alert(`This device is't manage checkpoint ${mark.key}`)
+            if (mark.key == this.checkpoint.key) {
+                const options = {
+                    title: '',
+                    message: `Удалить прохождени отметки ${mark.key}`,
+                    okButtonText: 'Да',
+                    cancelButtonText: 'Нет',
+                }
+                confirm(options).then((result: boolean) => {
+                    if (result) {
+                        const new_checkpoints: Array<Mark> = this.athlet.checkpoints.filter((item: Mark) => {return item != mark})
+
+                        if (new_checkpoints.length != this.athlet.checkpoints.length) {
+                            firestore.collection('athlets').doc(this.athlet.phone + '').update({
+                                checkpoints: new_checkpoints
+                            })
+                        }
+                    }
+                })
+            } else {
+                alert(`This device is't manage checkpoint ${mark.key}`)
+            }
         }
     }
 
@@ -117,6 +143,7 @@ export class DetailComponent extends BaseComponent implements OnInit, OnDestroy 
     onPhone(): void {
         phone.dial('+7' + this.athlet.phone)
     }
+
     onSms(): void {
         phone.sms('+7' + this.athlet.phone)
     }

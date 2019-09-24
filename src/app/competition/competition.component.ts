@@ -7,7 +7,6 @@ import * as moment from "moment"
 import * as dialogs from "tns-core-modules/ui/dialogs"
 import {PromptResult} from "tns-core-modules/ui/dialogs"
 import {firestore} from "nativescript-plugin-firebase"
-import QueryDocumentSnapshot = firestore.QueryDocumentSnapshot
 import {SettingsService} from "@src/app/shared/settings.service"
 
 const firebase = require('nativescript-plugin-firebase/app')
@@ -93,7 +92,7 @@ export class CompetitionComponent  implements OnInit, OnDestroy {
   onJoin(): void {
     dialogs.prompt("Enter secret key to JOIN into competition", "").then((r: PromptResult) => {
       if (r.result && initial.secret === r.text){
-        this.collection.doc(initial.id).get().then((doc: QueryDocumentSnapshot) =>{
+        this.collection.doc(initial.id).get().then((doc: firestore.QueryDocumentSnapshot) =>{
           const competition = doc.data() as Competition
           const current_devices = competition.devices.filter((item: Device) => item.uuid == device.uuid)
           if (!current_devices.length) {

@@ -1,9 +1,10 @@
 <StackLayout margin="24" horizontalAlignment="center" verticalAlignment="center">
+    <Label text="УДАЧНО!" class="number p-b-12" horizontalAlignment="center"></Label>
     <Label [text]="'Номер: ' + athlet.number" class="number p-b-12" horizontalAlignment="center"></Label>
     <Label [text]="'Имя: ' + athlet.fio"></Label>
     <Label [text]="'Класс: ' + athlet.class"></Label>
     <StackLayout orientation="horizontal" marginTop="12">
-        <Button [text]="' Открыть '" (tap)="onOpen()" class="btn"></Button>
-        <Button [text]="' Закрыть '" (tap)="close('Cancel')" class="btn -primary"></Button>
+        <Button [text]="'Открыть'" (tap)="onOpen()" class="btn" width="40%"></Button>
+        <Button [text]="'Закрыть'" (tap)="onClose()" class="btn -primary" width="40%"></Button>
     </StackLayout>
 </StackLayout>

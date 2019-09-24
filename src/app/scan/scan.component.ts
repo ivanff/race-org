@@ -20,6 +20,8 @@ import {CheckPoint} from "@src/app/home/checkpoint"
 import {device} from "tns-core-modules/platform"
 import {FoundDialogComponent} from "@src/app/scan/found-dialog/found-dialog.component"
 import {ActivatedRoute} from "@angular/router"
+import * as moment from 'moment'
+import {SettingsService} from "@src/app/shared/settings.service"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
@@ -39,7 +41,8 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
                 public nfc: NfcService,
                 private modalService: ModalDialogService,
                 private viewContainerRef: ViewContainerRef,
-                private activeRoute: ActivatedRoute) {
+                private activeRoute: ActivatedRoute,
+                private app_settings: SettingsService) {
         super(routerExtensions)
     }
 
@@ -91,33 +94,51 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
         const athlets = firebase.firestore().collection('athlets')
             .where('nfc_id', '==', data.id).get()
         athlets.then((snapshot: firestore.QuerySnapshot) => {
-            const key: string = getString('cp')
             if (snapshot.docs.length === 1) {
-                if (key) {
+                if (this.app_settings.hasCp()) {
+                    const current_checkpoint: CheckPoint = this.app_settings.getCp()
+
                     snapshot.forEach((doc: firestore.DocumentSnapshot) => {
                         this.last_athlet = doc.data() as Athlet
-                        const checkpoints: Array<any> = this.last_athlet.checkpoints
+                        const checkpoints: Array<Mark> = this.last_athlet.checkpoints
                         this.activityIndicatorRef.nativeElement.busy = false
+
+                        if (checkpoints.length) {
+                            const last_checkpoint = checkpoints[checkpoints.length - 1]
+
+                            if ((moment().diff(last_checkpoint.created, 'minutes') <= 7) && (last_checkpoint.key == current_checkpoint.key)) {
+                                alert('Текущая метка отмечена менее 5 минут назад!\nПовторная отметка прохождения!')
+                                return
+                            }
+
+                            if (current_checkpoint.order > 0) {
+                                if ((current_checkpoint.order - 1) == last_checkpoint.order) {
+                                    alert(`Возможно пропущена предыдущая отметка маршала #${current_checkpoint.order-1}!`)
+                                }
+                            }
+                        }
+
                         this.onFound(this.last_athlet)
 
                         checkpoints.push({
-                            key: key,
-                            created: new Date()
+                            key: current_checkpoint.key,
+                            order: current_checkpoint.order,
+                            created: new Date(),
                         } as Mark)
                         firebase.firestore().collection('athlets').doc(doc.id).update({
                             checkpoints: checkpoints
                         }).then(() => {
                         }, (err) => {
                         }).catch((err) => {
-                            console.log(`Transaction error: ${err}`)
+                            console.log(`Transaction error: ${err}!`)
                         })
                     })
                 } else {
-                    alert('Checkpoint isn\'t setup')
+                    alert('Checkpoint isn\'t setup!')
                     this.activityIndicatorRef.nativeElement.busy = false
                 }
             } else {
-                alert(`Athlet is\'t found which has NFC tag ${data.id}`)
+                alert(`Athlet is\'t found which has NFC tag ${data.id}!`)
                 this.activityIndicatorRef.nativeElement.busy = false
             }
         })
