@@ -22,6 +22,7 @@ import {StatComponent} from "@src/app/home/stat/stat.component"
 import {OrderModule} from "ngx-order-pipe"
 import {AdminResolve} from "@src/app/shared/admin.resolver"
 import {BaseComponent} from "@src/app/shared/base.component"
+import {LocalLogComponent} from "@src/app/scan/local-log/local-log.component"
 
 
 // Uncomment and add to NgModule imports if you need to use two-way binding
@@ -41,6 +42,7 @@ import {BaseComponent} from "@src/app/shared/base.component"
         AthletsComponent,
         DetailComponent,
         ScanComponent,
+        LocalLogComponent,
         OptionsComponent,
         CompetitionComponent,
         RootComponent,

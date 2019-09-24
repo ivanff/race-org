@@ -1,4 +1,4 @@
-<ActionBar [title]="'Race org'">
+<ActionBar [title]="'Race org: ' + version">
     <NavigationButton icon="res://round_menu_black_24"
                       (tap)="onDrawerButtonTap()"></NavigationButton>
     <ActionItem *ngIf="pending" text="Push to server" position="right">

@@ -9,6 +9,7 @@ import {Test2Component} from "@src/app/home/test2/test2.component"
 import {CompetitionComponent} from "@src/app/competition/competition.component"
 import {StatComponent} from "@src/app/home/stat/stat.component"
 import {AdminResolve} from "@src/app/shared/admin.resolver"
+import {LocalLogComponent} from "@src/app/scan/local-log/local-log.component"
 
 export const routes: Routes = [
     {
@@ -42,6 +43,10 @@ export const routes: Routes = [
     {
         path: "scan",
         component: ScanComponent,
+    },
+    {
+        path: "scan/local_log",
+        component: LocalLogComponent,
     },
     {
         path: "options",

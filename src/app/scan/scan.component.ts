@@ -99,6 +99,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
         if (this.current_checkpoint) {
             const athlets = firebase.firestore().collection('athlets')
                 .where('nfc_id', '==', data.id).get()
+
             athlets.then((snapshot: firestore.QuerySnapshot) => {
                 if (snapshot.docs.length === 1) {
                     if (this.app_settings.hasCp()) {
@@ -107,6 +108,13 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
                             this.last_athlet = doc.data() as Athlet
                             const checkpoints: Array<Mark> = this.last_athlet.checkpoints
                             this.activityIndicatorRef.nativeElement.busy = false
+
+                            const mark: Mark = {
+                                key: this.current_checkpoint.key,
+                                order: this.current_checkpoint.order,
+                                created: new Date(),
+                            }
+                            this.app_settings.insert(data.id, doc.id, mark)
 
                             if (checkpoints.length) {
                                 const last_checkpoint = checkpoints[checkpoints.length - 1]
@@ -129,13 +137,13 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
                                 }
                             }
 
+                            if (moment() > moment(this.app_settings.competition.finish)) {
+                                this.onFound(this.last_athlet, 'Соревнование окончено, время вышло!', true)
+                            }
+
                             this.onFound(this.last_athlet, 'УДАЧНО')
 
-                            checkpoints.push({
-                                key: this.current_checkpoint.key,
-                                order: this.current_checkpoint.order,
-                                created: new Date(),
-                            } as Mark)
+                            checkpoints.push(mark)
                             firebase.firestore().collection('athlets').doc(doc.id).update({
                                 checkpoints: checkpoints
                             }).then(() => {

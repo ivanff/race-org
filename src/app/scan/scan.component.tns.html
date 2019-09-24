@@ -1,6 +1,10 @@
 <ActionBar [title]="'Athlets'|L">
     <NavigationButton icon="res://round_menu_black_24"
                       (tap)="onDrawerButtonTap()"></NavigationButton>
+    <ActionItem [text]="'Local log'|L"
+                [nsRouterLink]="['local_log']"
+                ios.position="right"
+                android.position="popup"></ActionItem>
 </ActionBar>
 <GridLayout rows="auto, auto, *" columns="*">
     <StackLayout [ngSwitch]="current_checkpoint" row="0" col="0" class="p-t-10">

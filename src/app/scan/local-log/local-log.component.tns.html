@@ -1,0 +1,23 @@
+<ActionBar [title]="'Local log'|L">
+    <NavigationButton icon="res://round_menu_black_24"
+                      (tap)="onDrawerButtonTap()"></NavigationButton>
+    <ActionItem *ngIf="pending" text="Push to server" position="right">
+        <Label text="&#xf0c7;" class="far p-r-10"></Label>
+    </ActionItem>
+</ActionBar>
+<GridLayout rows="*" columns="*">
+    <ScrollView row="2" col="0">
+        <ListView height="100%"
+                  [items]="items" style="line-height: 20px">
+            <ng-template let-item="item" let-i="index" let-odd="odd" let-even="even">
+                <GridLayout columns="*" rows="*, *, *, *, *">
+                    <Label [text]="'nfc_id: ' + item.nfc_id" col="0" row="0" class="option"></Label>
+                    <Label [text]="'athlet_id: ' + item.athlet_id" col="0" row="1" class="option"></Label>
+                    <Label [text]="'checkpoint_key: ' + item.checkpoint_key" col="0" row="2" class="option"></Label>
+                    <Label [text]="'order: ' + item.checkpoint_order" col="0" row="3" class="option"></Label>
+                    <Label [text]="'created: ' + (item.created|date:'HH:MM')" col="0" row="4" class="option"></Label>
+                </GridLayout>
+            </ng-template>
+        </ListView>
+    </ScrollView>
+</GridLayout>
