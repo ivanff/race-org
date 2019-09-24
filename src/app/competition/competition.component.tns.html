@@ -4,18 +4,18 @@
                       android.systemIcon="ic_menu_back"></NavigationButton>
 </ActionBar>
 
-<StackLayout>
+<StackLayout *ngIf="app_settings.competition">
     <Label [text]="'UUID Device: ' + device_uuid" class="p-10 font-weight-bold"></Label>
-    <Label [text]="'Competition name: ' + settings.competition.name" class="p-10"></Label>
-    <Label [text]="'Count of devices: ' + settings.competition.devices.length" class="p-10"></Label>
-    <Label [text]="'This is admin device: ' + (settings.competition.admin_device.uuid == device_uuid)" class="p-10"></Label>
-    <Label [text]="'Завершение соревнований: ' + (settings.competition.finish|date)" class="p-10"></Label>
+    <Label [text]="'Competition name: ' + app_settings.competition.name" class="p-10"></Label>
+    <Label [text]="'Count of devices: ' + app_settings.competition.devices.length" class="p-10"></Label>
+    <Label [text]="'This is admin device: ' + (app_settings.competition.admin_device.uuid == device_uuid)" class="p-10"></Label>
+    <Label [text]="'Завершение соревнований: ' + (app_settings.competition.finish|date)" class="p-10"></Label>
 
     <Button (tap)="onSetAdmin()"
             [text]="'Set this device to admin'"
-            [isEnabled]="settings.competition.admin_device.uuid != device_uuid" class="btn -outline"></Button>
+            [isEnabled]="app_settings.competition.admin_device.uuid != device_uuid" class="btn -outline"></Button>
     <Button (tap)="onJoin()"
             [text]="'Join'|L"
-            [isEnabled]="checkExists(settings.competition.devices)" class="btn -primary"></Button>
+            [isEnabled]="checkExists(app_settings.competition.devices)" class="btn -primary"></Button>
 </StackLayout>
 

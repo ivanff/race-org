@@ -9,9 +9,13 @@ import {Athlet} from "@src/app/home/athlet"
 })
 export class FoundDialogComponent implements OnInit {
     athlet: Athlet
-  
+    msg = ''
+    error = false
+
     constructor(private params: ModalDialogParams) {
         this.athlet = params.context.athlet
+        this.msg = params.context.msg
+        this.error = params.context.error || false
     }
 
 

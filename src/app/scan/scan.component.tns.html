@@ -3,11 +3,14 @@
                       (tap)="onDrawerButtonTap()"></NavigationButton>
 </ActionBar>
 <GridLayout rows="auto, auto, *" columns="*">
-    <StackLayout *ngIf="current_checkpoint" row="0" col="0" class="p-t-10">
-        <Label class="text-center" textWrap="true">
+    <StackLayout [ngSwitch]="current_checkpoint" row="0" col="0" class="p-t-10">
+        <Label *ngSwitchCase="null" text="Это устройство не назначено считывателем" class="text-center warning"></Label>
+        <Label *ngSwitchDefault class="text-center" textWrap="true">
             <FormattedString>
                 <span [text]="current_checkpoint.key + '&#xa;'" class="font-weight-bold"></span>
-                <span [text]="current_checkpoint.name + '&#xa;'"></span>
+                <span [text]="'Название: ' + current_checkpoint.name + '&#xa;'"></span>
+                <span [text]="'Порядок: ' + current_checkpoint.order + '&#xa;'"></span>
+                <span [text]="'Класс: ' + current_checkpoint.kind + '&#xa;'"></span>
             </FormattedString>
         </Label>
     </StackLayout>

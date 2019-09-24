@@ -1,5 +1,3 @@
-import {Device} from "tns-core-modules/platform"
-
 export interface CompClass {
     round: number
 }
@@ -7,7 +5,9 @@ export interface CompClass {
 export interface Competition {
     id?: string,
     name: string,
-    admin_device: {},
+    admin_device: {
+        uuid: string
+    },
     classes: {[key:string]:CompClass},
     devices: Array<{}>,
     finish: Date,

@@ -32,7 +32,7 @@ const firebase = require('nativescript-plugin-firebase/app')
 })
 export class ScanComponent extends BaseComponent implements AfterViewInit, OnInit, OnDestroy {
     last_athlet: Athlet
-    current_checkpoint: CheckPoint
+    current_checkpoint: CheckPoint = null
 
     @ViewChild('activityIndicator', {static: false}) activityIndicatorRef: ElementRef
 
@@ -55,12 +55,15 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
     ngOnInit() {
         const checkpoints = firebase.firestore().collection('checkpoints')
             .where('device', '==', device.uuid).get()
+
         checkpoints.then((snapshot: firestore.QuerySnapshot) => {
             if (snapshot.docs.length === 1) {
                 snapshot.forEach((doc: firestore.DocumentSnapshot) => {
                     const id = doc.id
                     this.current_checkpoint = {id, ...doc.data()} as CheckPoint
                 })
+            } else {
+                alert('This device is\'t READER in current competition!')
             }
         })
         // this.onFound({phone: '9603273301'} as Athlet
@@ -70,10 +73,12 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
         this.nfc.doStopTagListener()
     }
 
-    onFound(athlet: Athlet): void {
+    onFound(athlet: Athlet, msg: string, error?: boolean): void {
         const options: ModalDialogOptions = {
             context: {
-                athlet: athlet
+                athlet: athlet,
+                msg: msg,
+                error: error
             },
             viewContainerRef: this.viewContainerRef,
             fullscreen: false
@@ -91,57 +96,64 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
 
 
     setNfcMark(data: NfcTagData) {
-        const athlets = firebase.firestore().collection('athlets')
-            .where('nfc_id', '==', data.id).get()
-        athlets.then((snapshot: firestore.QuerySnapshot) => {
-            if (snapshot.docs.length === 1) {
-                if (this.app_settings.hasCp()) {
-                    const current_checkpoint: CheckPoint = this.app_settings.getCp()
+        if (this.current_checkpoint) {
+            const athlets = firebase.firestore().collection('athlets')
+                .where('nfc_id', '==', data.id).get()
+            athlets.then((snapshot: firestore.QuerySnapshot) => {
+                if (snapshot.docs.length === 1) {
+                    if (this.app_settings.hasCp()) {
 
-                    snapshot.forEach((doc: firestore.DocumentSnapshot) => {
-                        this.last_athlet = doc.data() as Athlet
-                        const checkpoints: Array<Mark> = this.last_athlet.checkpoints
-                        this.activityIndicatorRef.nativeElement.busy = false
+                        snapshot.forEach((doc: firestore.DocumentSnapshot) => {
+                            this.last_athlet = doc.data() as Athlet
+                            const checkpoints: Array<Mark> = this.last_athlet.checkpoints
+                            this.activityIndicatorRef.nativeElement.busy = false
 
-                        if (checkpoints.length) {
-                            const last_checkpoint = checkpoints[checkpoints.length - 1]
+                            if (checkpoints.length) {
+                                const last_checkpoint = checkpoints[checkpoints.length - 1]
 
-                            if ((moment().diff(last_checkpoint.created, 'minutes') <= 7) && (last_checkpoint.key == current_checkpoint.key)) {
-                                alert('Текущая метка отмечена менее 5 минут назад!\nПовторная отметка прохождения!')
-                                return
-                            }
+                                if ((moment().diff(last_checkpoint.created, 'minutes') <= 7) && (last_checkpoint.key == this.current_checkpoint.key)) {
+                                    alert('Текущая метка отмечена менее 5 минут назад!\nПовторная отметка прохождения!')
+                                    return
+                                }
 
-                            if (current_checkpoint.order > 0) {
-                                if ((current_checkpoint.order - 1) == last_checkpoint.order) {
-                                    alert(`Возможно пропущена предыдущая отметка маршала #${current_checkpoint.order-1}!`)
+                                if (this.current_checkpoint.order > 0) {
+                                    if ((this.current_checkpoint.order - 1) != last_checkpoint.order) {
+                                        this.onFound(this.last_athlet, 'Возможно пропущена предыдущая отметка маршала', true)
+                                        return
+                                    }
+                                }
+                            } else {
+                                if (this.current_checkpoint.order != 0) {
+                                    this.onFound(this.last_athlet, 'Возможно пропущена предыдущая отметка маршала', true)
+                                    return
                                 }
                             }
-                        }
 
-                        this.onFound(this.last_athlet)
+                            this.onFound(this.last_athlet, 'УДАЧНО')
 
-                        checkpoints.push({
-                            key: current_checkpoint.key,
-                            order: current_checkpoint.order,
-                            created: new Date(),
-                        } as Mark)
-                        firebase.firestore().collection('athlets').doc(doc.id).update({
-                            checkpoints: checkpoints
-                        }).then(() => {
-                        }, (err) => {
-                        }).catch((err) => {
-                            console.log(`Transaction error: ${err}!`)
+                            checkpoints.push({
+                                key: this.current_checkpoint.key,
+                                order: this.current_checkpoint.order,
+                                created: new Date(),
+                            } as Mark)
+                            firebase.firestore().collection('athlets').doc(doc.id).update({
+                                checkpoints: checkpoints
+                            }).then(() => {
+                            }, (err) => {
+                            }).catch((err) => {
+                                console.log(`Transaction error: ${err}!`)
+                            })
                         })
-                    })
+                    } else {
+                        alert('Checkpoint isn\'t setup!')
+                        this.activityIndicatorRef.nativeElement.busy = false
+                    }
                 } else {
-                    alert('Checkpoint isn\'t setup!')
+                    alert(`Athlet is\'t found which has NFC tag ${data.id}!`)
                     this.activityIndicatorRef.nativeElement.busy = false
                 }
-            } else {
-                alert(`Athlet is\'t found which has NFC tag ${data.id}!`)
-                this.activityIndicatorRef.nativeElement.busy = false
-            }
-        })
+            })
+        }
     }
 
     onBusyChanged($event) {

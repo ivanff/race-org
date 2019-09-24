@@ -1,7 +1,7 @@
 <RadSideDrawer #sideDrawer>
-    <GridLayout tkDrawerContent rows="56, *">
-        <StackLayout class="side-title">
-            <Label [text]="'<' + settings?.competition?.name + '>'" class="h2"></Label>
+    <GridLayout tkDrawerContent rows="56, *" class="fix-release-color">
+        <StackLayout class="side-title" row="0">
+            <Label [text]="'<' + app_settings?.competition?.name + '>'" class="h2"></Label>
         </StackLayout>
         <ScrollView row="1">
             <StackLayout>

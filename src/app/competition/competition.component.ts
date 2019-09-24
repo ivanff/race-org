@@ -48,7 +48,7 @@ export class CompetitionComponent  implements OnInit, OnDestroy {
   device_obj: any
   device_uuid: string
 
-  constructor(private params: ModalDialogParams, public settings: SettingsService) {
+  constructor(private params: ModalDialogParams, public app_settings: SettingsService) {
     this.device_obj = {
       manufacturer: device.manufacturer,
       model: device.model,
@@ -83,10 +83,12 @@ export class CompetitionComponent  implements OnInit, OnDestroy {
     })
   }
 
-  checkExists(devices: Array<Device>): boolean {
-    return devices.filter((device: Device) => {
-      return device.uuid === this.device_uuid
-    }).length == 0
+  checkExists(devices: Array<{}> | undefined): boolean {
+    if (devices) {
+      return devices.filter((device: Device) => {
+        return device.uuid === this.device_uuid
+      }).length == 0
+    }
   }
 
   onJoin(): void {

@@ -21,6 +21,7 @@ import {FoundDialogComponent} from "@src/app/scan/found-dialog/found-dialog.comp
 import {StatComponent} from "@src/app/home/stat/stat.component"
 import {OrderModule} from "ngx-order-pipe"
 import {AdminResolve} from "@src/app/shared/admin.resolver"
+import {BaseComponent} from "@src/app/shared/base.component"
 
 
 // Uncomment and add to NgModule imports if you need to use two-way binding
@@ -35,6 +36,7 @@ import {AdminResolve} from "@src/app/shared/admin.resolver"
         FoundDialogComponent,
     ],
     declarations: [
+        BaseComponent,
         AppComponent,
         AthletsComponent,
         DetailComponent,

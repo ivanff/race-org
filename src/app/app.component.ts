@@ -19,7 +19,7 @@ const firebase_app = require('nativescript-plugin-firebase/app')
     styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
-    private _activatedUrl: string
+    _activatedUrl: string
 
     @ViewChild(RadSideDrawerComponent, {static: false}) sideDrawerComponent: RadSideDrawerComponent
 
@@ -28,7 +28,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                 private vcRef: ViewContainerRef,
                 private router: Router,
                 private zone: NgZone,
-                private settings: SettingsService) {
+                public app_settings: SettingsService) {
         this._activatedUrl = "/home"
     }
 
@@ -81,7 +81,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             await firebase_app.firestore().collection('competitions')
                 .doc('4O12e8JOUoR96idKit6d').get().then((doc) => {
                     const id = doc.id
-                    this.settings.competition$.next({id,...doc.data()})
+                    this.app_settings.competition$.next({id,...doc.data()})
                 })
         }
     }

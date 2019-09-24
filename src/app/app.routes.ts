@@ -21,10 +21,10 @@ export const routes: Routes = [
             hide_start_time: true
         }
     },
-    // {
-    //     path: 'settings',
-    //     component: SettingsComponent
-    // },
+    {
+        path: 'settings',
+        component: SettingsComponent
+    },
     {
         path: 'access/register',
         component: RegisterComponent

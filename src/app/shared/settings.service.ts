@@ -17,7 +17,6 @@ export class SettingsService implements OnDestroy {
     destroy: ReplaySubject<any>
 
     constructor() {
-        console.log('constructor')
         this.competition$ = new BehaviorSubject<Competition>(null)
         this.competition = this.competition$.getValue()
 
