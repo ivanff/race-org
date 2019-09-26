@@ -1,6 +1,9 @@
 <StackLayout class="p-10">
     <Label [text]="'Всего зарегестрированно участников: ' + athlets_count"></Label>
-    <Label [text]="'Класс hobby: ' + open_count"></Label>
-    <Label [text]="'Класс open: ' + hobby_count"></Label>
-    <Button class="brn -primary" style="height: 100; font-size: 24; font-weight: bold" [text]="'Сканировать'|L" [nsRouterLink]="['/scan']"></Button>
+    <Label [text]="'Класс open: ' + open_count"></Label>
+    <Label [text]="'Класс hobby: ' + hobby_count"></Label>
+    <Button class="brn -primary scan" [text]="'Сканировать'|L" [nsRouterLink]="['/scan']"></Button>
+</StackLayout>
+<StackLayout>
+    <Image src="~/images/surskie_zori.jpg"></Image>
 </StackLayout>

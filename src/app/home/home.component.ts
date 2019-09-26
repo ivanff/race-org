@@ -24,7 +24,7 @@ export class HomeComponent extends BaseComponent implements OnInit, OnDestroy {
     ngOnInit() {
         const $zone = this.zone
         const athletsCollRef: firestore.Query = firebase.firestore().collection('athlets')
-        this.unsubscribe = athletsCollRef.onSnapshot({},(snapshot: firestore.QuerySnapshot) => {
+        this.unsubscribe = athletsCollRef.onSnapshot({includeMetadataChanges: true},(snapshot: firestore.QuerySnapshot) => {
             $zone.run(() => {
                 this.pending = snapshot.metadata.hasPendingWrites
             })

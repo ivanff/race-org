@@ -4,12 +4,10 @@ import {RouterExtensions} from 'nativescript-angular'
 import {firestore} from 'nativescript-plugin-firebase'
 import {ActivatedRoute} from '@angular/router'
 import {confirm} from 'tns-core-modules/ui/dialogs'
-import {EventData} from 'tns-core-modules/data/observable'
 import {BaseComponent} from "@src/app/shared/base.component"
 import {Athlet} from "@src/app/home/athlet"
 import {NfcService} from "@src/app/shared/nfc.service"
 import {Mark} from "@src/app/home/mark"
-import {getString} from "tns-core-modules/application-settings"
 import {SettingsService} from "@src/app/shared/settings.service"
 import {CheckPoint} from "@src/app/home/checkpoint"
 
@@ -45,7 +43,7 @@ export class DetailComponent extends BaseComponent implements OnInit, OnDestroy 
             this.checkpoint = this.app_settings.getCp()
         }
 
-        this.unsubscribe = this.collection.doc(this.athlet.phone + '').onSnapshot((doc: firestore.DocumentSnapshot) => {
+        this.unsubscribe = this.collection.doc(this.athlet.phone + '').onSnapshot({includeMetadataChanges: true}, (doc: firestore.DocumentSnapshot) => {
             if (doc.exists) {
                 this.athlet = {...doc.data()} as Athlet
             }
@@ -117,7 +115,7 @@ export class DetailComponent extends BaseComponent implements OnInit, OnDestroy 
                 }
                 confirm(options).then((result: boolean) => {
                     if (result) {
-                        const new_checkpoints: Array<Mark> = this.athlet.checkpoints.filter((item: Mark) => {return item != mark})
+                        const new_checkpoints: Array<Mark> = this.athlet.checkpoints.filter((item: Mark) => {return item.key != mark.key})
 
                         if (new_checkpoints.length != this.athlet.checkpoints.length) {
                             firestore.collection('athlets').doc(this.athlet.phone + '').update({

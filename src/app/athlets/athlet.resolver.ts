@@ -10,6 +10,6 @@ export class AthletResolve implements Resolve<Athlet> {
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
         return firebase.firestore().collection('athlets').doc(route.params.phone).get().then((doc: firestore.DocumentSnapshot) => {
             return doc.data() as Athlet
-        })
+        }, (err) => console.log('AthletResolve error', err))
     }
 }

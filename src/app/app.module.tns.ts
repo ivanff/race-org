@@ -14,7 +14,6 @@ import {AthletResolve} from "@src/app/athlets/athlet.resolver"
 import {RootComponent} from "@src/app/root/root.component"
 import {ScanComponent} from "@src/app/scan/scan.component"
 import {OptionsComponent} from "@src/app/options/options.component"
-import {Test2Component} from "@src/app/home/test2/test2.component"
 import {CompetitionComponent} from "@src/app/competition/competition.component"
 import {SettingsService} from "@src/app/shared/settings.service"
 import {FoundDialogComponent} from "@src/app/scan/found-dialog/found-dialog.component"
@@ -23,6 +22,7 @@ import {OrderModule} from "ngx-order-pipe"
 import {AdminResolve} from "@src/app/shared/admin.resolver"
 import {BaseComponent} from "@src/app/shared/base.component"
 import {LocalLogComponent} from "@src/app/scan/local-log/local-log.component"
+import {AboutComponent} from "@src/app/home/about/about.component"
 
 
 // Uncomment and add to NgModule imports if you need to use two-way binding
@@ -47,7 +47,7 @@ import {LocalLogComponent} from "@src/app/scan/local-log/local-log.component"
         CompetitionComponent,
         RootComponent,
         StatComponent,
-        Test2Component,
+        AboutComponent,
         HomeComponent,
         FilterPipe,
         FoundDialogComponent,

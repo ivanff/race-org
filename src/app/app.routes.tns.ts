@@ -5,11 +5,11 @@ import {ScanComponent} from "@src/app/scan/scan.component"
 import {DetailComponent as AthletDetailComponent} from "@src/app/athlets/detail/detail.component"
 import {AthletResolve} from "@src/app/athlets/athlet.resolver"
 import {OptionsComponent} from "@src/app/options/options.component"
-import {Test2Component} from "@src/app/home/test2/test2.component"
 import {CompetitionComponent} from "@src/app/competition/competition.component"
 import {StatComponent} from "@src/app/home/stat/stat.component"
 import {AdminResolve} from "@src/app/shared/admin.resolver"
 import {LocalLogComponent} from "@src/app/scan/local-log/local-log.component"
+import {AboutComponent} from "@src/app/home/about/about.component"
 
 export const routes: Routes = [
     {
@@ -26,8 +26,8 @@ export const routes: Routes = [
                 component: StatComponent
             },
             {
-                path: 'test2',
-                component: Test2Component
+                path: 'about',
+                component: AboutComponent
             }
         ]
     },

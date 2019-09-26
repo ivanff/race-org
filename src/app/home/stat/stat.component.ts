@@ -20,7 +20,7 @@ export class StatComponent implements OnInit, OnDestroy {
   ngOnInit() {
     const $zone = this.zone
     const athletsCollRef: firestore.Query = firebase.firestore().collection('athlets')
-    this.unsubscribe = athletsCollRef.onSnapshot({},(snapshot: firestore.QuerySnapshot) => {
+    this.unsubscribe = athletsCollRef.onSnapshot({includeMetadataChanges: true}, (snapshot: firestore.QuerySnapshot) => {
       $zone.run(() => {
         this.athlets_count = snapshot.docs.length
         this.hobby_count = snapshot.docs.filter((doc: firestore.QueryDocumentSnapshot) => {return doc.data().class === 'hobby'}).length

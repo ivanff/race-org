@@ -75,6 +75,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                     )
                 }
             })
+            firebase.firestore.settings({cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED})
         } catch (e) {
 
         } finally {
