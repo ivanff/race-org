@@ -6,13 +6,17 @@
         <!--        <mat-icon class="example-icon" aria-hidden="false" aria-label="Example delete icon">delete</mat-icon>-->
         <button mat-flat-button color="warn"
                 [disabled]="_activatedUrl == '/list'"
-                [routerLink]="['list']">Список участников</button>
+                [routerLink]="['list']"
+                routerLinkActive="active">Список участников
+        </button>
         <mat-menu #appMenu="matMenu">
-<!--            <button mat-menu-item [routerLink]="['results']">Результаты</button>-->
-<!--            <button mat-menu-item [routerLink]="['list']">Список участников</button>-->
-<!--            <button mat-menu-item [routerLink]="['settings']">Настройки</button>-->
-            <button mat-menu-item [routerLink]="['access/register']">Регистрация участников</button>
-            <button mat-menu-item [routerLink]="['help']">Помощ</button>
+            <!--            <button mat-menu-item [routerLink]="['results']">Результаты</button>-->
+            <!--            <button mat-menu-item [routerLink]="['list']">Список участников</button>-->
+            <!--            <button mat-menu-item [routerLink]="['settings']">Настройки</button>-->
+            <button mat-menu-item [routerLink]="['results/public']" routerLinkActive="active">Результаты</button>
+            <button mat-menu-item [routerLink]="['access/register']" routerLinkActive="active">Регистрация участников
+            </button>
+            <button mat-menu-item [routerLink]="['help']" routerLinkActive="active">Помощ</button>
         </mat-menu>
 
         <button mat-icon-button [matMenuTriggerFor]="appMenu">

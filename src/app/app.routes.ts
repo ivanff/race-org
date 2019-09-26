@@ -29,7 +29,8 @@ export const routes: Routes = [
         path: 'list',
         component: ResultsComponent,
         data: {
-            hide_start_time: true
+            hide_start_time: true,
+            hide_place: true
         }
     },
     {

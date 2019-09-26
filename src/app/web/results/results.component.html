@@ -24,7 +24,7 @@
 
 <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
 
-    <ng-container *ngIf="!hide_start_time" matColumnDef="place">
+    <ng-container *ngIf="!hide_place" matColumnDef="place">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Place</th>
         <td mat-cell *matCellDef="let element" [class.highlight]="element.place <= 3"> {{ element.place }} </td>
     </ng-container>
@@ -63,7 +63,7 @@
                 {{ def.name }}
             </small>
         </th>
-        <td mat-cell *matCellDef="let element" [ngSwitch]="!hide_start_time ? element.marks[y] : null">
+        <td mat-cell *matCellDef="let element" [ngSwitch]="!hide_place ? element.marks[y] : null">
       <span *ngSwitchDefault [class.active]="element.last_created == element.marks[y].created">
 <!--        <mat-icon aria-hidden="false" aria-label="Clock">av_timer</mat-icon>-->
           <!--          {{ diffTime(element.marks[y].created) }}<br>-->

@@ -38,6 +38,7 @@ export class ResultsComponent implements OnInit, AfterViewInit {
     filter: Filter = {class: '', str: ''}
 
     hide_start_time = false
+    hide_place = false
     hide_class_filter = false
     checkpoints: Array<CheckPoint> = []
     start_time = today.clone()
@@ -51,7 +52,8 @@ export class ResultsComponent implements OnInit, AfterViewInit {
     constructor(private firestore: AngularFirestore, private route: ActivatedRoute) {
         this.hide_start_time = route.snapshot.data['hide_start_time']
         this.hide_class_filter = route.snapshot.data['hide_class_filter']
-        if (this.hide_start_time) {
+        this.hide_place = route.snapshot.data['hide_place']
+        if (this.hide_place) {
             this.displayedColumns.shift()
         }
     }
