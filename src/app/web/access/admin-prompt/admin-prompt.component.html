@@ -1,0 +1,13 @@
+<h1 mat-dialog-title>You must have admin access</h1>
+<form [formGroup]="promptForm" #formDirective="ngForm"
+      (ngSubmit)="onEnter(promptForm.valid)">
+<div mat-dialog-content>
+    <p>Please, enter secret code</p>
+    <mat-form-field>
+        <input matInput [(ngModel)]="code" formControlName="code" required>
+    </mat-form-field>
+</div>
+<div mat-dialog-actions>
+    <button mat-button type="submit">Enter</button>
+</div>
+</form>

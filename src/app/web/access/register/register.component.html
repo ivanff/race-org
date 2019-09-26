@@ -40,7 +40,7 @@
                 <mat-label>Марка/Модель мотоцикла</mat-label>
                 <input matInput placeholder="" formControlName="bike">
             </mat-form-field>
-            <mat-form-field class="full-width">
+            <mat-form-field *ngIf="registerForm.controls.hasOwnProperty('phone')" class="full-width">
                 <mat-label>Телефонный номер</mat-label>
 
                 <span matPrefix>+7 &nbsp;</span>
@@ -55,23 +55,29 @@
                     Указанный телефонный номер уже зарегистрирован
                 </mat-error>
             </mat-form-field>
-            <mat-form-field class="full-width">
-                <mat-label>Код подтверждения</mat-label>
-                <input matInput formControlName="code" required>
-                <mat-hint>Код состоит из 6-ти цифр</mat-hint>
-                <span matSuffix>
+            <div *ngIf="registerForm.controls.hasOwnProperty('code')">
+                <mat-form-field class="full-width">
+                    <mat-label>Код подтверждения</mat-label>
+                    <input matInput formControlName="code" required>
+                    <mat-hint>Код состоит из 6-ти цифр</mat-hint>
+                    <span matSuffix>
                     <mat-spinner *ngIf="registerForm.controls['code'].pending" diameter="24"></mat-spinner>
                 </span>
-            </mat-form-field>
-            <div *ngIf="!registerForm.controls['code'].valid" class="mat-form-field full-width">
-                <button mat-raised-button color="warn"
-                        [disabled]="!registerForm.controls['phone'].valid"
-                        (click)="onSendSms()" type="button">Выслать код подтверждения номера
-                </button>
+                </mat-form-field>
+                <div *ngIf="!registerForm.controls['code'].valid" class="mat-form-field full-width">
+                    <button mat-raised-button color="warn"
+                            [disabled]="!registerForm.controls['phone'].valid"
+                            (click)="onSendSms()" type="button">Выслать код подтверждения номера
+                    </button>
+                </div>
             </div>
             <div class="mat-form-field full-width">
+                <re-captcha formControlName="captcha" required></re-captcha>
+            </div>
+
+            <div class="mat-form-field full-width">
                 <button mat-raised-button [disabled]="!registerForm.valid" color="primary" type="submit">
-                    Зарегистрироваться
+                    {{ athlet.id ? 'Сохранить' : 'Зарегистрироваться' }}
                 </button>
             </div>
         </form>

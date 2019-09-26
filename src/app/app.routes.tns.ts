@@ -51,7 +51,7 @@ export const routes: Routes = [
     {
         path: "options",
         component: OptionsComponent,
-        resolve: {admin: AdminResolve}
+        resolve: {is_admin: AdminResolve}
     },
     {
         path: "competition",

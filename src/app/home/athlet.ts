@@ -1,6 +1,7 @@
 import {Mark} from "@src/app/home/mark"
 
 export interface Athlet {
+    id?: string
     phone: number
     class: string
     fio: string
