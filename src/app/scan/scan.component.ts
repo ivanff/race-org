@@ -17,11 +17,14 @@ import {Athlet} from "@src/app/home/athlet"
 import {NfcService} from "@src/app/shared/nfc.service"
 import {Mark} from "@src/app/home/mark"
 import {CheckPoint} from "@src/app/home/checkpoint"
-import {device} from "tns-core-modules/platform"
+import {device, isAndroid} from "tns-core-modules/platform"
 import {FoundDialogComponent} from "@src/app/scan/found-dialog/found-dialog.component"
 import {ActivatedRoute} from "@angular/router"
 import * as moment from 'moment'
 import {SettingsService} from "@src/app/shared/settings.service"
+import {TextField} from "tns-core-modules/ui/text-field"
+import {BehaviorSubject, defer, empty, ReplaySubject} from "rxjs"
+import {debounceTime, map, switchMap, takeUntil} from "rxjs/operators"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
@@ -33,8 +36,12 @@ const firebase = require('nativescript-plugin-firebase/app')
 export class ScanComponent extends BaseComponent implements AfterViewInit, OnInit, OnDestroy {
     last_athlet: Athlet
     current_checkpoint: CheckPoint = null
+    number$ = new BehaviorSubject(null)
+    destroy = new ReplaySubject<any>(1)
+    collection = firebase.firestore().collection('athlets')
 
     @ViewChild('activityIndicator', {static: false}) activityIndicatorRef: ElementRef
+    @ViewChild('textField', {static: false}) textFieldRef: ElementRef
 
     constructor(public routerExtensions: RouterExtensions,
                 private zone: NgZone,
@@ -66,11 +73,46 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
                 alert('This device is\'t READER in current competition!')
             }
         })
+
+        this.number$.pipe(
+            debounceTime(1000),
+            switchMap((value) => {
+                const number: number = parseInt(value)
+                if (number) {
+                    return defer(() => {
+                        return this.collection.where('number', '==', number).get()
+                    }).pipe(
+                        map((snapshot: firestore.QuerySnapshot) => {
+                            let athlet: Athlet | null
+                            if (snapshot.docs.length === 1) {
+                                if (this.app_settings.hasCp()) {
+                                    snapshot.forEach((doc: firestore.DocumentSnapshot) => {
+                                        const id = doc.id
+                                        athlet = {id, ...doc.data()} as Athlet
+                                    })
+                                }
+                            } else {
+                                athlet = null
+                            }
+                            return athlet
+                        }),
+                        takeUntil(this.destroy)
+                    )
+                } else {
+                    return empty()
+                }
+            })
+        ).subscribe((athlet: Athlet) => {
+            this.last_athlet = athlet
+        })
+
         // this.onFound({phone: '9603273301'} as Athlet
     }
 
     ngOnDestroy(): void {
         this.nfc.doStopTagListener()
+        this.destroy.next(null)
+        this.destroy.complete()
     }
 
     onFound(athlet: Athlet, msg: string, error?: boolean): void {
@@ -87,70 +129,74 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
         this.modalService.showModal(FoundDialogComponent, options).then((path: Array<string> | null) => {
             if (path) {
                 setTimeout(() =>
-                    this.routerExtensions.navigate(path,{relativeTo: this.activeRoute})
-                , 100)
+                        this.routerExtensions.navigate(path, {relativeTo: this.activeRoute})
+                    , 100)
             }
             return
         })
     }
 
+    private setMark(mark: Mark) {
+        const checkpoints: Array<Mark> = this.last_athlet.checkpoints
+        this.activityIndicatorRef.nativeElement.busy = false
+
+        if (checkpoints.length) {
+            const last_checkpoint = checkpoints[checkpoints.length - 1]
+
+            if ((moment().diff(last_checkpoint.created, 'minutes') <= 7) && (last_checkpoint.key == this.current_checkpoint.key)) {
+                alert('Текущая метка отмечена менее 5 минут назад!\nПовторная отметка прохождения!')
+                return
+            }
+
+            if (this.current_checkpoint.order > 0) {
+                if ((this.current_checkpoint.order - 1) != last_checkpoint.order) {
+                    this.onFound(this.last_athlet, 'Возможно пропущена предыдущая отметка маршала', true)
+                    return
+                }
+            }
+        } else {
+            if (this.current_checkpoint.order != 0) {
+                this.onFound(this.last_athlet, 'Возможно пропущена предыдущая отметка маршала', true)
+                return
+            }
+        }
+
+        if (moment() > moment(this.app_settings.competition.finish)) {
+            this.onFound(this.last_athlet, 'Соревнование окончено, время вышло!', true)
+        }
+
+        this.onFound(this.last_athlet, 'УДАЧНО')
+
+        checkpoints.push(mark)
+        this.collection.doc(this.last_athlet.id).update({checkpoints: checkpoints}).then(() => {
+        }, (err) => {
+        }).catch((err) => {
+            console.log(`Transaction error: ${err}!`)
+        })
+    }
 
     setNfcMark(data: NfcTagData) {
         if (this.current_checkpoint) {
-            const athlets = firebase.firestore().collection('athlets')
-                .where('nfc_id', '==', data.id).get()
+            const mark: Mark = {
+                key: this.current_checkpoint.key,
+                order: this.current_checkpoint.order,
+                created: new Date(),
+            }
+            let sqlite_id: number = null
+            this.app_settings.insert(data.id, '', mark).then(id => sqlite_id = id)
+
+            const athlets = this.collection.where('nfc_id', '==', data.id).get()
 
             athlets.then((snapshot: firestore.QuerySnapshot) => {
                 if (snapshot.docs.length === 1) {
                     if (this.app_settings.hasCp()) {
-
                         snapshot.forEach((doc: firestore.DocumentSnapshot) => {
-                            this.last_athlet = doc.data() as Athlet
-                            const checkpoints: Array<Mark> = this.last_athlet.checkpoints
-                            this.activityIndicatorRef.nativeElement.busy = false
-
-                            const mark: Mark = {
-                                key: this.current_checkpoint.key,
-                                order: this.current_checkpoint.order,
-                                created: new Date(),
+                            const id = doc.id
+                            this.last_athlet = {id, ...doc.data()} as Athlet
+                            if (sqlite_id) {
+                                this.app_settings.update(sqlite_id, data.id, this.last_athlet.id, mark)
                             }
-                            this.app_settings.insert(data.id, doc.id, mark)
-
-                            if (checkpoints.length) {
-                                const last_checkpoint = checkpoints[checkpoints.length - 1]
-
-                                if ((moment().diff(last_checkpoint.created, 'minutes') <= 7) && (last_checkpoint.key == this.current_checkpoint.key)) {
-                                    alert('Текущая метка отмечена менее 5 минут назад!\nПовторная отметка прохождения!')
-                                    return
-                                }
-
-                                if (this.current_checkpoint.order > 0) {
-                                    if ((this.current_checkpoint.order - 1) != last_checkpoint.order) {
-                                        this.onFound(this.last_athlet, 'Возможно пропущена предыдущая отметка маршала', true)
-                                        return
-                                    }
-                                }
-                            } else {
-                                if (this.current_checkpoint.order != 0) {
-                                    this.onFound(this.last_athlet, 'Возможно пропущена предыдущая отметка маршала', true)
-                                    return
-                                }
-                            }
-
-                            if (moment() > moment(this.app_settings.competition.finish)) {
-                                this.onFound(this.last_athlet, 'Соревнование окончено, время вышло!', true)
-                            }
-
-                            this.onFound(this.last_athlet, 'УДАЧНО')
-
-                            checkpoints.push(mark)
-                            firebase.firestore().collection('athlets').doc(doc.id).update({
-                                checkpoints: checkpoints
-                            }).then(() => {
-                            }, (err) => {
-                            }).catch((err) => {
-                                console.log(`Transaction error: ${err}!`)
-                            })
+                            this.setMark(mark)
                         })
                     } else {
                         alert('Checkpoint isn\'t setup!')
@@ -159,8 +205,29 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
                 } else {
                     alert(`Athlet is\'t found which has NFC tag ${data.id}!`)
                     this.activityIndicatorRef.nativeElement.busy = false
+                    this.last_athlet = null
                 }
             })
+        }
+    }
+
+    setNumberMark(textField: TextField) {
+        if (this.current_checkpoint) {
+            const mark: Mark = {
+                key: this.current_checkpoint.key,
+                order: this.current_checkpoint.order,
+                created: new Date(),
+            }
+            let sqlite_id: number = null
+            this.app_settings.insert([], `number[${this.last_athlet.number}]`, mark).then(id => sqlite_id = id)
+
+            this.setMark(mark)
+            this.last_athlet = null
+            textField.text = ''
+            textField.dismissSoftInput()
+            if (isAndroid) {
+                textField.android.clearFocus()
+            }
         }
     }
 
@@ -170,5 +237,10 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
         } else {
             this.nfc.doStopTagListener()
         }
+    }
+
+    onTextChange($event): void {
+        const textField = <TextField>$event.object
+        this.number$.next(textField.text)
     }
 }

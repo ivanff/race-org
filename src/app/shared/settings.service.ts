@@ -16,15 +16,12 @@ const Sqlite = require( "nativescript-sqlite" )
 })
 export class SettingsService implements OnDestroy {
     competition: Competition
-    competition$: BehaviorSubject<Competition>
-    destroy: ReplaySubject<any>
+    competition$ = new BehaviorSubject<Competition | null>(null)
+    destroy = new ReplaySubject<any>(1)
     private database: any
 
     constructor() {
-        this.competition$ = new BehaviorSubject<Competition>(null)
         this.competition = this.competition$.getValue()
-
-        this.destroy =  new ReplaySubject<any>(1)
         this.competition$.pipe(
             switchMap((doc: Competition, i: number) => {
                 if (doc) {
@@ -53,7 +50,7 @@ export class SettingsService implements OnDestroy {
 
         new Sqlite("race_org_local.db").then(db => {
             db.execSQL("DROP TABLE nfc_scan_events")
-            db.execSQL("CREATE TABLE IF NOT EXISTS nfc_scan_events (id INTEGER PRIMARY KEY AUTOINCREMENT, nfc_id TEXT NOT NULL, athlet_id TEXT NOT NULL, checkpoint_key TEXT NOT NULL, checkpoint_order INTEGER NOT NULL, created DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL)").then(id => {
+            db.execSQL("CREATE TABLE IF NOT EXISTS nfc_scan_events (id INTEGER PRIMARY KEY AUTOINCREMENT, nfc_id TEXT, athlet_id TEXT, checkpoint_key TEXT NOT NULL, checkpoint_order INTEGER NOT NULL, created DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL)").then(id => {
                 this.database = db;
             }, error => {
                 console.log("CREATE TABLE ERROR", error);
@@ -97,13 +94,28 @@ export class SettingsService implements OnDestroy {
         }
     }
 
-    insert(id: Array<number>, athlet_id: string, mark: Mark) {
-        this.database.execSQL("INSERT INTO nfc_scan_events (nfc_id, athlet_id, checkpoint_key, checkpoint_order, created) VALUES (?, ?, ?, ?, ?)", [
-            id.join(','),
+    insert(nfc_id: Array<number>, athlet_id: string, mark: Mark) {
+        return this.database.execSQL("INSERT INTO nfc_scan_events (nfc_id, athlet_id, checkpoint_key, checkpoint_order, created) VALUES (?, ?, ?, ?, ?)", [
+            nfc_id.join(','),
             athlet_id,
             mark.key,
             mark.order,
             mark.created
+        ]).then(id => {
+            console.log("ID", id)
+        }, error => {
+            console.log("INSERT ERROR", error);
+        });
+    }
+
+    update(id: number, nfc_id: Array<number>, athlet_id: string, mark: Mark) {
+        this.database.execSQL("UPDATE nfc_scan_events SET (nfc_id, athlet_id, checkpoint_key, checkpoint_order, created) VALUES (?, ?, ?, ?, ?) WHERE id = ?", [
+            nfc_id.join(','),
+            athlet_id,
+            mark.key,
+            mark.order,
+            mark.created,
+            id
         ]).then(id => {
             console.log("ID", id)
         }, error => {

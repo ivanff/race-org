@@ -6,7 +6,7 @@
                 ios.position="right"
                 android.position="popup"></ActionItem>
 </ActionBar>
-<GridLayout rows="auto, auto, *" columns="*">
+<GridLayout rows="auto, auto, auto, *" columns="*">
     <StackLayout [ngSwitch]="current_checkpoint" row="0" col="0" class="p-t-10">
         <Label *ngSwitchCase="null" text="Это устройство не назначено считывателем" class="text-center warning"></Label>
         <Label *ngSwitchDefault class="text-center" textWrap="true">
@@ -18,13 +18,29 @@
             </FormattedString>
         </Label>
     </StackLayout>
+    <StackLayout row="1" col="0" class="p-t-10">
+        <GridLayout columns="*, *" rows="auto">
+            <TextField [hint]="'Номер участника'|L"
+                       (textChange)="onTextChange($event)"
+                       (focus)="activityIndicator.busy = false"
+                       #textField
+                       keyboardType="number"
+                       maxLength="3"
+                       col="0"
+                       row="0"
+                       style="font-size: 24; font-weight: bold"></TextField>
+            <Button [text]="'Отметить'|L"
+                    (tap)="setNumberMark(textField)"
+                    [isEnabled]="last_athlet ? true : false" col="1" row="0"></Button>
+        </GridLayout>
+    </StackLayout>
     <Button [text]="activityIndicator.busy ? 'Прекратить сканирование NFC': 'Сканировать метку NFC'|L"
             (tap)="(activityIndicator.busy = !activityIndicator.busy)"
-            row="1"
+            row="2"
             col="0"
             [class.-primary]="!activityIndicator.busy"
             class="btn"></Button>
-    <ActivityIndicator row="2"
+    <ActivityIndicator row="3"
                        col="0"
                        height="200"
                        width="200"
