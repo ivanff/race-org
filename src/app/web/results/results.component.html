@@ -10,7 +10,7 @@
             <input matInput (keyup)="applyFilter($event, 'str')" placeholder="Фильтр">
             <mat-hint>По фамилии или номеру участника</mat-hint>
         </mat-form-field>
-        <div class="p-20 mat-form-field">
+        <div [hidden]="hide_class_filter" class="p-20 mat-form-field">
             <label id="radio-group-classes">Классы участников</label>
             <mat-radio-group [ngModel]="filter.class" (ngModelChange)="applyFilter($event, 'class')"
                              aria-labelledby="radio-group-classes" aria-label="Классы участников">

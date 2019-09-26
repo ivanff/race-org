@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core'
+import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core'
 import {AngularFirestore} from '@angular/fire/firestore'
 
 import {from, of, zip} from 'rxjs'
@@ -38,15 +38,19 @@ export class ResultsComponent implements OnInit, AfterViewInit {
     filter: Filter = {class: '', str: ''}
 
     hide_start_time = false
-    circles = 3
+    hide_class_filter = false
     checkpoints: Array<CheckPoint> = []
     start_time = today.clone()
+
+    @Input('circles') circles: number = 3
+    @Input('classes') classes: Array<string> = ['open', 'hobby']
 
     @ViewChild('picker', {static: true}) picker: NgxTimepickerFieldComponent
     @ViewChild(MatSort, {static: true}) sort: MatSort
 
     constructor(private firestore: AngularFirestore, private route: ActivatedRoute) {
         this.hide_start_time = route.snapshot.data['hide_start_time']
+        this.hide_class_filter = route.snapshot.data['hide_class_filter']
         if (this.hide_start_time) {
             this.displayedColumns.shift()
         }
@@ -115,7 +119,7 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         })
         this.firestore.collection('athlets').valueChanges().subscribe((doc: Array<Athlet>) => {
             let rows: Array<TableRow> = []
-            doc.forEach((athlet: Athlet) => {
+            doc.filter((athlet: Athlet) => this.classes.indexOf(athlet.class) >= 0).forEach((athlet: Athlet) => {
                 const marks: Array<Mark> = []
                 let last_created: Date = null
                 let last_cp = -1

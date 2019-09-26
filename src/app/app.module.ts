@@ -25,6 +25,7 @@ import {
     RecaptchaSettings
 } from 'ng-recaptcha'
 import {AdminPromptComponent} from "@src/app/web/access/admin-prompt/admin-prompt.component"
+import {ResultsPublicComponent} from "@src/app/web/results/results-public/results-public.component"
 
 @NgModule({
     entryComponents: [
@@ -33,6 +34,7 @@ import {AdminPromptComponent} from "@src/app/web/access/admin-prompt/admin-promp
     declarations: [
         AppComponent,
         ResultsComponent,
+        ResultsPublicComponent,
         RegisterComponent,
         AdminRegisterComponent,
         HelpComponent,
