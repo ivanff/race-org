@@ -49,7 +49,7 @@ export class SettingsService implements OnDestroy {
         })
 
         new Sqlite("race_org_local.db").then(db => {
-            db.execSQL("DROP TABLE nfc_scan_events")
+            // db.execSQL("DROP TABLE nfc_scan_events")
             db.execSQL("CREATE TABLE IF NOT EXISTS nfc_scan_events (id INTEGER PRIMARY KEY AUTOINCREMENT, nfc_id TEXT, athlet_id TEXT, checkpoint_key TEXT NOT NULL, checkpoint_order INTEGER NOT NULL, created DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL)").then(id => {
                 this.database = db;
             }, error => {
