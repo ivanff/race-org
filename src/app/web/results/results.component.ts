@@ -1,7 +1,6 @@
 import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core'
 import {AngularFirestore} from '@angular/fire/firestore'
-
-import {from, of, zip} from 'rxjs'
+import {BehaviorSubject, from, Observable, of, zip} from 'rxjs'
 import {groupBy, map, mergeMap, toArray} from 'rxjs/operators'
 import {MatSort, MatTableDataSource} from '@angular/material'
 import * as moment from 'moment'
@@ -10,6 +9,8 @@ import {Athlet} from "@src/app/home/athlet"
 import {Mark} from "@src/app/home/mark"
 import {CheckPoint} from "@src/app/home/checkpoint"
 import {ActivatedRoute} from "@angular/router"
+import {LocalStorageService} from "angular-2-local-storage"
+
 
 export interface TableRow {
     place: number,
@@ -17,7 +18,7 @@ export interface TableRow {
     athlet: Athlet,
     marks: Array<Mark>,
     last_created: Date,
-    last_cp: number,
+    last_cp: number
 }
 
 export interface Filter {
@@ -36,12 +37,28 @@ export class ResultsComponent implements OnInit, AfterViewInit {
     dataSource = new MatTableDataSource<TableRow>([])
     displayedColumns: string[] = ['place', 'number', 'class', 'athlet']
     filter: Filter = {class: '', str: ''}
+    now: Date = new Date()
+    csv_export_options = {
+        fieldSeparator: ',',
+        quoteStrings: '"',
+        decimalseparator: '.',
+        showLabels: true,
+        headers: this.displayedColumns,
+        showTitle: true,
+        title: 'Результаты',
+        useBom: false,
+        removeNewLines: true,
+        keys: this.displayedColumns,
+    }
+    competition_minutes = 60 * 2 + 30
 
     hide_start_time = false
     hide_place = false
     hide_class_filter = false
     checkpoints: Array<CheckPoint> = []
     start_time = today.clone()
+    end_time = today.clone()
+    athlets: Array<Athlet> = []
 
     @Input('circles') circles: number = 3
     @Input('classes') classes: Array<string> = ['open', 'hobby']
@@ -49,13 +66,21 @@ export class ResultsComponent implements OnInit, AfterViewInit {
     @ViewChild('picker', {static: true}) picker: NgxTimepickerFieldComponent
     @ViewChild(MatSort, {static: true}) sort: MatSort
 
-    constructor(private firestore: AngularFirestore, private route: ActivatedRoute) {
+    constructor(private firestore: AngularFirestore,
+                private _localStorageService: LocalStorageService,
+                private route: ActivatedRoute) {
         this.hide_start_time = route.snapshot.data['hide_start_time']
         this.hide_class_filter = route.snapshot.data['hide_class_filter']
         this.hide_place = route.snapshot.data['hide_place']
         if (this.hide_place) {
             this.displayedColumns.shift()
         }
+
+        if (this._localStorageService.get('start_time')) {
+            this.start_time = moment(this._localStorageService.get('start_time'))
+            this.end_time = this.start_time.clone().add(this.competition_minutes, 'minutes')
+        }
+
     }
 
     private range = (start, end, delta) => {
@@ -64,17 +89,8 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         )
     }
 
-    ngAfterViewInit() {
-        if (this.picker) {
-            this.picker.registerOnChange((timestr) => {
-                const time_parts = timestr.split(':')
-                this.start_time = today.clone()
-                this.start_time.add(time_parts[0], 'hours')
-                this.start_time.add(time_parts[1], 'minutes')
-                return timestr
-            })
-        }
-    }
+
+    ngAfterViewInit() {}
 
     ngOnInit() {
         this.dataSource.sortingDataAccessor = (item, property) => {
@@ -120,65 +136,82 @@ export class ResultsComponent implements OnInit, AfterViewInit {
             })
         })
         this.firestore.collection('athlets').valueChanges().subscribe((doc: Array<Athlet>) => {
-            let rows: Array<TableRow> = []
-            doc.filter((athlet: Athlet) => this.classes.indexOf(athlet.class) >= 0).forEach((athlet: Athlet) => {
-                const marks: Array<Mark> = []
-                let last_created: Date = null
-                let last_cp = -1
+            this.athlets = doc.filter((athlet: Athlet) => this.classes.indexOf(athlet.class) >= 0)
+            this.buildRows()
+        })
+    }
 
-                from(athlet.checkpoints.sort((a, b) => a.created < b.created ? -1 : a.created > b.created ? 1 : 0)).pipe(
-                    groupBy((mark: Mark) => mark.key),
-                    mergeMap((group) => zip(of(group.key), group.pipe(toArray())))
-                ).subscribe((groups) => {
-                    const key = groups[0]
-                    const group_marks: Array<Mark> = groups[1]
-                    this.checkpoints.forEach((checkpoint: CheckPoint, i: number) => {
-                        if (!marks[i]) {
-                            marks[i] = null
-                        }
-                        if (checkpoint.key === key) {
-                            marks[i] = group_marks.shift() || null
-                        }
+    buildRows() {
+        let rows: Array<TableRow> = []
+        this.athlets.forEach((athlet: Athlet) => {
+            const marks: Array<Mark> = []
+            let last_cp = -1
 
-                        if ((i === 0) && marks[i]) {
-                            last_created = marks[i].created
-                            last_cp = i
-                        }
-                        if ((i > 0) && marks[i]) {
-                            if (marks[i - 1]) {
-                                if (marks[i - 1].created === last_created) {
-                                    last_created = marks[i].created
-                                    last_cp = i
+            from(athlet.checkpoints.sort((a, b) => a.created < b.created ? -1 : a.created > b.created ? 1 : 0)).pipe(
+                groupBy((mark: Mark) => mark.key),
+                mergeMap((group) => zip(of(group.key), group.pipe(toArray())))
+            ).subscribe((groups) => {
+                const key = groups[0]
+                const group_marks: Array<Mark> = groups[1]
+                this.checkpoints.forEach((checkpoint: CheckPoint, i: number) => {
+                    if (!marks[i]) {
+                        marks[i] = null
+                    }
+                    if (checkpoint.key === key) {
+                        marks[i] = group_marks.shift() || null
+                    }
+
+                    if (marks[i]) {
+                        if (moment(marks[i].created.toDate()) <= this.end_time) {
+                            if (i == 0) {
+                                last_cp = i
+                            } else {
+                                if (marks[i - 1]) {
+                                    if (marks[i - 1].created === marks[last_cp].created) {
+                                        last_cp = i
+                                    }
                                 }
                             }
                         }
-                    })
-                })
-                rows.push({
-                    number: athlet.number,
-                    athlet: athlet,
-                    marks: marks,
-                    last_created: last_created,
-                    last_cp: last_cp,
-                } as TableRow)
-            })
-            rows = rows.sort((a: TableRow, b: TableRow) => {
-                if (a.last_cp < b.last_cp) {
-                    return 1
-                } else if (a.last_cp > b.last_cp) {
-                    return -1
-                } else {
-                    if (a.last_created < b.last_created) {
-                        return -1
-                    } else if (a.last_created > b.last_created) {
-                        return 1
                     }
-                }
-                return 0
+
+
+                    // if (last_created) {
+                    //     if (moment(last_created.toDate()) > this.start_time.add(this.competition_minutes, 'minutes')) {
+                    //         last_created = null
+                    //     }
+                    // }
+                })
             })
-            rows.map((row: TableRow, i: number) => row.place = i + 1)
-            this.dataSource.data = rows
+            rows.push({
+                number: athlet.number,
+                athlet: athlet,
+                marks: marks,
+                last_created: last_cp >= 0 ? marks[last_cp].created : null,
+                last_cp: last_cp,
+            } as TableRow)
         })
+        rows = rows.sort((a: TableRow, b: TableRow) => {
+            if (a.last_cp < b.last_cp) {
+                return 1
+            } else if (a.last_cp > b.last_cp) {
+                return -1
+            } else {
+                if (a.last_created < b.last_created) {
+                    return -1
+                } else if (a.last_created > b.last_created) {
+                    return 1
+                }
+            }
+            return 0
+        })
+        rows.map((row: TableRow, i: number) => row.place = i + 1)
+        this.dataSource.data = rows
+    }
+
+    getElapsed(date: any): boolean {
+        // return false
+        return moment(date.toDate()) > this.end_time
     }
 
     applyFilter($event: any, field: string) {
@@ -203,7 +236,63 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         }
     }
 
-    onStart($event) {
-        this.start_time = moment()
+    onSetStartTime($event) {
+        const time_parts = this.picker.timepickerTime.split(':')
+        this.start_time = today.clone()
+        this.start_time.add(time_parts[0], 'hours').add(time_parts[1], 'minutes')
+        this.end_time = this.start_time.clone().add(this.competition_minutes, 'minutes')
+
+        this._localStorageService.set('start_time', this.start_time.format())
+
+        this.buildRows()
+    }
+
+    getCsvData(data: Array<any>) {
+        // let row = {}
+        // for (let header of this.displayedColumns) {
+        //     row[header] = header
+        // }
+
+        let rows: Array<any> = []
+
+        data.map((item) => {
+            let row = {}
+            for (let key of this.csv_export_options.keys) {
+                switch (key) {
+                    case 'place': {
+                        row['place'] = item.place
+                        break
+                    }
+                    case 'number': {
+                        row['number'] = item.number
+                        break
+                    }
+                    case 'class': {
+                        row['class'] = item.athlet.class
+                        break
+                    }
+                    case 'athlet': {
+                        row['athlet'] = item.athlet.fio
+                        break
+                    }
+                    default: {
+                        if (/^CP\d+_\d+$/.test(key)) {
+                            const result = /^CP\d+_(?<index>\d+)$/.exec(key)
+                            const mark: Mark | undefined = item.marks[parseInt(result.groups.index)]
+
+                            if (mark) {
+                                row[key] = moment(mark.created.toDate()).format('HH:mm:ss')
+                            } else {
+                                row[key] = ''
+                            }
+                        }
+                    }
+                }
+            }
+
+            rows.push(row)
+        })
+
+        return rows
     }
 }

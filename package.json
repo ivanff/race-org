@@ -33,6 +33,8 @@
     "@angular/platform-browser": "~8.2.6",
     "@angular/platform-browser-dynamic": "~8.2.6",
     "@angular/router": "~8.2.6",
+    "angular-2-local-storage": "^3.0.2",
+    "angular2-csv": "^0.2.9",
     "core-js": "^2.5.4",
     "firebase": "^6.6.1",
     "moment": "^2.24.0",

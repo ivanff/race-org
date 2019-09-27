@@ -16,6 +16,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms"
 import {HttpClientModule} from "@angular/common/http"
 import {HelpComponent} from "@src/app/web/help/help.component"
 import {AdminResolve} from "@src/app/shared/admin.resolver"
+import {Angular2CsvModule} from 'angular2-csv';
 
 import {
     RECAPTCHA_LANGUAGE,
@@ -26,6 +27,7 @@ import {
 } from 'ng-recaptcha'
 import {AdminPromptComponent} from "@src/app/web/access/admin-prompt/admin-prompt.component"
 import {ResultsPublicComponent} from "@src/app/web/results/results-public/results-public.component"
+import {LocalStorageModule} from "angular-2-local-storage"
 
 @NgModule({
     entryComponents: [
@@ -53,12 +55,17 @@ import {ResultsPublicComponent} from "@src/app/web/results/results-public/result
         HttpClientModule,
         RecaptchaModule,
         RecaptchaFormsModule,
-        NgxMaterialTimepickerModule.setLocale('RU')
+        Angular2CsvModule,
+        NgxMaterialTimepickerModule.setLocale('RU'),
+        LocalStorageModule.forRoot({
+            prefix: 'race-org',
+            storageType: 'localStorage'
+        })
     ],
     providers: [
         {
             provide: RECAPTCHA_SETTINGS,
-            useValue: { siteKey: '6LfXHrkUAAAAADpcaw0LZFCFsehMD9TxkV9a1mtv' } as RecaptchaSettings,
+            useValue: {siteKey: '6LfXHrkUAAAAADpcaw0LZFCFsehMD9TxkV9a1mtv'} as RecaptchaSettings,
         },
         {
             provide: RECAPTCHA_LANGUAGE,
