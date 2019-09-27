@@ -15,7 +15,7 @@ export const routes: Routes = [
     {
         path: 'results',
         component: ResultsComponent,
-        // resolve: {is_admin: AdminResolve}
+        resolve: {is_admin: AdminResolve}
     },
     {
         path: 'results/public',
