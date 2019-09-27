@@ -39,7 +39,7 @@
                     <Label [text]="'Имя: ' + athlet.fio" col="1" row="0" class="option"></Label>
                     <Label [text]="'Город: ' + athlet.city" col="1" row="1" class="option"></Label>
                     <Label [text]="'Марка мотоцикла: ' + athlet.bike" col="1" row="2" class="option"></Label>
-                    <Label [text]="'NFC: ' + (athlet.nfc_id ? 'назначено' : 'не назначено')" col="1" row="3" [class.warning]="!athlet.nfc_id" class="option"></Label>
+                    <Label [text]="'NFC: ' + (athlet.nfc_id ? 'назначено' : 'не назначено')" col="1" row="3" [class.-warning]="!athlet.nfc_id" class="option font-weight-bold"></Label>
                     <Label [text]="'Пройдено отметок: ' + athlet.checkpoints.length" col="1" row="4" class="font-weight-bold option"></Label>
                 </GridLayout>
             </ng-template>

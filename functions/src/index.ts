@@ -14,7 +14,7 @@ const main = express();
 
 main.use('/api/v1', app);
 
-const whitelist = ['http://localhost:4200', 'https://rageorg.agestart.ru']
+const whitelist = ['http://localhost:4200', 'https://raceorg.agestart.ru']
 
 // app.use(function(req, res, next) {
 //   res.header("Access-Control-Allow-Origin", "http://localhost");

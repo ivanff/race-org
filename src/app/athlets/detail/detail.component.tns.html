@@ -24,7 +24,7 @@
         <Label [text]="'Телефон: +7' + athlet.phone" col="0" verticalAlignment="center"></Label>
         <Label [text]="'Мотоцикл: ' + athlet.bike"></Label>
         <Label [text]="'NFC: ' + (athlet.nfc_id ? athlet.nfc_id : 'не назначено')"
-               [class.alert]="!athlet.nfc_id"
+               [class.-warning]="!athlet.nfc_id"
                class="font-weight-bold"></Label>
         <Button *ngIf="athlet.nfc_id"
                 [text]="'Очистить метку Nfc'|L"

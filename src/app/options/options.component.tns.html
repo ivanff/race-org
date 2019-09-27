@@ -8,13 +8,13 @@
               [items]="checkpoints"
               (itemTap)="onItemTap($event)">
         <ng-template let-cp="item" let-i="index">
-            <GridLayout columns="*, 60" rows="*,*,*,*, *" [class.active]="current_checkpoint?.key === cp.key">
-                <Label [text]="cp.key" col="1" rowSpan="4" row="0" class="number" horizontalAlignment="center"></Label>
+            <GridLayout columns="*, 60" rows="*,*,*,*,*" [class.active]="current_checkpoint?.key === cp.key">
+                <Label [text]="cp.key" col="1" rowSpan="5" row="0" class="number" horizontalAlignment="center"></Label>
                 <Label [text]="'Название: ' + cp.name" col="0" row="1" class="option"></Label>
                 <Label [text]="'Маршал: ' + cp.marshal" col="0" row="2" class="option"></Label>
-                <Label [text]="'Устройство: ' + getDeviceInfo(cp.device)" col="0" row="3" [class.warning]="!cp.device" class="option"></Label>
+                <Label [text]="'Устройство: ' + getDeviceInfo(cp.device)" col="0" row="3" [class.-warning]="!cp.device" class="option"></Label>
                 <Label [text]="'Порядок: ' + cp.order" col="0" row="4" class="option"></Label>
-                <Label [text]="cp.kind" col="1" row="4" class="option" horizontalAlignment="center" ></Label>
+<!--                <Label [text]="" col="1" row="4" class="option" horizontalAlignment="center" ></Label>-->
             </GridLayout>
         </ng-template>
     </ListView>
