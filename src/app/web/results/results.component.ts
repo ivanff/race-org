@@ -60,7 +60,7 @@ export class ResultsComponent implements OnInit, AfterViewInit {
     end_time = today.clone()
     athlets: Array<Athlet> = []
 
-    @Input('circles') circles: number = 3
+    @Input('circles') circles: number = 5
     @Input('classes') classes: Array<string> = ['open', 'hobby']
 
     @ViewChild('picker', {static: true}) picker: NgxTimepickerFieldComponent
@@ -131,6 +131,10 @@ export class ResultsComponent implements OnInit, AfterViewInit {
                     this.checkpoints.push(checkoint)
                 })
             })
+            if (this.displayedColumns.indexOf('CP1_0') >= 0) {
+                this.displayedColumns = [...this.displayedColumns.slice(0, this.displayedColumns.indexOf('CP1_0'))]
+            }
+
             this.checkpoints.forEach((checkpoint: CheckPoint, y: number) => {
                 this.displayedColumns.push(checkpoint.key + '_' + y)
             })
@@ -144,21 +148,117 @@ export class ResultsComponent implements OnInit, AfterViewInit {
     buildRows() {
         let rows: Array<TableRow> = []
         this.athlets.forEach((athlet: Athlet) => {
-            const marks: Array<Mark> = []
+            const marks: Array<Mark | null> = []
+            const clean_marks: Array<Mark> = [...athlet.checkpoints.sort((a, b) => a.created < b.created ? -1 : a.created > b.created ? 1 : 0)]
             let last_cp = -1
 
-            from(athlet.checkpoints.sort((a, b) => a.created < b.created ? -1 : a.created > b.created ? 1 : 0)).pipe(
+            for ( const i of this.range(0, 16, 1)) {
+                if ([0,4,8,12].indexOf(i) >= 0) {
+                    if(!clean_marks[i]) {
+                        clean_marks[i] = {
+                            missing: true,
+                            created: (clean_marks[i-1] || {created: null}).created,
+                            key: 'CP1',
+                            order: 0
+                        }
+                    }
+
+                    if (clean_marks[i].order !== 0) {
+                        clean_marks.splice(i, 0, {
+                            missing: true,
+                            created: clean_marks[i].created,
+                            key: 'CP1',
+                            order: 0
+                        })
+                    }
+                }
+                else if ([1,5,9,13].indexOf(i) >= 0) {
+
+                    if(!clean_marks[i]) {
+                        clean_marks[i] = {
+                            missing: true,
+                            created: clean_marks[i-1].created,
+                            key: 'CP2',
+                            order: 1
+                        }
+                    }
+
+                    if (clean_marks[i].order !== 1) {
+                        clean_marks.splice(i, 0, {
+                            missing: true,
+                            created: clean_marks[i].created,
+                            key: 'CP2',
+                            order: 1
+                        })
+                    }
+                }
+                else if ([2,6,10,14].indexOf(i) >= 0) {
+
+                    if(!clean_marks[i]) {
+                        clean_marks[i] = {
+                            missing: true,
+                            created: clean_marks[i-1].created,
+                            key: 'CP3',
+                            order: 2
+                        }
+                    }
+
+                    if (clean_marks[i].order !== 2) {
+                        clean_marks.splice(i, 0, {
+                            missing: true,
+                            created: clean_marks[i].created,
+                            key: 'CP3',
+                            order: 2
+                        })
+                    }
+                }
+                else if ([3,7,11,15].indexOf(i) >= 0) {
+
+                    if(!clean_marks[i]) {
+                        clean_marks[i] = {
+                            missing: true,
+                            created: clean_marks[i-1].created,
+                            key: 'CP4',
+                            order: 3
+                        }
+                    }
+
+                    if (clean_marks[i].order !== 3) {
+                        clean_marks.splice(i, 0, {
+                            missing: true,
+                            created: clean_marks[i].created,
+                            key: 'CP4',
+                            order: 3
+                        })
+                    }
+                }
+            }
+
+
+            from(clean_marks).pipe(
                 groupBy((mark: Mark) => mark.key),
                 mergeMap((group) => zip(of(group.key), group.pipe(toArray())))
             ).subscribe((groups) => {
                 const key = groups[0]
                 const group_marks: Array<Mark> = groups[1]
+
                 this.checkpoints.forEach((checkpoint: CheckPoint, i: number) => {
                     if (!marks[i]) {
                         marks[i] = null
                     }
                     if (checkpoint.key === key) {
-                        marks[i] = group_marks.shift() || null
+                        // console.log(
+                        //     [...group_marks]
+                        // )
+                        const m: any = group_marks.shift() || null
+                        if (m) {
+                            if (m.hasOwnProperty('missing')) {
+                                marks[i] = null
+                            } else {
+                                marks[i] = m
+                            }
+                        }
+
                     }
 
                     if (marks[i]) {
