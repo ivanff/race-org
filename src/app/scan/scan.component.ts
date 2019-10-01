@@ -143,7 +143,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
         if (checkpoints.length) {
             const last_checkpoint = checkpoints[checkpoints.length - 1]
 
-            if ((moment().diff(last_checkpoint.created, 'minutes') <= 7) && (last_checkpoint.key == this.current_checkpoint.key)) {
+            if ((moment().diff(last_checkpoint.created, 'minutes') <= 5) && (last_checkpoint.key == this.current_checkpoint.key)) {
                 alert('Текущая метка отмечена менее 5 минут назад!\nПовторная отметка прохождения!')
                 return
             }
@@ -182,32 +182,31 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
                 order: this.current_checkpoint.order,
                 created: new Date(),
             }
-            let sqlite_id: number = null
-            this.app_settings.insert(data.id, '', mark).then(id => sqlite_id = id)
-
-            const athlets = this.collection.where('nfc_id', '==', data.id).get()
-
-            athlets.then((snapshot: firestore.QuerySnapshot) => {
-                if (snapshot.docs.length === 1) {
-                    if (this.app_settings.hasCp()) {
-                        snapshot.forEach((doc: firestore.DocumentSnapshot) => {
-                            const id = doc.id
-                            this.last_athlet = {id, ...doc.data()} as Athlet
-                            if (sqlite_id) {
-                                this.app_settings.update(sqlite_id, data.id, this.last_athlet.id, mark)
-                            }
-                            this.setMark(mark)
-                        })
+            this.app_settings.insert(data.id, '', mark).then((sqlite_id: number) => {
+                const athlets = this.collection.where('nfc_id', '==', data.id).get()
+                athlets.then((snapshot: firestore.QuerySnapshot) => {
+                    if (snapshot.docs.length === 1) {
+                        if (this.app_settings.hasCp()) {
+                            snapshot.forEach((doc: firestore.DocumentSnapshot) => {
+                                const id = doc.id
+                                this.last_athlet = {id, ...doc.data()} as Athlet
+                                if (sqlite_id) {
+                                    this.app_settings.update(sqlite_id, data.id, `id[${this.last_athlet.id}]`, mark)
+                                }
+                                this.setMark(mark)
+                            })
+                        } else {
+                            alert('Checkpoint isn\'t setup!')
+                            this.activityIndicatorRef.nativeElement.busy = false
+                        }
                     } else {
-                        alert('Checkpoint isn\'t setup!')
+                        alert(`Athlet is\'t found which has NFC tag ${data.id}!`)
                         this.activityIndicatorRef.nativeElement.busy = false
+                        this.last_athlet = null
                     }
-                } else {
-                    alert(`Athlet is\'t found which has NFC tag ${data.id}!`)
-                    this.activityIndicatorRef.nativeElement.busy = false
-                    this.last_athlet = null
-                }
+                })
             })
+
         }
     }
 

@@ -1,0 +1,13 @@
+<h1 mat-dialog-title>Missing time setup</h1>
+<form [formGroup]="setTimeForm" #formDirective="ngForm"
+      (ngSubmit)="onEnter(setTimeForm.valid)">
+    <div mat-dialog-content>
+        <p>Please, enter time</p>
+        <mat-form-field>
+            <input matInput [(ngModel)]="time" formControlName="time" required>
+        </mat-form-field>
+    </div>
+    <div mat-dialog-actions>
+        <button mat-button type="submit">Установить</button>
+    </div>
+</form>

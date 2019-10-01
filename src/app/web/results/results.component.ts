@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core'
+import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core'
 import {AngularFirestore} from '@angular/fire/firestore'
 import {BehaviorSubject, from, Observable, of, zip} from 'rxjs'
 import {groupBy, map, mergeMap, toArray} from 'rxjs/operators'
@@ -26,7 +26,7 @@ export interface Filter {
     class: string
 }
 
-const today = moment().startOf('day')
+const today = moment('2019-09-28').startOf('day')
 
 @Component({
     selector: 'app-results',
@@ -56,12 +56,15 @@ export class ResultsComponent implements OnInit, AfterViewInit {
     hide_place = false
     hide_class_filter = false
     checkpoints: Array<CheckPoint> = []
-    start_time = today.clone()
-    end_time = today.clone()
+    start_time = today.clone().add(12, 'hours')
+    end_time = today.clone().add(14, 'hours').add(30, 'minutes')
     athlets: Array<Athlet> = []
+    is_admin: boolean = false
 
     @Input('circles') circles: number = 5
     @Input('classes') classes: Array<string> = ['open', 'hobby']
+
+    @Output() checkpointsEvent = new EventEmitter<{'classes': Array<string>, 'checkpoints': Array<CheckPoint>}>(true)
 
     @ViewChild('picker', {static: true}) picker: NgxTimepickerFieldComponent
     @ViewChild(MatSort, {static: true}) sort: MatSort
@@ -72,6 +75,8 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         this.hide_start_time = route.snapshot.data['hide_start_time']
         this.hide_class_filter = route.snapshot.data['hide_class_filter']
         this.hide_place = route.snapshot.data['hide_place']
+        this.is_admin = route.snapshot.data['is_admin']
+
         if (this.hide_place) {
             this.displayedColumns.shift()
         }
@@ -80,10 +85,9 @@ export class ResultsComponent implements OnInit, AfterViewInit {
             this.start_time = moment(this._localStorageService.get('start_time'))
             this.end_time = this.start_time.clone().add(this.competition_minutes, 'minutes')
         }
-
     }
 
-    private range = (start, end, delta) => {
+    static range = (start, end, delta) => {
         return Array.from(
             {length: (end - start) / delta}, (v, k) => (k * delta) + start
         )
@@ -126,11 +130,16 @@ export class ResultsComponent implements OnInit, AfterViewInit {
 
         this.firestore.collection('checkpoints', ref => ref.orderBy('order')).valueChanges().subscribe((doc: Array<CheckPoint>) => {
             this.checkpoints = []
-            this.range(0, this.circles, 1).forEach(() => {
-                doc.forEach((checkoint: CheckPoint) => {
-                    this.checkpoints.push(checkoint)
+            ResultsComponent.range(0, this.circles, 1).forEach(() => {
+                doc.forEach((checkpoint: CheckPoint) => {
+                    this.checkpoints.push(checkpoint)
                 })
             })
+            this.checkpointsEvent.emit({
+                classes: this.classes,
+                checkpoints: this.checkpoints
+            })
+
             if (this.displayedColumns.indexOf('CP1_0') >= 0) {
                 this.displayedColumns = [...this.displayedColumns.slice(0, this.displayedColumns.indexOf('CP1_0'))]
             }
@@ -139,7 +148,7 @@ export class ResultsComponent implements OnInit, AfterViewInit {
                 this.displayedColumns.push(checkpoint.key + '_' + y)
             })
         })
-        this.firestore.collection('athlets').valueChanges().subscribe((doc: Array<Athlet>) => {
+        this.firestore.collection('athlets').valueChanges({idField: 'id'}).subscribe((doc: Array<any>) => {
             this.athlets = doc.filter((athlet: Athlet) => this.classes.indexOf(athlet.class) >= 0)
             this.buildRows()
         })
@@ -152,7 +161,7 @@ export class ResultsComponent implements OnInit, AfterViewInit {
             const clean_marks: Array<Mark> = [...athlet.checkpoints.sort((a, b) => a.created < b.created ? -1 : a.created > b.created ? 1 : 0)]
             let last_cp = -1
 
-            for ( const i of this.range(0, 16, 1)) {
+            for ( const i of ResultsComponent.range(0, 16, 1)) {
                 if ([0,4,8,12].indexOf(i) >= 0) {
                     if(!clean_marks[i]) {
                         clean_marks[i] = {
@@ -394,5 +403,15 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         })
 
         return rows
+    }
+
+
+    isLastCp(index: number): boolean {
+        const cp_in_circle = this.checkpoints.length / this.circles
+        if ((index % cp_in_circle) == (cp_in_circle - 1)) {
+            return true
+        }
+
+        return false
     }
 }

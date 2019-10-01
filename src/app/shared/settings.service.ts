@@ -7,9 +7,15 @@ import {CheckPoint} from "@src/app/home/checkpoint"
 import {getString, hasKey, setString} from "tns-core-modules/application-settings"
 import {Mark} from "@src/app/home/mark"
 import {Item} from "@src/app/scan/local-log/item"
+import {knownFolders, Folder, File} from "tns-core-modules/file-system";
+import {Request} from "nativescript-background-http"
+import {environment} from "@src/environments/environment"
+import {device} from "tns-core-modules/platform"
+import * as moment from 'moment'
 
+const bghttp = require("nativescript-background-http")
 const firebase = require('nativescript-plugin-firebase/app')
-const Sqlite = require( "nativescript-sqlite" )
+const Sqlite = require("nativescript-sqlite")
 
 @Injectable({
     providedIn: 'root'
@@ -18,6 +24,23 @@ export class SettingsService implements OnDestroy {
     competition: Competition
     competition$ = new BehaviorSubject<Competition | null>(null)
     destroy = new ReplaySubject<any>(1)
+    private sqlite_db_name = "race_org_local.db"
+    private upload_params: Request = {
+        url: environment.backend_gateway + '/local_log',
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/octet-stream",
+            "File-Name": this.sqlite_db_name
+        },
+        description: "Uploading " + this.sqlite_db_name,
+        utf8: true,
+        androidDisplayNotificationProgress: true,
+        androidNotificationTitle: "Uploading " + this.sqlite_db_name,
+        androidMaxRetries: 1,
+        androidAutoClearNotification: true,
+        androidRingToneEnabled: true
+
+    }
     private database: any
 
     constructor() {
@@ -26,13 +49,13 @@ export class SettingsService implements OnDestroy {
             switchMap((doc: Competition, i: number) => {
                 if (doc) {
                     const db = firebase.firestore()
-                    db.settings({ timestampsInSnapshots: true })
+                    db.settings({timestampsInSnapshots: true})
                     return fromEventPattern((handler => {
                         return firebase.firestore().collection("competitions").doc(doc.id).onSnapshot({includeMetadataChanges: true}, handler)
                     }), (handler, unsubscribe) => unsubscribe()).pipe(
                         map((doc: firestore.DocumentSnapshot) => {
                             const id = doc.id
-                            return {id,...doc.data()} as Competition
+                            return {id, ...doc.data()} as Competition
                         }),
                         takeUntil(this.destroy)
                     )
@@ -48,7 +71,7 @@ export class SettingsService implements OnDestroy {
             }
         })
 
-        new Sqlite("race_org_local.db").then(db => {
+        new Sqlite(this.sqlite_db_name).then(db => {
             // db.execSQL("DROP TABLE nfc_scan_events")
             db.execSQL("CREATE TABLE IF NOT EXISTS nfc_scan_events (id INTEGER PRIMARY KEY AUTOINCREMENT, nfc_id TEXT, athlet_id TEXT, checkpoint_key TEXT NOT NULL, checkpoint_order INTEGER NOT NULL, created DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL)").then(id => {
                 this.database = db;
@@ -94,8 +117,31 @@ export class SettingsService implements OnDestroy {
         }
     }
 
-    insert(nfc_id: Array<number>, athlet_id: string, mark: Mark) {
-        return this.database.execSQL("INSERT INTO nfc_scan_events (nfc_id, athlet_id, checkpoint_key, checkpoint_order, created) VALUES (?, ?, ?, ?, ?)", [
+    async check(nfc_id: Array<number>, athlet_id: string, mark: Mark) {
+        let check_sql: [string, Array<any>]
+
+        if (athlet_id) {
+            check_sql = ["SELECT id FROM nfc_scan_events WHERE athlet_id = ? AND checkpoint_key = ? ORDER BY created DESC LIMIT 1", [athlet_id, mark.key]]
+        } else {
+            check_sql = ["SELECT id FROM nfc_scan_events WHERE nfc_id = ? AND checkpoint_key = ? ORDER BY created DESC LIMIT 1", [nfc_id.join(','), mark.key]]
+        }
+
+        return await this.database.execSQL(check_sql[0], check_sql[1])
+    }
+
+    async insert(nfc_id: Array<number>, athlet_id: string, mark: Mark) {
+
+        const rows =  await this.check(nfc_id, athlet_id, mark)
+
+        if (rows.length) {
+            const row = rows[0]
+            const created = row[row.length-1]
+            if (moment(created).diff(mark.created, 'minutes') <= 5) {
+                return
+            }
+        }
+
+        return await this.database.execSQL("INSERT INTO nfc_scan_events (nfc_id, athlet_id, checkpoint_key, checkpoint_order, created) VALUES (?, ?, ?, ?, ?)", [
             nfc_id.join(','),
             athlet_id,
             mark.key,
@@ -138,4 +184,28 @@ export class SettingsService implements OnDestroy {
         })
     }
 
+    upload() {
+        // Sqlite.copyDatabase(this.sqlite_db_name)
+        const folder: Folder = Folder.fromPath('/data/data/org.nativescript.raceorg/databases/')
+        const db_file: File = folder.getFile(this.sqlite_db_name)
+        if (File.exists(db_file.path)) {
+            if (db_file.size > 0) {
+                const session = bghttp.session("db-upload")
+                const task = session.multipartUpload([
+                    {name: 'device_uuid', value: device.uuid},
+                    {name: 'fileToUpload', filename: db_file.path, mimeType: "application/x-sqlite3"},
+                ], this.upload_params)
+                task.on("error", (err) => console.log(err))
+                task.on("responded", (err) => console.log(err))
+            } else {
+                alert(
+                    "File size is zero"
+                )
+            }
+        } else {
+            alert(
+                "Not exists " + db_file.path
+            )
+        }
+    }
 }

@@ -1,6 +1,7 @@
 <mat-card class="m-20">
     <mat-card-content [hidden]="hide_start_time">
-        <button (click)="onSetStartTime($event)" mat-raised-button color="primary" class="m-20">Начать соревнования</button>
+        <button (click)="onSetStartTime($event)" mat-raised-button color="primary" class="m-20">Начать соревнования
+        </button>
         <ngx-timepicker-field #picker
                               [format]="24"
                               [defaultTime]="start_time.format('HH:mm')"
@@ -11,15 +12,15 @@
             <input matInput (keyup)="applyFilter($event, 'str')" placeholder="Фильтр">
             <mat-hint>По фамилии или номеру участника</mat-hint>
         </mat-form-field>
-        <div [hidden]="hide_class_filter" class="p-20 mat-form-field">
-            <label id="radio-group-classes">Классы участников</label>
-            <mat-radio-group [ngModel]="filter.class" (ngModelChange)="applyFilter($event, 'class')"
-                             aria-labelledby="radio-group-classes" aria-label="Классы участников">
-                <mat-radio-button class="m-r-10" value="">Все</mat-radio-button>
-                <mat-radio-button class="m-r-10" value="open">Open</mat-radio-button>
-                <mat-radio-button class="m-r-10" value="hobby">Hobby</mat-radio-button>
-            </mat-radio-group>
-        </div>
+<!--        <div [hidden]="hide_class_filter" class="p-20 mat-form-field">-->
+<!--            <label id="radio-group-classes">Классы участников</label>-->
+<!--            <mat-radio-group [ngModel]="filter.class" (ngModelChange)="applyFilter($event, 'class')"-->
+<!--                             aria-labelledby="radio-group-classes" aria-label="Классы участников">-->
+<!--                <mat-radio-button class="m-r-10" value="">Все</mat-radio-button>-->
+<!--                <mat-radio-button class="m-r-10" value="open">Open</mat-radio-button>-->
+<!--                <mat-radio-button class="m-r-10" value="hobby">Hobby</mat-radio-button>-->
+<!--            </mat-radio-group>-->
+<!--        </div>-->
         <angular2csv [data]="getCsvData(dataSource.filteredData)"
                      [filename]="classes.join('_') + '_' + (this.now|date:'dd-MM-yy_HH:mm:ss')"
                      [options]="csv_export_options"></angular2csv>
@@ -45,24 +46,27 @@
 
     <ng-container matColumnDef="athlet">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Athlet</th>
-        <td mat-cell *matCellDef="let element">
-          <span>
-             {{element.athlet.fio}}
-          </span><br>
-            <small>
-                {{element.athlet.bike}}
-            </small><br>
-            <small>
-                г. {{element.athlet.city}}
-            </small>
-            <small [hidden]="hide_start_time">
-                <br>тел. {{element.athlet.phone}}
-            </small>
+        <td mat-cell *matCellDef="let element" class="athlet">
+            <ul>
+                <li [ngSwitch]="is_admin">
+                    <a *ngSwitchCase="true" [routerLink]="['detail', element.athlet.phone]">{{element.athlet.fio}}</a>
+                    <span *ngSwitchDefault>{{element.athlet.fio}}</span>
+                </li>
+                <li>
+                    {{element.athlet.nfc_id}}
+                </li>
+                <li>
+                    г. {{element.athlet.city}}
+                </li>
+                <li [hidden]="!is_admin">
+                    тел. {{element.athlet.phone}}
+                </li>
+            </ul>
         </td>
     </ng-container>
 
     <ng-container [matColumnDef]="def.key + '_' + y" *ngFor="let def of checkpoints; let y = index;">
-        <th mat-header-cell *matHeaderCellDef class="v-top p-t-2" style="width: 70px">
+        <th mat-header-cell *matHeaderCellDef class="v-top p-t-2 cp-header">
         <span>
             {{ def.key }}
         </span><br>
@@ -70,7 +74,10 @@
                 {{ def.name }}
             </small>
         </th>
-        <td mat-cell *matCellDef="let element" [ngSwitch]="!hide_place ? element.marks[y] : null">
+        <td mat-cell
+            *matCellDef="let element"
+            [ngSwitch]="!hide_place ? element.marks[y] : null"
+            [class.last-cp]="isLastCp(y)">
       <span *ngSwitchDefault
             [class.active]="element.last_created == element.marks[y].created"
             [class.elapsed]="getElapsed(element.marks[y].created)">

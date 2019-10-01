@@ -4,4 +4,5 @@ export interface Mark {
     created: any
     order: number
     missing?: boolean
+    manual?: boolean
 }

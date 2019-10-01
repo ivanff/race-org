@@ -32,6 +32,17 @@ table {
   margin: 20px;
 }
 
+.cp-header {
+  width: 70px;
+}
+
+.athlet {
+  ul {
+    list-style-type: none;
+    font-size: smaller;
+  }
+}
+
 .in-row {
   display: inline-block
 }
@@ -50,4 +61,13 @@ table {
 
 .mat-header-row {
   height: 42px;
+}
+
+.last-cp {
+  background-color: lightblue;
+}
+
+td > span {
+  padding-left: 2px;
+  padding-right: 2px;
 }

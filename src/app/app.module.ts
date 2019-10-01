@@ -28,20 +28,29 @@ import {
 import {AdminPromptComponent} from "@src/app/web/access/admin-prompt/admin-prompt.component"
 import {ResultsPublicComponent} from "@src/app/web/results/results-public/results-public.component"
 import {LocalStorageModule} from "angular-2-local-storage"
+import {ResultsAdminComponent} from "@src/app/web/results/results-admin/results-admin.component"
+import {ResultDetailComponent} from "@src/app/web/results/results-admin/result-detail/result-detail.component"
+import {AthletResolve} from "@src/app/shared/athlet.resolver"
+import {ResultSetTimeComponent} from "@src/app/web/results/results-admin/result-detail/result-set-time/result-set-time.component"
 
 @NgModule({
     entryComponents: [
         AdminPromptComponent,
+        ResultSetTimeComponent,
     ],
     declarations: [
         AppComponent,
         ResultsComponent,
+        ResultsAdminComponent,
+        ResultDetailComponent,
         ResultsPublicComponent,
         RegisterComponent,
         AdminRegisterComponent,
         HelpComponent,
         SettingsComponent,
+
         AdminPromptComponent,
+        ResultSetTimeComponent,
     ],
     imports: [
         AngularFireModule.initializeApp(environment.firebase),
@@ -72,6 +81,7 @@ import {LocalStorageModule} from "angular-2-local-storage"
             useValue: 'ru', // use French language
         },
         AdminResolve,
+        AthletResolve,
     ],
     bootstrap: [AppComponent]
 })

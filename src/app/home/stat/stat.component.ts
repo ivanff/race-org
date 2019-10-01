@@ -1,5 +1,6 @@
 import {Component, NgZone, OnDestroy, OnInit} from '@angular/core'
 import {firestore} from "nativescript-plugin-firebase"
+import {SettingsService} from "@src/app/shared/settings.service"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
@@ -14,7 +15,7 @@ export class StatComponent implements OnInit, OnDestroy {
   hobby_count: number = 0
   private unsubscribe: any
 
-  constructor(private zone: NgZone,) {
+  constructor(private zone: NgZone) {
   }
 
   ngOnInit() {

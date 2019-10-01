@@ -43,7 +43,7 @@ export class DetailComponent extends BaseComponent implements OnInit, OnDestroy 
             this.checkpoint = this.app_settings.getCp()
         }
 
-        this.unsubscribe = this.collection.doc(this.athlet.phone + '').onSnapshot({includeMetadataChanges: true}, (doc: firestore.DocumentSnapshot) => {
+        this.unsubscribe = this.collection.doc(this.athlet.id).onSnapshot({includeMetadataChanges: true}, (doc: firestore.DocumentSnapshot) => {
             if (doc.exists) {
                 this.athlet = {...doc.data()} as Athlet
             }
@@ -63,7 +63,7 @@ export class DetailComponent extends BaseComponent implements OnInit, OnDestroy 
             snapshot.forEach((doc: firestore.DocumentSnapshot) => {
                 batch = batch.update(this.collection.doc(doc.id), {nfc_id: null})
             })
-            batch.update(this.collection.doc(this.athlet.phone + ''), {
+            batch.update(this.collection.doc(this.athlet.id), {
                 nfc_id: data.id
             })
 
@@ -86,7 +86,7 @@ export class DetailComponent extends BaseComponent implements OnInit, OnDestroy 
         }
         confirm(options).then((result: boolean) => {
             if (result) {
-                this.collection.doc(this.athlet.phone + '').update({
+                this.collection.doc(this.athlet.id).update({
                     nfc_id: null
                 }).then(() => {
                     this.athlet.nfc_id = null
@@ -118,7 +118,7 @@ export class DetailComponent extends BaseComponent implements OnInit, OnDestroy 
                         const new_checkpoints: Array<Mark> = this.athlet.checkpoints.filter((item: Mark) => {return item.key != mark.key})
 
                         if (new_checkpoints.length != this.athlet.checkpoints.length) {
-                            firestore.collection('athlets').doc(this.athlet.phone + '').update({
+                            firestore.collection('athlets').doc(this.athlet.id).update({
                                 checkpoints: new_checkpoints
                             })
                         }

@@ -4,6 +4,10 @@
     <ActionItem *ngIf="pending" text="Push to server" position="right">
         <Label text="&#xf0c7;" class="far p-r-10"></Label>
     </ActionItem>
+    <ActionItem [text]="'Upload to server'|L"
+                (tap)="app_settings.upload()"
+                ios.position="right"
+                android.position="popup"></ActionItem>
 </ActionBar>
 <GridLayout rows="*" columns="*">
     <ScrollView row="2" col="0">

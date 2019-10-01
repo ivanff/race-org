@@ -82,7 +82,7 @@ export class RegisterComponent implements OnInit {
 
     onSendSms(): void {
         if (this.registerForm.controls['phone'].valid) {
-            this.http.post(environment.sms_gateway + '/sms',
+            this.http.post(environment.backend_gateway + '/sms',
                 JSON.stringify({phone: this.registerForm.controls['phone'].value}),
                 {headers: new HttpHeaders({'Content-Type': 'application/json'})}).pipe(
                 catchError((err: HttpErrorResponse) => {
@@ -137,7 +137,7 @@ export class RegisterComponent implements OnInit {
 
     checkSmsCode(): AsyncValidatorFn {
         return (control: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null> => {
-            return this.http.post(environment.sms_gateway + '/check',
+            return this.http.post(environment.backend_gateway + '/check',
                 JSON.stringify({
                     phone: this.registerForm.controls['phone'].value,
                     code: control.value

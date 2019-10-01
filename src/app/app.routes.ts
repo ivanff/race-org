@@ -5,6 +5,9 @@ import {AdminRegisterComponent, RegisterComponent} from "@src/app/web/access/reg
 import {HelpComponent} from "@src/app/web/help/help.component"
 import {AdminResolve} from "@src/app/shared/admin.resolver"
 import {ResultsPublicComponent} from "@src/app/web/results/results-public/results-public.component"
+import {ResultsAdminComponent} from "@src/app/web/results/results-admin/results-admin.component"
+import {ResultDetailComponent} from "@src/app/web/results/results-admin/result-detail/result-detail.component"
+import {AthletResolve} from "@src/app/shared/athlet.resolver"
 
 export const routes: Routes = [
     {
@@ -14,8 +17,15 @@ export const routes: Routes = [
     },
     {
         path: 'results',
-        component: ResultsComponent,
-        resolve: {is_admin: AdminResolve}
+        component: ResultsAdminComponent,
+        resolve: {is_admin: AdminResolve},
+        children: [
+            {
+                path: 'detail/:id',
+                component: ResultDetailComponent,
+                resolve: {athlet: AthletResolve},
+            }
+        ]
     },
     {
         path: 'results/public',
