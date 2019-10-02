@@ -1,16 +1,16 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router"
 import {Athlet} from "@src/app/home/athlet"
-import {ResultsComponent} from "@src/app/web/results/results.component"
+import {Mark} from "@src/app/web/results/results.component"
 import {AngularFirestore, AngularFirestoreDocument} from "@angular/fire/firestore"
 import {CheckPoint} from "@src/app/home/checkpoint"
 import {MatDialog, MatTableDataSource} from "@angular/material"
-import {Mark} from "@src/app/home/mark"
 import {ResultSetTimeComponent} from "@src/app/web/results/results-admin/result-detail/result-set-time/result-set-time.component"
 import * as moment from "moment"
 import {LocalStorageService} from "angular-2-local-storage"
 import * as firebase from "firebase/app"
 import {ResultAddMarkComponent} from "@src/app/web/results/results-admin/result-detail/result-add-mark/result-add-mark.component"
+import * as _ from "lodash"
 
 @Component({
     selector: 'app-result-detail',
@@ -47,7 +47,7 @@ export class ResultDetailComponent implements OnInit {
         const cp_in_circle = (this.checkpoints.length / this.circle)
         let rows: Array<any> = []
 
-        for (const i of ResultsComponent.range(0, this.checkpoints.length + 1, 1)) {
+        for (const i of _.range(0, this.checkpoints.length + 1, 1)) {
             const order = i % cp_in_circle
             const mark = this.marks[i]
             if (mark) {

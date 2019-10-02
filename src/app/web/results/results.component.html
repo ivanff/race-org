@@ -83,7 +83,7 @@
             [class.last-cp]="isLastCp(y)">
             <div *ngSwitchDefault
                  [class.active]="element.last_created == element.marks[y].created"
-                 [class.elapsed]="getElapsed(element.marks[y].created)">
+                 [class.elapsed]="element.marks[y].elapsed">
                 <small>
                     {{ diffTime(element.marks[y].created) }}
                 </small>
