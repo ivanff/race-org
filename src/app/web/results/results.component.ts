@@ -154,7 +154,7 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         })
     }
 
-    buildRows() {
+    private buildRows() {
         let rows: Array<TableRow> = []
         this.athlets.forEach((athlet: Athlet) => {
             const marks: Array<Mark | null> = []

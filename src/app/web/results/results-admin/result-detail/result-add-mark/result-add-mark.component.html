@@ -1,0 +1,21 @@
+<h1 mat-dialog-title>Enter new mark data</h1>
+<form [formGroup]="addMarkForm" #formDirective="ngForm"
+      (ngSubmit)="onEnter(addMarkForm.valid)">
+    <div mat-dialog-content>
+        <mat-form-field>
+            <mat-label>Checkpoint key</mat-label>
+            <input matInput [(ngModel)]="mark.key" formControlName="key" required>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Order</mat-label>
+            <input matInput [(ngModel)]="mark.order" formControlName="order" required type="number">
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Please, enter time</mat-label>
+            <input matInput [(ngModel)]="mark.time" formControlName="time" required>
+        </mat-form-field>
+    </div>
+    <div mat-dialog-actions>
+        <button mat-button type="submit">Добавить</button>
+    </div>
+</form>

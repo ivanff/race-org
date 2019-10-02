@@ -32,11 +32,13 @@ import {ResultsAdminComponent} from "@src/app/web/results/results-admin/results-
 import {ResultDetailComponent} from "@src/app/web/results/results-admin/result-detail/result-detail.component"
 import {AthletResolve} from "@src/app/shared/athlet.resolver"
 import {ResultSetTimeComponent} from "@src/app/web/results/results-admin/result-detail/result-set-time/result-set-time.component"
+import {ResultAddMarkComponent} from "@src/app/web/results/results-admin/result-detail/result-add-mark/result-add-mark.component"
 
 @NgModule({
     entryComponents: [
         AdminPromptComponent,
         ResultSetTimeComponent,
+        ResultAddMarkComponent,
     ],
     declarations: [
         AppComponent,
@@ -51,6 +53,7 @@ import {ResultSetTimeComponent} from "@src/app/web/results/results-admin/result-
 
         AdminPromptComponent,
         ResultSetTimeComponent,
+        ResultAddMarkComponent,
     ],
     imports: [
         AngularFireModule.initializeApp(environment.firebase),

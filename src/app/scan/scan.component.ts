@@ -151,13 +151,11 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
             if (this.current_checkpoint.order > 0) {
                 if ((this.current_checkpoint.order - 1) != last_checkpoint.order) {
                     this.onFound(this.last_athlet, 'Возможно пропущена предыдущая отметка маршала', true)
-                    return
                 }
             }
         } else {
             if (this.current_checkpoint.order != 0) {
                 this.onFound(this.last_athlet, 'Возможно пропущена предыдущая отметка маршала', true)
-                return
             }
         }
 
