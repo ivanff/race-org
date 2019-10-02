@@ -2,15 +2,14 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router"
 import {Athlet} from "@src/app/home/athlet"
 import {ResultsComponent} from "@src/app/web/results/results.component"
-import {AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument} from "@angular/fire/firestore"
+import {AngularFirestore, AngularFirestoreDocument} from "@angular/fire/firestore"
 import {CheckPoint} from "@src/app/home/checkpoint"
 import {MatDialog, MatTableDataSource} from "@angular/material"
 import {Mark} from "@src/app/home/mark"
-import {AdminPromptComponent} from "@src/app/web/access/admin-prompt/admin-prompt.component"
 import {ResultSetTimeComponent} from "@src/app/web/results/results-admin/result-detail/result-set-time/result-set-time.component"
 import * as moment from "moment"
 import {LocalStorageService} from "angular-2-local-storage"
-import * as firebase from "firebase"
+import * as firebase from "firebase/app"
 import {ResultAddMarkComponent} from "@src/app/web/results/results-admin/result-detail/result-add-mark/result-add-mark.component"
 
 @Component({

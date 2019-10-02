@@ -12,7 +12,7 @@ import {AthletResolve} from "@src/app/shared/athlet.resolver"
 export const routes: Routes = [
     {
         path: '',
-        redirectTo: '/access/register',
+        redirectTo: 'results/public',
         pathMatch: 'full',
     },
     {

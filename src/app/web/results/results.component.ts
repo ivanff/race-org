@@ -10,6 +10,7 @@ import {Mark} from "@src/app/home/mark"
 import {CheckPoint} from "@src/app/home/checkpoint"
 import {ActivatedRoute} from "@angular/router"
 import {LocalStorageService} from "angular-2-local-storage"
+import * as _ from "lodash"
 
 
 export interface TableRow {
@@ -300,6 +301,18 @@ export class ResultsComponent implements OnInit, AfterViewInit {
                 last_cp: last_cp,
             } as TableRow)
         })
+
+        // Если подсчет по полным кругам
+        for (let row of rows) {
+            const [last_circle, last_first_cp] = this.getLastCircle(row.marks)
+            if (last_circle){
+                row.last_created = last_circle.pop().created
+                row.last_cp = last_first_cp
+            }
+        }
+
+
+
         rows = rows.sort((a: TableRow, b: TableRow) => {
             if (a.last_cp < b.last_cp) {
                 return 1
@@ -319,7 +332,6 @@ export class ResultsComponent implements OnInit, AfterViewInit {
     }
 
     getElapsed(date: any): boolean {
-        // return false
         return moment(date.toDate()) > this.end_time
     }
 
@@ -411,7 +423,20 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         if ((index % cp_in_circle) == (cp_in_circle - 1)) {
             return true
         }
-
         return false
+    }
+
+    getLastCircle(marks: Array<Mark>): [Array<Mark>, number] {
+        const cp_in_circle = this.checkpoints.length / this.circles
+        let circles_marks: Array<Array<Mark>> = _.chunk(marks, cp_in_circle)
+        circles_marks = circles_marks.filter((circle: Array<Mark|null>) => circle.filter((mark) => {
+            if (mark) {
+                if (!this.getElapsed(mark.created)) {
+                    return true
+                }
+            }
+            return false
+        }).length == cp_in_circle)
+        return [circles_marks.pop(), circles_marks.length * cp_in_circle]
     }
 }

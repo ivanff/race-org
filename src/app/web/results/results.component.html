@@ -12,15 +12,15 @@
             <input matInput (keyup)="applyFilter($event, 'str')" placeholder="Фильтр">
             <mat-hint>По фамилии или номеру участника</mat-hint>
         </mat-form-field>
-<!--        <div [hidden]="hide_class_filter" class="p-20 mat-form-field">-->
-<!--            <label id="radio-group-classes">Классы участников</label>-->
-<!--            <mat-radio-group [ngModel]="filter.class" (ngModelChange)="applyFilter($event, 'class')"-->
-<!--                             aria-labelledby="radio-group-classes" aria-label="Классы участников">-->
-<!--                <mat-radio-button class="m-r-10" value="">Все</mat-radio-button>-->
-<!--                <mat-radio-button class="m-r-10" value="open">Open</mat-radio-button>-->
-<!--                <mat-radio-button class="m-r-10" value="hobby">Hobby</mat-radio-button>-->
-<!--            </mat-radio-group>-->
-<!--        </div>-->
+        <!--        <div [hidden]="hide_class_filter" class="p-20 mat-form-field">-->
+        <!--            <label id="radio-group-classes">Классы участников</label>-->
+        <!--            <mat-radio-group [ngModel]="filter.class" (ngModelChange)="applyFilter($event, 'class')"-->
+        <!--                             aria-labelledby="radio-group-classes" aria-label="Классы участников">-->
+        <!--                <mat-radio-button class="m-r-10" value="">Все</mat-radio-button>-->
+        <!--                <mat-radio-button class="m-r-10" value="open">Open</mat-radio-button>-->
+        <!--                <mat-radio-button class="m-r-10" value="hobby">Hobby</mat-radio-button>-->
+        <!--            </mat-radio-group>-->
+        <!--        </div>-->
         <angular2csv [data]="getCsvData(dataSource.filteredData)"
                      [filename]="classes.join('_') + '_' + (this.now|date:'dd-MM-yy_HH:mm:ss')"
                      [options]="csv_export_options"></angular2csv>
@@ -61,6 +61,9 @@
                 <li [hidden]="!is_admin">
                     тел. {{element.athlet.phone}}
                 </li>
+                <li [hidden]="!is_admin">
+                    moto: {{element.athlet.bike}}
+                </li>
             </ul>
         </td>
     </ng-container>
@@ -78,18 +81,16 @@
             *matCellDef="let element"
             [ngSwitch]="!hide_place ? element.marks[y] : null"
             [class.last-cp]="isLastCp(y)">
-      <span *ngSwitchDefault
-            [class.active]="element.last_created == element.marks[y].created"
-            [class.elapsed]="getElapsed(element.marks[y].created)">
-<!--        <mat-icon aria-hidden="false" aria-label="Clock">av_timer</mat-icon>-->
-          <!--          {{ diffTime(element.marks[y].created) }}<br>-->
-      <small>
-          {{ diffTime(element.marks[y].created) }}
-      </small>
-        <small>
-            {{ element.marks[y].created.toDate()|date:"HH:mm:ss" }}<br>
-        </small>
-      </span>
+            <div *ngSwitchDefault
+                 [class.active]="element.last_created == element.marks[y].created"
+                 [class.elapsed]="getElapsed(element.marks[y].created)">
+                <small>
+                    {{ diffTime(element.marks[y].created) }}
+                </small>
+                <small>
+                    {{ element.marks[y].created.toDate()|date:"HH:mm:ss" }}<br>
+                </small>
+            </div>
             <span *ngSwitchCase="null">-</span>
         </td>
     </ng-container>

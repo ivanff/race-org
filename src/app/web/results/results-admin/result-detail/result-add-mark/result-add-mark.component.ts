@@ -3,8 +3,7 @@ import {FormBuilder, FormGroup} from "@angular/forms"
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material"
 import {AdminPromptComponent} from "@src/app/web/access/admin-prompt/admin-prompt.component"
 import {Mark} from "@src/app/home/mark"
-import * as moment from "moment"
-import * as firebase from "firebase"
+import * as firebase from "firebase/app"
 
 @Component({
   selector: 'app-result-add-mark',
