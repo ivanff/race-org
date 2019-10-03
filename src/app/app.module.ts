@@ -1,4 +1,4 @@
-import {NgModule} from '@angular/core'
+import {LOCALE_ID, NgModule} from '@angular/core'
 import {BrowserModule} from '@angular/platform-browser'
 
 import {AppRoutingModule} from '@src/app/app-routing.module'
@@ -33,6 +33,12 @@ import {ResultDetailComponent} from "@src/app/web/results/results-admin/result-d
 import {AthletResolve} from "@src/app/shared/athlet.resolver"
 import {ResultSetTimeComponent} from "@src/app/web/results/results-admin/result-detail/result-set-time/result-set-time.component"
 import {ResultAddMarkComponent} from "@src/app/web/results/results-admin/result-detail/result-add-mark/result-add-mark.component"
+import {SigninComponent} from "@src/app/web/access/signin/signin.component"
+
+import localeRu from '@angular/common/locales/ru'
+import {registerLocaleData} from "@angular/common"
+
+registerLocaleData(localeRu)
 
 @NgModule({
     entryComponents: [
@@ -50,6 +56,7 @@ import {ResultAddMarkComponent} from "@src/app/web/results/results-admin/result-
         AdminRegisterComponent,
         HelpComponent,
         SettingsComponent,
+        SigninComponent,
 
         AdminPromptComponent,
         ResultSetTimeComponent,
@@ -82,6 +89,10 @@ import {ResultAddMarkComponent} from "@src/app/web/results/results-admin/result-
         {
             provide: RECAPTCHA_LANGUAGE,
             useValue: 'ru', // use French language
+        },
+        {
+            provide: LOCALE_ID,
+            useValue: 'ru'
         },
         AdminResolve,
         AthletResolve,

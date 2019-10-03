@@ -17,7 +17,6 @@ export class ResultAddMarkComponent implements OnInit {
 
   constructor(private _fb: FormBuilder,
               private dialogRef: MatDialogRef<AdminPromptComponent>,
-
               @Inject(MAT_DIALOG_DATA) public data: any) {
 
   }

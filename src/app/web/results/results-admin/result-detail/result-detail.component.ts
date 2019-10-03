@@ -6,11 +6,13 @@ import {AngularFirestore, AngularFirestoreDocument} from "@angular/fire/firestor
 import {CheckPoint} from "@src/app/home/checkpoint"
 import {MatDialog, MatTableDataSource} from "@angular/material"
 import {ResultSetTimeComponent} from "@src/app/web/results/results-admin/result-detail/result-set-time/result-set-time.component"
-import * as moment from "moment"
+import * as moment from "moment-timezone"
 import {LocalStorageService} from "angular-2-local-storage"
 import * as firebase from "firebase/app"
 import {ResultAddMarkComponent} from "@src/app/web/results/results-admin/result-detail/result-add-mark/result-add-mark.component"
 import * as _ from "lodash"
+
+const today = moment.tz('2019-09-28 00:00:00', 'Europe/Moscow').startOf('day')
 
 @Component({
     selector: 'app-result-detail',
@@ -25,17 +27,13 @@ export class ResultDetailComponent implements OnInit {
     marks: Array<Mark> = []
     athlet: Athlet
     circle: number
-    start_time: any
+    start_time = today.clone().add(12, 'hours')
 
     constructor(private route: ActivatedRoute,
                 private firestore: AngularFirestore,
                 private dialog: MatDialog,
                 private _localStorageService: LocalStorageService) {
         this.athlet = route.snapshot.data['athlet']
-
-        if (this._localStorageService.get('start_time')) {
-            this.start_time = moment(this._localStorageService.get('start_time'))
-        }
     }
 
     ngOnInit() {

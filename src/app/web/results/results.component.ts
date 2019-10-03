@@ -1,13 +1,12 @@
 import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core'
 import {AngularFirestore} from '@angular/fire/firestore'
 import {MatSort, MatTableDataSource} from '@angular/material'
-import * as moment from 'moment'
+import * as moment from 'moment-timezone'
 import {NgxTimepickerFieldComponent} from 'ngx-material-timepicker'
 import {Athlet} from "@src/app/home/athlet"
 import {Mark as FbMark} from "@src/app/home/mark"
 import {CheckPoint} from "@src/app/home/checkpoint"
 import {ActivatedRoute} from "@angular/router"
-import {LocalStorageService} from "angular-2-local-storage"
 import * as _ from "lodash"
 
 
@@ -32,7 +31,7 @@ export interface Filter {
     class: string
 }
 
-const today = moment('2019-09-28').startOf('day')
+const today = moment.tz('2019-09-28 00:00:00', 'Europe/Moscow').startOf('day')
 
 @Component({
     selector: 'app-results',
@@ -56,7 +55,6 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         removeNewLines: true,
         keys: this.displayedColumns,
     }
-    competition_minutes = 60 * 2 + 30
 
     hide_start_time = false
     hide_place = false
@@ -67,6 +65,8 @@ export class ResultsComponent implements OnInit, AfterViewInit {
     athlets: Array<Athlet> = []
     is_admin: boolean = false
 
+    today: any
+
     @Input('circles') circles: number = 5
     @Input('classes') classes: Array<string> = ['open', 'hobby']
 
@@ -76,7 +76,6 @@ export class ResultsComponent implements OnInit, AfterViewInit {
     @ViewChild(MatSort, {static: true}) sort: MatSort
 
     constructor(private firestore: AngularFirestore,
-                private _localStorageService: LocalStorageService,
                 private route: ActivatedRoute) {
         this.hide_start_time = route.snapshot.data['hide_start_time']
         this.hide_class_filter = route.snapshot.data['hide_class_filter']
@@ -87,10 +86,7 @@ export class ResultsComponent implements OnInit, AfterViewInit {
             this.displayedColumns.shift()
         }
 
-        if (this._localStorageService.get('start_time')) {
-            this.start_time = moment(this._localStorageService.get('start_time'))
-            this.end_time = this.start_time.clone().add(this.competition_minutes, 'minutes')
-        }
+        this.today = today
     }
 
     ngAfterViewInit() {}
@@ -144,6 +140,9 @@ export class ResultsComponent implements OnInit, AfterViewInit {
             this.checkpoints.forEach((checkpoint: CheckPoint, y: number) => {
                 this.displayedColumns.push(checkpoint.key + '_' + y)
             })
+
+            this.csv_export_options.keys = this.displayedColumns
+            this.csv_export_options.headers = this.displayedColumns
         })
         this.firestore.collection('athlets').valueChanges({idField: 'id'}).subscribe((doc: Array<any>) => {
             this.athlets = doc.filter((athlet: Athlet) => this.classes.indexOf(athlet.class) >= 0)
@@ -153,7 +152,10 @@ export class ResultsComponent implements OnInit, AfterViewInit {
 
     private buildRows() {
         let rows: Array<TableRow> = []
-        this.athlets.forEach((athlet: Athlet) => {
+        this.athlets.forEach((athlet: Athlet, y: number) => {
+            // if (athlet.number != 888) {
+            //     return
+            // }
             const clean_marks: Array<Mark | null> = [...athlet.checkpoints.sort((a, b) => a.created < b.created ? -1 : a.created > b.created ? 1 : 0)]
             const cp_in_circle = (this.checkpoints.length / this.circles)
 
@@ -196,6 +198,8 @@ export class ResultsComponent implements OnInit, AfterViewInit {
                 last_created: last_cp >= 0 ? clean_marks[last_cp].created : null,
                 last_cp: last_cp,
             } as TableRow)
+
+
         })
 
         // Если подсчет по полным кругам
@@ -239,23 +243,39 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         const created$ = moment(created.toDate())
 
         if (created$ > this.start_time) {
-            return moment.utc(
-                moment.duration(
-                    created$.diff(this.start_time)
-                ).as('milliseconds')
-            ).format('HH:mm:ss')
+               return today.clone().add(created$.diff(this.start_time, 'ms'), 'ms').format("HH:mm:ss")
         }
-    }
 
-    onSetStartTime($event) {
-        const time_parts = this.picker.timepickerTime.split(':')
-        this.start_time = today.clone()
-        this.start_time.add(time_parts[0], 'hours').add(time_parts[1], 'minutes')
-        this.end_time = this.start_time.clone().add(this.competition_minutes, 'minutes')
 
-        this._localStorageService.set('start_time', this.start_time.format())
+        const zero_time = new Date(Date.UTC(this.start_time.year(), this.start_time.month(), this.start_time.day(), 0, 0, 0, 0))
+        console.log(zero_time)
+        if (created$ > this.start_time) {
+            zero_time.setMilliseconds(created$.diff(this.start_time, 'ms') + zero_time.getTimezoneOffset() * 60000)
+            // return created$.diff(this.start_time, 'seconds')
+            // console.log(
+            //     moment({h:0, m:0, s:0, ms:0})
+            // )
+            return [zero_time.getHours(), zero_time.getMinutes(), zero_time.getSeconds()].join(':')
 
-        this.buildRows()
+
+
+            // const duration = moment.duration(created$.diff(this.start_time))
+            //
+            // return [duration.hours(), duration.minutes(), duration.seconds()].join(":")
+
+            // return created$.diff(this.start_time, 'milliseconds')
+            // return moment({seconds: created$.diff(this.start_time, 'seconds')}).format('HH:mm:ss')
+
+            // return moment(
+            // ).utc(true).format('HH:mm:ss')
+            // return moment.duration(
+            //
+            // ).as('asMinutes')
+
+            // return moment.utc(
+            //
+            // ).format('HH:mm:ss')
+        }
     }
 
     getCsvData(data: Array<any>) {
@@ -268,6 +288,7 @@ export class ResultsComponent implements OnInit, AfterViewInit {
 
         data.map((item) => {
             let row = {}
+            let i = 0
             for (let key of this.csv_export_options.keys) {
                 switch (key) {
                     case 'place': {
@@ -287,16 +308,15 @@ export class ResultsComponent implements OnInit, AfterViewInit {
                         break
                     }
                     default: {
-                        if (/^CP\d+_\d+$/.test(key)) {
-                            const result = /^CP\d+_(?<index>\d+)$/.exec(key)
-                            const mark: Mark | undefined = item.marks[parseInt(result.groups.index)]
+                        const mark: Mark | undefined = item.marks[i]
 
-                            if (mark) {
-                                row[key] = moment(mark.created.toDate()).format('HH:mm:ss')
-                            } else {
-                                row[key] = ''
-                            }
+                        if (mark) {
+                            row[key] = moment(mark.created.toDate()).format('HH:mm:ss')
+                        } else {
+                            row[key] = ''
                         }
+
+                        i = i + 1
                     }
                 }
             }

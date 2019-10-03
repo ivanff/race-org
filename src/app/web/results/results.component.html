@@ -1,12 +1,4 @@
 <mat-card class="m-20">
-    <mat-card-content [hidden]="hide_start_time">
-        <button (click)="onSetStartTime($event)" mat-raised-button color="primary" class="m-20">Начать соревнования
-        </button>
-        <ngx-timepicker-field #picker
-                              [format]="24"
-                              [defaultTime]="start_time.format('HH:mm')"
-                              class="m-20 in-row"></ngx-timepicker-field>
-    </mat-card-content>
     <mat-card-content>
         <mat-form-field class="p-20">
             <input matInput (keyup)="applyFilter($event, 'str')" placeholder="Фильтр">
@@ -25,6 +17,9 @@
                      [filename]="classes.join('_') + '_' + (this.now|date:'dd-MM-yy_HH:mm:ss')"
                      [options]="csv_export_options"></angular2csv>
     </mat-card-content>
+    <h2>
+        Время старта: {{ start_time.toDate()|date:"yyyy-dd-MM HH:mm:ss z":"+0300" }}
+    </h2>
 </mat-card>
 
 <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
@@ -88,7 +83,7 @@
                     {{ diffTime(element.marks[y].created) }}
                 </small>
                 <small>
-                    {{ element.marks[y].created.toDate()|date:"HH:mm:ss" }}<br>
+                    {{ element.marks[y].created.toDate()|date:"HH:mm:ss z":"+0300" }}<br>
                 </small>
             </div>
             <span *ngSwitchCase="null">-</span>

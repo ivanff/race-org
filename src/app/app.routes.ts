@@ -8,6 +8,7 @@ import {ResultsPublicComponent} from "@src/app/web/results/results-public/result
 import {ResultsAdminComponent} from "@src/app/web/results/results-admin/results-admin.component"
 import {ResultDetailComponent} from "@src/app/web/results/results-admin/result-detail/result-detail.component"
 import {AthletResolve} from "@src/app/shared/athlet.resolver"
+import {SigninComponent} from "@src/app/web/access/signin/signin.component"
 
 export const routes: Routes = [
     {
@@ -51,6 +52,10 @@ export const routes: Routes = [
     {
         path: 'access/register',
         component: RegisterComponent
+    },
+    {
+        path: 'access/signin',
+        component: SigninComponent
     },
     {
         path: 'access/register/admin',
