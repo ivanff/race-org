@@ -1,22 +1,2 @@
 /* You can add global styles to this file, and also import other style files */
-
-// Import common styles
-@import "~@angular/material/prebuilt-themes/indigo-pink.css";
-@import 'app-common';
-
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-[hidden] { display: none !important; transition: all .3s;}
-
-//.mat-snack-bar-container {
-//  min-width: 550px !important;
-//  .mat-simple-snackbar {
-//    font-size: 1.5em;
-//  }
-//  .mat-simple-snackbar {
-//    font-size: 1.5em;
-//  }
-//  .mat-simple-snackbar-action button {
-//    font-size: 0.7em;
-//  }
-//}
+@import "styles/app";

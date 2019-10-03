@@ -1,4 +1,5 @@
 export const environment = {
+  SERVER_URL: 'https://agestart.ru',
   backend_gateway: 'https://agestart.ru/js_api/mobile',
   production: true,
   firebase: {
@@ -9,5 +10,7 @@ export const environment = {
     storageBucket: "race-org.appspot.com",
     messagingSenderId: "599442157307",
     appId: "1:599442157307:web:86360c312465ceb53bca5e"
-  }
+  },
+  useHash: true,
+  hmr: true,
 }

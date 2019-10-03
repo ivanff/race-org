@@ -1,4 +1,4 @@
-import {APP_INITIALIZER, NgModule, NO_ERRORS_SCHEMA} from '@angular/core'
+import {NgModule, NO_ERRORS_SCHEMA} from '@angular/core'
 import {NativeScriptModule} from 'nativescript-angular/nativescript.module'
 
 import {AppRoutingModule} from '@src/app/app-routing.module'
@@ -10,7 +10,6 @@ import {NativeScriptUIListViewModule} from "nativescript-ui-listview/angular"
 import {AthletsComponent} from "@src/app/athlets/athlets.component"
 import {FilterPipe} from "@src/app/shared/filter.pipe"
 import {DetailComponent} from "@src/app/athlets/detail/detail.component"
-import {AthletResolve} from "@src/app/athlets/athlet.resolver"
 import {RootComponent} from "@src/app/root/root.component"
 import {ScanComponent} from "@src/app/scan/scan.component"
 import {OptionsComponent} from "@src/app/options/options.component"
@@ -23,6 +22,7 @@ import {AdminResolve} from "@src/app/shared/admin.resolver"
 import {BaseComponent} from "@src/app/shared/base.component"
 import {LocalLogComponent} from "@src/app/scan/local-log/local-log.component"
 import {AboutComponent} from "@src/app/home/about/about.component"
+import {AthletResolve} from "@src/app/shared/athlet.resolver"
 
 
 // Uncomment and add to NgModule imports if you need to use two-way binding

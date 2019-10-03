@@ -1,4 +1,4 @@
-import {LOCALE_ID, NgModule} from '@angular/core'
+import {APP_INITIALIZER, LOCALE_ID, NgModule} from '@angular/core'
 import {BrowserModule} from '@angular/platform-browser'
 
 import {AppRoutingModule} from '@src/app/app-routing.module'
@@ -13,10 +13,11 @@ import {AppComponent} from "@src/app/app.component.web"
 import {SettingsComponent} from "@src/app/web/settings/settings.component"
 import {AdminRegisterComponent, RegisterComponent} from "@src/app/web/access/register/register.component"
 import {FormsModule, ReactiveFormsModule} from "@angular/forms"
-import {HttpClientModule} from "@angular/common/http"
+import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http"
 import {HelpComponent} from "@src/app/web/help/help.component"
 import {AdminResolve} from "@src/app/shared/admin.resolver"
 import {Angular2CsvModule} from 'angular2-csv';
+import {FlexLayoutModule} from '@angular/flex-layout';
 
 import {
     RECAPTCHA_LANGUAGE,
@@ -37,8 +38,18 @@ import {SigninComponent} from "@src/app/web/access/signin/signin.component"
 
 import localeRu from '@angular/common/locales/ru'
 import {registerLocaleData} from "@angular/common"
+import {StartupService} from "@src/app/web/core/services/startup.service"
+import {CoreModule} from "@src/app/web/core/core.module"
+import {SharedModule} from "@src/app/web/shared"
+import {RoutesModule} from "@src/app/web/routes/routes.module"
+import {DefaultInterceptor} from "@src/app/web/core"
+import {ThemeModule} from "@src/app/web/theme/theme.module"
 
 registerLocaleData(localeRu)
+
+export function StartupServiceFactory(startupService: StartupService) {
+    return () => startupService.load();
+}
 
 @NgModule({
     entryComponents: [
@@ -47,6 +58,7 @@ registerLocaleData(localeRu)
         ResultAddMarkComponent,
     ],
     declarations: [
+
         AppComponent,
         ResultsComponent,
         ResultsAdminComponent,
@@ -63,6 +75,14 @@ registerLocaleData(localeRu)
         ResultAddMarkComponent,
     ],
     imports: [
+        //ng-matero
+        CoreModule,
+        SharedModule,
+        ThemeModule,
+        RoutesModule,
+
+        //
+        FlexLayoutModule,
         AngularFireModule.initializeApp(environment.firebase),
         AngularFirestoreModule,
         BrowserModule,
@@ -82,6 +102,14 @@ registerLocaleData(localeRu)
         })
     ],
     providers: [
+        {provide: HTTP_INTERCEPTORS, useClass: DefaultInterceptor, multi: true},
+        StartupService,
+        {
+            provide: APP_INITIALIZER,
+            useFactory: StartupServiceFactory,
+            deps: [StartupService],
+            multi: true,
+        },
         {
             provide: RECAPTCHA_SETTINGS,
             useValue: {siteKey: '6LfXHrkUAAAAADpcaw0LZFCFsehMD9TxkV9a1mtv'} as RecaptchaSettings,

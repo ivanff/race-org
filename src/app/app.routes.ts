@@ -13,7 +13,7 @@ import {SigninComponent} from "@src/app/web/access/signin/signin.component"
 export const routes: Routes = [
     {
         path: '',
-        redirectTo: 'results/public',
+        redirectTo: 'access/signin',
         pathMatch: 'full',
     },
     {

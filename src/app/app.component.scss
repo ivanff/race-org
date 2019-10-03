@@ -5,8 +5,14 @@
 .side-label{
   padding: 10;
   font-size: 16;
+  &.active {
+    background-color: #aee406
+  }
 }
 .active {
   background-color: #aee406
 }
+
+
+
 

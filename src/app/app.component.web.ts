@@ -1,24 +1,16 @@
-import {Component, NgZone, OnInit} from '@angular/core'
-import {ActivatedRoute, ChildActivationEnd, Router} from "@angular/router"
-import {filter, take} from "rxjs/operators"
+import {AfterViewInit, Component, OnInit} from '@angular/core'
+import {PreloaderService} from "@src/app/web/core"
 
 @Component({
     selector: 'app-root',
-    templateUrl: './app.component.html',
-    styleUrls: ['./app.component.scss']
+    template: '<router-outlet></router-outlet>'
 })
-export class AppComponent implements OnInit {
-    _activatedUrl: string
+export class AppComponent implements OnInit, AfterViewInit {
+    constructor(private preloader: PreloaderService) {}
 
-    constructor(public zone: NgZone,
-                private router: Router,
-                private route: ActivatedRoute) {
-        this.router.events.pipe(
-            filter((event:any) => event instanceof ChildActivationEnd),
-        ).subscribe((event: ChildActivationEnd) => {
-            this._activatedUrl = event.snapshot['_routerState'].url
-        })
+    ngOnInit() {}
+
+    ngAfterViewInit() {
+        this.preloader.hide();
     }
-
-    ngOnInit(): void {}
 }
