@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import {Router} from "@angular/router"
+import {AuthService} from "@src/app/web/core"
 
 @Component({
   selector: 'app-user-panel',
@@ -23,11 +25,21 @@ import { Component } from '@angular/core';
         <a routerLink="/profile/settings" mat-icon-button>
           <mat-icon class="icon-18">settings</mat-icon>
         </a>
-        <a routerLink="/auth/login" mat-icon-button>
+        <a (click)="onLogout()" mat-icon-button>
           <mat-icon class="icon-18">exit_to_app</mat-icon>
         </a>
       </div>
     </div>
   `,
 })
-export class UserPanelComponent {}
+export class UserPanelComponent {
+  constructor(private route: Router, private auth: AuthService) {
+
+  }
+
+  onLogout() {
+    this.auth.logout().then(() => {
+      this.route.navigate(['/auth/login'])
+    })
+  }
+}

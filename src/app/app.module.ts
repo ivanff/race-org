@@ -44,6 +44,8 @@ import {SharedModule} from "@src/app/web/shared"
 import {RoutesModule} from "@src/app/web/routes/routes.module"
 import {DefaultInterceptor} from "@src/app/web/core"
 import {ThemeModule} from "@src/app/web/theme/theme.module"
+import {AuthGuard} from "@src/app/web/core/guard/auth.guard"
+import {AngularFireAuth} from "@angular/fire/auth"
 
 registerLocaleData(localeRu)
 
@@ -122,6 +124,9 @@ export function StartupServiceFactory(startupService: StartupService) {
             provide: LOCALE_ID,
             useValue: 'ru'
         },
+        AngularFireAuth,
+        AuthGuard,
+
         AdminResolve,
         AthletResolve,
     ],

@@ -15,6 +15,19 @@
         {{ menuItem.badge.value }}
       </span>
     </a>
+    <a class="matero-sidemenu-link" [routerLink]="menuItem.state"
+       *ngIf="menuItem.type === 'state'"
+       matRipple [matRippleDisabled]="!ripple">
+      <mat-icon class="menu-icon">{{ menuItem.icon }}</mat-icon>
+      <span class="menu-name">{{ menuItem.name }}</span>
+      <span class="menu-label bg-{{ menuItem.label.color }}" *ngIf="menuItem.label">
+        {{ menuItem.label.value }}
+      </span>
+      <span fxFlex></span>
+      <span class="menu-badge bg-{{ menuItem.badge.color }}" *ngIf="menuItem.badge">
+        {{ menuItem.badge.value }}
+      </span>
+    </a>
     <a class="matero-sidemenu-link" [href]="menuItem.state" *ngIf="menuItem.type === 'extLink'"
        matRipple [matRippleDisabled]="!ripple">
       <mat-icon class="menu-icon">{{ menuItem.icon }}</mat-icon>

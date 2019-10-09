@@ -1,27 +1,81 @@
 <div class="w-full h-full" fxLayout="row wrap" fxLayoutAlign="center center">
-  <mat-card class="mat-elevation-z4 m-b-0" style="max-width: 380px;">
-    <mat-card-title class="text-center m-b-24">Race org</mat-card-title>
-    <mat-card-content>
-      <form class="matero-form-horizontal" [formGroup]="reactiveForm">
-        <mat-form-field>
-          <mat-label>Телефон</mat-label>
-          <span matPrefix>+7 &nbsp;</span>
-          <input matInput placeholder="Simple placeholder" formControlName="phone" required>
-          <mat-error *ngIf="reactiveForm.get('phone').invalid">Please enter phone</mat-error>
-        </mat-form-field>
+    <mat-card class="mat-elevation-z4 m-b-0" style="width: 334px;">
+        <mat-card-title class="text-center m-b-24">Race org</mat-card-title>
+        <mat-card-content>
+            <form class="matero-form-horizontal" [formGroup]="reactiveForm">
+                <mat-form-field class="m-b-32">
+                    <mat-label>Телефонный номер</mat-label>
+                    <span matPrefix>+7 &nbsp;</span>
+                    <input matInput [(ngModel)]="phone" placeholder="Телефон" formControlName="phone" required>
+                    <mat-hint>Убедитесь, что вводите номер телефона без пробелов, только 10 цифр</mat-hint>
+                    <div matSuffix>
+                        <mat-spinner *ngIf="reactiveForm.controls['phone'].pending" diameter="24"></mat-spinner>
+                    </div>
+                    <mat-error *ngIf="reactiveForm.get('phone').invalid">
+                        Телефонный номер указан неверно
+                    </mat-error>
+                </mat-form-field>
 
-        <div fxLayout="row" fxLayoutAlign="space-between center">
-          <a mat-flat-button color="accent">
-            Google
-          </a>
-          <a mat-flat-button color="accent">
-            Facebook
-          </a>
-        </div>
+                <div *ngIf="reactiveForm.controls.hasOwnProperty('code')">
+                    <mat-form-field class="full-width">
+                        <mat-label>Код подтверждения</mat-label>
+                        <input matInput [(ngModel)]="code" formControlName="code" required>
+                        <mat-hint>Код состоит из 6-ти цифр</mat-hint>
+                        <div matSuffix>
+                            <mat-spinner *ngIf="reactiveForm.controls['code'].pending" diameter="24"></mat-spinner>
+                        </div>
+                    </mat-form-field>
+                </div>
 
-        <button class="w-full m-t-24" mat-raised-button color="primary" (click)="login()"
-                [disabled]="reactiveForm.invalid">Вход</button>
-      </form>
-    </mat-card-content>
-  </mat-card>
+                <div [hidden]="reactiveForm.controls.hasOwnProperty('code')" id="recaptcha-container"></div>
+
+                <div [ngSwitch]="reactiveForm.controls.hasOwnProperty('code')">
+
+                    <button *ngSwitchDefault
+                            (click)="onSendLoginCode()"
+                            [disabled]="reactiveForm.invalid"
+                            class="w-full m-t-24" mat-raised-button color="primary">
+                        Отправить sms код
+                    </button>
+                    <button *ngSwitchCase="true"
+                            (click)="onResetForm()"
+                            class="w-full m-t-24" mat-button>
+                        Выслать код повторно
+                    </button>
+
+                    <button *ngSwitchCase="true"
+                            [disabled]="reactiveForm.invalid"
+                            class="w-full m-t-24" mat-raised-button (click)="onVerifyLoginCode()">
+                        Войти
+                    </button>
+                </div>
+
+                <h3>
+                    Войти через
+                </h3>
+
+                <div fxLayout="row" fxLayoutAlign="space-between center" class="m-b-24">
+                    <a (click)="onGoogleLogin()" mat-flat-button color="accent">
+                        Google
+                    </a>
+                    <a (click)="onFbLogin()" mat-flat-button color="accent">
+                        Facebook
+                    </a>
+                </div>
+
+
+                <!--                <button *ngIf="!reactiveForm.controls.hasOwnProperty('code')"-->
+<!--                        (click)="onSendLoginCode()"-->
+<!--                        [disabled]="reactiveForm.invalid"-->
+<!--                        class="w-full m-t-24" mat-raised-button color="primary">-->
+<!--                    Отправить sms код-->
+<!--                </button>-->
+<!--                <button *ngIf="reactiveForm.controls.hasOwnProperty('code')"-->
+<!--                        [disabled]="reactiveForm.invalid"-->
+<!--                        class="w-full m-t-24" mat-raised-button (click)="onVerifyLoginCode()">-->
+<!--                    Войти-->
+<!--                </button>-->
+            </form>
+        </mat-card-content>
+    </mat-card>
 </div>

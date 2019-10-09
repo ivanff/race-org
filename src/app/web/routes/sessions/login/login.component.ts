@@ -1,23 +1,83 @@
-import { Component, OnInit } from '@angular/core';
-import { FormGroup, Validators, FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import {AfterViewInit, Component, NgZone, OnInit} from '@angular/core';
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {Router} from '@angular/router';
+import {WindowService} from "@src/app/web/core/services/window.service"
+import * as firebase from 'firebase/app';
+import 'firebase/auth'
+import {AuthService} from "@src/app/web/core"
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
+    selector: 'app-login',
+    templateUrl: './login.component.html',
 })
-export class LoginComponent implements OnInit {
-  reactiveForm: FormGroup;
+export class LoginComponent implements OnInit, AfterViewInit {
+    reactiveForm: FormGroup
+    phone: string = '9999999999'
+    code: string
+    windowRef: any
 
-  constructor(private fb: FormBuilder, private router: Router) {
-    this.reactiveForm = this.fb.group({
-      phone: ['', [Validators.required]],
-    });
-  }
+    constructor(private fb: FormBuilder,
+                private window: WindowService,
+                private router: Router,
+                private auth: AuthService,
+                private zone: NgZone) {
+        this.onResetForm()
+    }
 
-  ngOnInit() {}
+    ngOnInit() {
+    }
 
-  login() {
-    this.router.navigateByUrl('/dashboard');
-  }
+    ngAfterViewInit() {
+        this.windowRef = this.window.windowRef
+        this.windowRef.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container')
+        this.windowRef.recaptchaVerifier.render()
+    }
+
+    onResetForm() {
+        this.reactiveForm = this.fb.group({
+            phone: ['', [Validators.required]],
+        })
+    }
+
+    onSendLoginCode() {
+        if (this.reactiveForm.valid) {
+            const appVerifier = this.windowRef.recaptchaVerifier;
+            this.auth.phoneLogin(this.phone, appVerifier).then(result => {
+                this.windowRef.confirmationResult = result;
+                this.reactiveForm.addControl('code', new FormControl('', [Validators.required]))
+            }).catch(LoginComponent.googleAuthError);
+        }
+    }
+
+    onVerifyLoginCode() {
+        this.windowRef.confirmationResult
+            .confirm(this.code)
+            .then(result => {
+                this.successRedirect()
+            }).catch(LoginComponent.googleAuthError)
+    }
+
+    onGoogleLogin() {
+        this.auth.googleLogin().then(result => {
+            this.successRedirect()
+        }).catch(LoginComponent.googleAuthError)
+    }
+
+    onFbLogin() {
+        this.auth.facebookLogin().then(result => {
+            this.successRedirect()
+        }).catch(LoginComponent.googleAuthError)
+    }
+
+    successRedirect() {
+        this.zone.run(() => {
+            this.router.navigate(['/dashboard']);
+        })
+    }
+
+    static googleAuthError(error) {
+        if (error.code) {
+            alert(error.message)
+        }
+    }
 }

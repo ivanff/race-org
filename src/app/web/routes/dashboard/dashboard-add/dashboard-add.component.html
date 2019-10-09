@@ -1,0 +1,217 @@
+<page-header title="Добавить соревнование"></page-header>
+<pre>
+    {{data|json}}
+</pre>
+<!--<pre>-->
+<!--    {{classes|json}}-->
+<!--</pre>-->
+<mat-card>
+    <mat-card-content>
+
+        <mat-vertical-stepper [linear]="isLinear" #stepper>
+            <mat-step [stepControl]="firstFormGroup">
+                <form [formGroup]="firstFormGroup" fxLayout="column" fxLayoutAlign="left">
+                    <ng-template matStepLabel>Описание</ng-template>
+                    <p>
+                        <mat-form-field>
+                            <input matInput [(ngModel)]="data.title"
+                                   placeholder="Название события"
+                                   formControlName="title"
+                                   required>
+                        </mat-form-field>
+                    </p>
+                    <p>
+                        <mat-form-field class="m-r-16">
+                            <input matInput
+                                   (dateChange)="onDateChange('change', $event)"
+                                   [matDatepicker]="start_date_picker"
+                                   [min]="minDate"
+                                   formControlName="start_date"
+                                   placeholder="Дата проведения"
+                                   required>
+                            <mat-datepicker-toggle matSuffix [for]="start_date_picker"></mat-datepicker-toggle>
+                            <mat-datepicker #start_date_picker></mat-datepicker>
+                        </mat-form-field>
+                        <mat-form-field>
+                            <input matInput
+                                   (ngModelChange)="setTime($event, 'start_time')"
+                                   formControlName="start_time"
+                                   placeholder="Время начала"
+                                   required>
+                            <mat-hint>
+                                В формате 00:00
+                            </mat-hint>
+                            <mat-error>
+                                {{firstFormGroup.controls['start_time'].errors|json}}
+                            </mat-error>
+                        </mat-form-field>
+                    </p>
+                    <p>
+                        <mat-form-field class="m-r-16">
+                            <input matInput
+                                   (dateChange)="onDateChange('change', $event)"
+                                   [matDatepicker]="end_date_picker"
+                                   [min]="minDate"
+                                   formControlName="end_date"
+                                   placeholder="Дата окончания"
+                                   required>
+                            <mat-datepicker-toggle matSuffix [for]="end_date_picker"></mat-datepicker-toggle>
+                            <mat-datepicker #end_date_picker></mat-datepicker>
+                        </mat-form-field>
+                        <mat-form-field>
+                            <input matInput
+                                   (ngModelChange)="setTime($event, 'duration')"
+                                   formControlName="duration"
+                                   placeholder="Контрольное время"
+                                   required>
+                            <mat-hint>
+                                В формате 00:00
+                            </mat-hint>
+                        </mat-form-field>
+                    </p>
+
+                    <section class="m-t-24 m-b-24">
+                        <h3>Способы отметки атлета на точке</h3>
+                        <mat-checkbox [checked]="data.checking.indexOf('manual') >= 0"
+                                      (change)="onCheckboxChange($event, data.checking)"
+                                      value="manual" class="m-r-16">Ручная отметка
+                        </mat-checkbox>
+                        <mat-checkbox [checked]="data.checking.indexOf('nfc') >= 0"
+                                      (change)="onCheckboxChange($event, data.checking)"
+                                      value="nfc" class="m-r-16">NFC
+                        </mat-checkbox>
+                        <mat-checkbox [checked]="data.checking.indexOf('barcode') >= 0"
+                                      (change)="onCheckboxChange($event, data.checking)"
+                                      value="barcode">Штрихкод
+                        </mat-checkbox>
+                    </section>
+
+                    <div>
+                        <button mat-button matStepperNext type="button">Далее</button>
+                    </div>
+                </form>
+            </mat-step>
+            <mat-step [stepControl]="secondFormGroup">
+                <form [formGroup]="secondFormGroup">
+                    <ng-template matStepLabel>Опции проведения</ng-template>
+
+                    <p>
+                        <mat-slide-toggle [checked]="data.group_start"
+                                          (change)="onSlideChange($event)"
+                                          name="group_start"
+                                          color="primary"
+                                          class="m-r-16">
+                            Старт по группам
+                        </mat-slide-toggle>
+                    </p>
+
+                    <p>
+                        <mat-slide-toggle [checked]="data.marshal_has_device"
+                                          (change)="onSlideChange($event)"
+                                          name="marshal_has_device"
+                                          color="primary"
+                                          class="m-r-16">
+                            Маршалы имеют устройства
+                        </mat-slide-toggle>
+                    </p>
+                    <p>
+                        <mat-slide-toggle [checked]="data.result_by_full_circle" (change)="onSlideChange($event)"
+                                          name="result_by_full_circle"
+                                          color="primary"
+                                          class="m-r-16">
+                            Результат по последнему полному кругу
+                        </mat-slide-toggle>
+                    </p>
+                    <div>
+                        <button mat-button matStepperPrevious type="button">Назад</button>
+                        <button mat-button matStepperNext type="button">Далее</button>
+                    </div>
+                </form>
+            </mat-step>
+            <mat-step [stepControl]="thirdFormGroup">
+                <form [formGroup]="thirdFormGroup">
+                    <ng-template matStepLabel>Классы участников</ng-template>
+                    <div formArrayName="classes">
+                        <div *ngFor="let item of classes; let i = index;">
+                            <p>
+                                <mat-form-field>
+                                    <a matSuffix (click)="onRemoveClass(i)" *ngIf="classes.length > 1">
+                                        <mat-icon>remove</mat-icon>
+                                    </a>
+                                    <input matInput
+                                           [placeholder]="'Класс ' + (i + 1)"
+                                           [(ngModel)]="item.value"
+                                           [formControlName]="i" required>
+                                </mat-form-field>
+                            </p>
+                        </div>
+                    </div>
+                    <div>
+                        <a (click)="onAddClass()" mat-mini-fab aria-label="Добавить класс">
+                            <mat-icon>add</mat-icon>
+                        </a>
+                        <button mat-button matStepperPrevious type="button">Назад</button>
+                        <button mat-button matStepperNext type="button">Далее</button>
+                    </div>
+                </form>
+            </mat-step>
+            <mat-step [stepControl]="fourFromGroup">
+                <form [formGroup]="fourFromGroup">
+                    <ng-template matStepLabel>Чекпоинты</ng-template>
+                    <div formArrayName="checkpoints">
+                        <div *ngFor="let checkpoint of data.checkpoints; let i = index;"
+                             [formGroupName]="i">
+                            <p>
+                                <mat-form-field>
+                                    <a matSuffix (click)="onRemoveCp(i)" *ngIf="data.checkpoints.length > 1">
+                                        <mat-icon>remove</mat-icon>
+                                    </a>
+                                    <input matInput
+                                           [(ngModel)]="checkpoint.title"
+                                           [placeholder]="'Название точки ' + (i + 1)"
+                                           formControlName="title"
+                                           required>
+                                </mat-form-field>
+                            </p>
+                            <section formArrayName="classes" class="m-t-24 m-b-24">
+                                <h4>Классы участников</h4>
+                                <mat-checkbox *ngFor="let _class of classes; let y = index;"
+                                              [checked]="checkpoint.classes.indexOf(_class.value) >= 0"
+                                              (change)="onCheckboxChange($event, i)"
+                                              [value]="classes[y].value"
+                                              formControlName="{{ y }}"
+                                              class="m-r-16">{{ classes[y].value}}
+                                </mat-checkbox>
+                                <p>
+                                    <mat-error *ngIf="fourFromGroup.controls['checkpoints'].controls[i].controls['classes'].errors?.groupRequired">
+                                        Установите хотябы одно значение
+                                    </mat-error>
+                                </p>
+                            </section>
+                        </div>
+                    </div>
+
+                    <div>
+                        <a (click)="onAddCp()" mat-mini-fab aria-label="Добавить чекпоинт">
+                            <mat-icon>add</mat-icon>
+                        </a>
+                        <button mat-button matStepperPrevious type="button">Назад</button>
+                        <button mat-button matStepperNext type="button">Далее</button>
+                    </div>
+                </form>
+            </mat-step>
+            <mat-step>
+                <ng-template matStepLabel>Готово</ng-template>
+                Завершить регистрацию соревнования
+                <div>
+                    <button mat-button matStepperPrevious type="button">Назад</button>
+                    <button mat-button (click)="stepper.reset()" type="button">Сбросить</button>
+                    <button mat-button (click)="onCreate()" color="primary">Создать</button>
+                </div>
+            </mat-step>
+        </mat-vertical-stepper>
+
+    </mat-card-content>
+</mat-card>
+
+
