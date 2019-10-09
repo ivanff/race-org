@@ -9,6 +9,8 @@ export class SettingsService {
     private notice$ = new Subject<any>();
     private options = defaults;
 
+    timezones: Array<any> = [];
+
     get notice(): Observable<any> {
         return this.notice$.asObservable();
     }

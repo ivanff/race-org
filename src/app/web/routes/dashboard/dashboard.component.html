@@ -22,7 +22,7 @@
                     <mat-list-item>
                         <mat-icon mat-list-icon>date_range</mat-icon>
                         <h4 mat-line>Начало</h4>
-                        <p mat-line> {{ competition.start_date.toDate()|date }} </p>
+                        <p mat-line> {{ getFullDate(competition.start_date, competition.start_time)|date:"yyyy-dd-MM HH:mm:ss z" }} </p>
                     </mat-list-item>
                     <mat-list-item>
                         <mat-icon mat-list-icon>nfc</mat-icon>

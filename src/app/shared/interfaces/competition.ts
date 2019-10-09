@@ -10,10 +10,10 @@ export interface Competition {
     title: string,
     time_zone: string,
 
-    start_date: Date,
+    start_date: firebase.firestore.Timestamp,
     start_time: firebase.firestore.Timestamp,
 
-    end_date: Date,
+    end_date: firebase.firestore.Timestamp,
     duration: firebase.firestore.Timestamp,
 
     checking: Array<string>,

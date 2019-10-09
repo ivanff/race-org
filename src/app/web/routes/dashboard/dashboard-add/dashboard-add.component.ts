@@ -2,9 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {MatCheckboxChange, MatDatepickerInputEvent, MatSlideToggleChange} from "@angular/material"
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidatorFn, Validators} from "@angular/forms"
 import {AngularFirestore} from "@angular/fire/firestore"
-import * as _ from "lodash"
 import {Router} from "@angular/router"
-import {AuthService} from "@src/app/web/core"
+import {AuthService, SettingsService} from "@src/app/web/core"
 import * as firebase from "firebase"
 import {Secret} from "@src/app/shared/interfaces/secret"
 import {Competition} from "@src/app/shared/interfaces/competition"
@@ -98,13 +97,14 @@ export class DashboardAddComponent implements OnInit {
     constructor(private fb: FormBuilder,
                 private firestore: AngularFirestore,
                 private router: Router,
+                private settings: SettingsService,
                 private auth: AuthService) {
         this.firstFormGroup = this.fb.group({
             title: ['', [Validators.required]],
             start_date: ['', [Validators.required]],
-            start_time: ['12:00', [Validators.required, Validators.pattern('^\d{1,2}\:\d{1,2}$')]],
+            start_time: ['12:00', [Validators.required, Validators.pattern('^[0-9]{1,2}\:[0-9]{1,2}$')]],
             end_date: ['', [Validators.required]],
-            duration: ['03:00', [Validators.required, Validators.pattern('^\d{1,2}\:\d{1,2}$')]],
+            duration: ['03:00', [Validators.required, Validators.pattern('^[0-9]{1,2}\:[0-9]{1,2}$')]],
         })
         this.secondFormGroup = this.fb.group({})
         this.thirdFormGroup = new FormGroup({
@@ -116,6 +116,9 @@ export class DashboardAddComponent implements OnInit {
     }
 
     ngOnInit() {
+        console.log(
+            this.settings.timezones
+        )
     }
 
     private formArrayCheckpoints(): FormArray {
