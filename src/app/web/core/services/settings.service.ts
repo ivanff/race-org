@@ -1,6 +1,7 @@
-import {Injectable} from '@angular/core';
-import {Observable, Subject} from 'rxjs';
-import {AppSettings, defaults} from '../settings';
+import {Injectable} from '@angular/core'
+import {Observable, Subject} from 'rxjs'
+import {AppSettings, defaults} from '../settings'
+import timezones from 'google-timezones-json'
 
 @Injectable({
     providedIn: 'root',
@@ -9,7 +10,7 @@ export class SettingsService {
     private notice$ = new Subject<any>();
     private options = defaults;
 
-    timezones: Array<any> = [];
+    timezones: {[key: string]: string} = timezones
 
     get notice(): Observable<any> {
         return this.notice$.asObservable();

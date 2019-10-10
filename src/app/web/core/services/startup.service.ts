@@ -40,26 +40,6 @@ export class StartupService {
                             resolve();
                         }
                     );
-            }),
-            new Promise((resolve, reject) => {
-                this.http
-                    .get('assets/data/timezones.json')
-                    .pipe(
-                        catchError(res => {
-                            resolve();
-                            return res;
-                        })
-                    )
-                    .subscribe(
-                        (res: Array<any>) => {
-                            this.settings.timezones = res.sort((a, b) => a.offset < b.offset ? -1 : a.offset > b.offset ? 1 : 0)
-                        },
-                        () => {
-                        },
-                        () => {
-                            resolve();
-                        }
-                    );
             })
         ])
     }

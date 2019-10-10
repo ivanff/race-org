@@ -5,6 +5,7 @@ import {AngularFirestore} from "@angular/fire/firestore"
 import {Router} from "@angular/router"
 import {AuthService, SettingsService} from "@src/app/web/core"
 import * as firebase from "firebase"
+import * as moment from "moment-timezone"
 import {Secret} from "@src/app/shared/interfaces/secret"
 import {Competition} from "@src/app/shared/interfaces/competition"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
@@ -51,6 +52,7 @@ export function groupRequiredValidator(count: number): ValidatorFn {
 })
 export class DashboardAddComponent implements OnInit {
     isLinear = true
+    timezones: {[key: string]: string} = {}
 
     classes = [
         {value: 'hobby'}
@@ -99,12 +101,15 @@ export class DashboardAddComponent implements OnInit {
                 private router: Router,
                 private settings: SettingsService,
                 private auth: AuthService) {
+        this.timezones = settings.timezones
+
         this.firstFormGroup = this.fb.group({
             title: ['', [Validators.required]],
             start_date: ['', [Validators.required]],
             start_time: ['12:00', [Validators.required, Validators.pattern('^[0-9]{1,2}\:[0-9]{1,2}$')]],
             end_date: ['', [Validators.required]],
             duration: ['03:00', [Validators.required, Validators.pattern('^[0-9]{1,2}\:[0-9]{1,2}$')]],
+            timezone: [moment.tz.guess()]
         })
         this.secondFormGroup = this.fb.group({})
         this.thirdFormGroup = new FormGroup({
@@ -117,8 +122,11 @@ export class DashboardAddComponent implements OnInit {
 
     ngOnInit() {
         console.log(
-            this.settings.timezones
+            this.settings.timezones,
+            // moment.tz.guess(),
+            // this.settings.timezones[moment.tz.guess()]
         )
+
     }
 
     private formArrayCheckpoints(): FormArray {

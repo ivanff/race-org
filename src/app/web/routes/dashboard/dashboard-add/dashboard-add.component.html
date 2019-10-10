@@ -1,7 +1,7 @@
 <page-header title="Добавить соревнование"></page-header>
-<pre>
-    {{data|json}}
-</pre>
+<!--<pre>-->
+<!--    {{data|json}}-->
+<!--</pre>-->
 <!--<pre>-->
 <!--    {{classes|json}}-->
 <!--</pre>-->
@@ -66,6 +66,21 @@
                                    required>
                             <mat-hint>
                                 В формате 00:00
+                            </mat-hint>
+                        </mat-form-field>
+                    </p>
+                    <p>
+                        <mat-form-field fxFlex="0 1 396px">
+                            <mat-label>Часовой пояс</mat-label>
+                            <mat-select formControlName="timezone">
+                                <mat-option>--</mat-option>
+                                <mat-option *ngFor="let item of timezones|keyvalue" [value]="item.key">
+                                    {{item.value}}
+                                </mat-option>
+                            </mat-select>
+                            <mat-hint>
+                                Начало и окончание соревнования исчисляется в выбранном часовом поясе.
+                                Если не установлено применяется текущий часовой пояс компьютера или телефона.
                             </mat-hint>
                         </mat-form-field>
                     </p>
