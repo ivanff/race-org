@@ -10,6 +10,8 @@ import { DashboardEditComponent } from '@src/app/web/routes/dashboard/dashboard-
 
 const COMPONENTS = [
     DashboardComponent,
+    DashboardEditComponent,
+    DashboardDetailComponent,
     DashboardAddComponent,
     LoginComponent,
     // RegisterComponent,
@@ -18,7 +20,7 @@ const COMPONENTS_DYNAMIC = [];
 
 @NgModule({
     imports: [SharedModule, RoutesRoutingModule],
-    declarations: [...COMPONENTS, ...COMPONENTS_DYNAMIC, DashboardAddComponent, DashboardDetailComponent, DashboardEditComponent],
+    declarations: [...COMPONENTS, ...COMPONENTS_DYNAMIC],
     entryComponents: COMPONENTS_DYNAMIC,
 })
 export class RoutesModule {

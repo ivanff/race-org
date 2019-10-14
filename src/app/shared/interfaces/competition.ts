@@ -6,15 +6,14 @@ export interface Competition {
     id?: string,
     user: string,
     secret?: Secret
-    created: firebase.firestore.Timestamp,
     title: string,
-    time_zone: string,
+    timezone: string,
 
     start_date: firebase.firestore.Timestamp,
-    start_time: firebase.firestore.Timestamp,
+    start_time: number | null,
 
     end_date: firebase.firestore.Timestamp,
-    duration: firebase.firestore.Timestamp,
+    duration: number | null,
 
     checking: Array<string>,
     group_start: boolean,
@@ -22,4 +21,7 @@ export interface Competition {
     result_by_full_circle: boolean,
     classes: Array<string>,
     checkpoints: Array<Checkpoint>,
+    stages: Array<Competition>
+
+    created: firebase.firestore.Timestamp,
 }

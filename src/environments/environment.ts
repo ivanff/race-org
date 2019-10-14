@@ -16,7 +16,7 @@ export const environment = {
     messagingSenderId: "599442157307",
     appId: "1:599442157307:web:86360c312465ceb53bca5e"
   },
-  useHash: true,
+  useHash: false,
   hmr: true,
 }
 

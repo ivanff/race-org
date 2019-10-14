@@ -10,7 +10,10 @@ export class SettingsService {
     private notice$ = new Subject<any>();
     private options = defaults;
 
-    timezones: {[key: string]: string} = timezones
+    readonly timezones: {[key: string]: string} = timezones
+    readonly timezones_array: Array<{key: string, value: string}> = Object.keys(timezones).map((key) => {
+        return {key: key, value: timezones[key]}
+    })
 
     get notice(): Observable<any> {
         return this.notice$.asObservable();
@@ -28,5 +31,6 @@ export class SettingsService {
     getOptions(): AppSettings {
         return this.options;
     }
+
 
 }

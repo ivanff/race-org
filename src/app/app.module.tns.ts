@@ -8,7 +8,7 @@ import {NativeScriptUISideDrawerModule} from "nativescript-ui-sidedrawer/angular
 import {NativeScriptLocalizeModule} from "nativescript-localize/localize.module"
 import {NativeScriptUIListViewModule} from "nativescript-ui-listview/angular"
 import {AthletsComponent} from "@src/app/athlets/athlets.component"
-import {FilterPipe} from "@src/app/shared/filter.pipe"
+import {FilterPipe} from "@src/app/shared/pipes/filter.pipe"
 import {DetailComponent} from "@src/app/athlets/detail/detail.component"
 import {RootComponent} from "@src/app/root/root.component"
 import {ScanComponent} from "@src/app/scan/scan.component"

@@ -11,9 +11,9 @@
       }
     },
     {
-      "state": ["add"],
+      "state": "add",
       "name": "Добавить соревнование",
-      "type": "state",
+      "type": "link",
       "icon": "add_circle_outline"
     },
     {

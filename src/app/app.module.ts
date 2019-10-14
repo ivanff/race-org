@@ -18,7 +18,6 @@ import {HelpComponent} from "@src/app/web/help/help.component"
 import {AdminResolve} from "@src/app/shared/admin.resolver"
 import {Angular2CsvModule} from 'angular2-csv';
 import {FlexLayoutModule} from '@angular/flex-layout';
-
 import {
     RECAPTCHA_LANGUAGE,
     RECAPTCHA_SETTINGS,
@@ -46,6 +45,8 @@ import {DefaultInterceptor} from "@src/app/web/core"
 import {ThemeModule} from "@src/app/web/theme/theme.module"
 import {AuthGuard} from "@src/app/web/core/guard/auth.guard"
 import {AngularFireAuth} from "@angular/fire/auth"
+import {MAT_DATE_LOCALE} from "@angular/material"
+import {CompetitionResolve} from "@src/app/shared/resolvers/competition"
 
 registerLocaleData(localeRu)
 
@@ -124,11 +125,16 @@ export function StartupServiceFactory(startupService: StartupService) {
             provide: LOCALE_ID,
             useValue: 'ru'
         },
+        {
+            provide: MAT_DATE_LOCALE,
+            useValue: 'ru'
+        },
         AngularFireAuth,
         AuthGuard,
 
         AdminResolve,
         AthletResolve,
+        CompetitionResolve,
     ],
     bootstrap: [AppComponent]
 })

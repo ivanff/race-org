@@ -10,31 +10,38 @@ import {AuthGuard} from "@src/app/web/core/guard/auth.guard"
 import {DashboardAddComponent} from "@src/app/web/routes/dashboard/dashboard-add/dashboard-add.component"
 import {ResultsComponent} from "@src/app/web/results/results.component"
 import {DashboardDetailComponent} from "@src/app/web/routes/dashboard/dashboard-detail/dashboard-detail.component"
+import {CompetitionResolve} from "@src/app/shared/resolvers/competition"
 
 const routes: Routes = [
+    // {
+    //     path: '',
+    //     redirectTo: 'auth/login',
+    //     pathMatch: 'full'
+    // },
     {
         path: '',
-        redirectTo: 'auth/login',
-        pathMatch: 'full'
-    },
-    {
-        path: 'dashboard',
         component: AdminLayoutComponent,
         canActivate: [AuthGuard],
         children: [
-            // { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+            {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
             {
-                path: '',
+                path: 'dashboard',
                 component: DashboardComponent,
                 data: {title: 'Соревнования', titleI18n: 'dashboard'},
+                children: [
+
+                ]
             }, {
                 path: 'add',
                 component: DashboardAddComponent,
                 data: {title: 'Добавить соревнование', titleI18n: 'dashboard'},
             }, {
-                path: 'detail',
+                path: 'edit/:id',
                 component: DashboardDetailComponent,
                 data: {title: 'Соревнование', titleI18n: 'dashboard'},
+                resolve: {
+                    competition: CompetitionResolve
+                }
             }, {
                 path: 'results',
                 component: ResultsComponent,

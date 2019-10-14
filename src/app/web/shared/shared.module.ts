@@ -14,6 +14,9 @@ import {DemoMaterialModule} from "@src/app/material-module"
 import {NgSelectModule} from "@ng-select/ng-select"
 import {NgProgressModule} from "ngx-progressbar"
 import {NgProgressRouterModule} from "@ngx-progressbar/router"
+import {NgxMatSelectSearchModule} from "ngx-mat-select-search"
+import {CompetitionComponent} from "@src/app/web/shared/components/competition/competition.component"
+import {FilterPipe} from "@src/app/shared/pipes/filter.pipe"
 
 const THIRD_MODULES = [
     DemoMaterialModule,
@@ -21,6 +24,7 @@ const THIRD_MODULES = [
     NgProgressModule,
     NgProgressRouterModule,
     NgSelectModule,
+    NgxMatSelectSearchModule,
 ];
 const COMPONENTS = [
     BreadcrumbComponent,
@@ -28,9 +32,13 @@ const COMPONENTS = [
     MiniProgressComponent,
     Text3dComponent,
     ErrorCodeComponent,
+
+    CompetitionComponent,
 ];
 const DIRECTIVES = [];
-const PIPES = [];
+const PIPES = [
+    FilterPipe
+];
 
 @NgModule({
     declarations: [...COMPONENTS, ...DIRECTIVES, ...PIPES],

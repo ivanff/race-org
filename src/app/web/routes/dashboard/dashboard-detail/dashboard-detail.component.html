@@ -1,0 +1,153 @@
+<page-header [title]="competition.title"></page-header>
+
+<mat-tab-group [selectedIndex]="active_tab" (selectedIndexChange)="setActiveTab($event)">
+    <mat-tab label="Статистика">
+        <ul>
+            <li>
+                Этапов: {{ competition.stages.length + 1}}
+            </li>
+            <li>
+                Классы: {{ competition.classes.length }}
+                <ul>
+                    <li *ngFor="let _class of competition.classes">
+                        {{_class}}: {{ (athlets$|async|filter:[]:{class: _class}).length }}
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        {{ competition.stages|json }}
+    </mat-tab>
+    <mat-tab label="Редактировать">
+        <div fxLayout="row wrap" fxLayoutAlign="space-between stretch" class="p-t-8">
+            <div fxFlex="40" fxFlex.lt-sm="100" class="p-r-4">
+                <mat-card>
+                    <mat-card-header>
+                        <mat-card-title>Соревнование</mat-card-title>
+                        <mat-card-subtitle>Этапы проведения</mat-card-subtitle>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <form [formGroup]="selectCompetition">
+                            <mat-radio-group [(ngModel)]="edit_competition" formControlName="competition"
+                                             aria-label="Select an option">
+
+                                <mat-list>
+                                    <mat-list-item>
+                                        <h4 mat-line class="p-16">
+                                            <mat-radio-button [value]="competition">
+                                                <b>{{competition.title}}</b>
+                                            </mat-radio-button>
+                                        </h4>
+                                        <p mat-line>
+                                            {{ competition.start_date.toDate()|date:"yyyy-dd-MM (z)":getTzOffset(competition.timezone) }}
+                                        </p>
+                                        <button (click)="onDelete(competition)" mat-icon-button type="button"
+                                                color="warn">
+                                            <mat-icon>
+                                                delete
+                                            </mat-icon>
+                                        </button>
+                                    </mat-list-item>
+                                    <mat-divider *ngIf="competition.stages?.length"></mat-divider>
+                                    <div *ngFor="let item of competition.stages; let i = index; let l = last;">
+                                        <mat-list-item>
+                                            <h4 mat-line class="p-16">
+                                                <mat-radio-button [value]="item">{{item.title}}</mat-radio-button>
+                                            </h4>
+                                            <p mat-line>
+                                                {{ item.start_date.toDate()|date:"yyyy-dd-MM (z)":getTzOffset(competition.timezone) }}
+                                            </p>
+                                            <button (click)="onDelete(item, 'stages')" mat-icon-button type="button"
+                                                    color="warn">
+                                                <mat-icon>
+                                                    delete
+                                                </mat-icon>
+                                            </button>
+                                        </mat-list-item>
+                                        <mat-divider *ngIf="!l"></mat-divider>
+                                    </div>
+                                </mat-list>
+
+                            </mat-radio-group>
+                        </form>
+                    </mat-card-content>
+                </mat-card>
+            </div>
+            <div fxFlex="60" fxFlex.lt-sm="100" class="p-l-4">
+                <app-competition [competition]="edit_competition"></app-competition>
+            </div>
+        </div>
+    </mat-tab>
+    <mat-tab label="Добавить этап">
+        <h2>Добавить следующий этап(день) соревнований</h2>
+        <p>
+            Если соревнование многодневное / поэтапное, необходимо добавить следующий этап, при этому указать новые
+            установочные данные, например, время начали или продолжительность. При этом атлеты зарегистрированные для
+            первого (основного) этапа
+            будут перенесены на все последующие этапы, БЕЗ перерегистрации.
+        </p>
+        <app-competition [firstCompetition]="competition" (setActiveTabEvent)="setActiveTab($event)"></app-competition>
+    </mat-tab>
+    <mat-tab label="Атлеты">
+        <ng-template matTabContent>
+
+            <mat-card style="overflow: hidden">
+                <mat-card-header>
+                    <mat-card-title>Зарегистрированные спортсмены</mat-card-title>
+                    <mat-card-subtitle></mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <form [formGroup]="filterAthlets">
+                        <mat-card class="m-20">
+                            <mat-card-content fxLayout="row wrap">
+                                <mat-form-field fxFlex="100" class="p-16">
+                                    <input matInput formControlName="search" placeholder="Фильтр">
+                                    <mat-hint>По фамилии или номеру участника</mat-hint>
+                                </mat-form-field>
+                                <div fxFlex="100" class="mat-form-field p-16">
+                                    <label id="competition_classes" class="p-r-16">
+                                        Классы участников
+                                    </label>
+                                    <mat-radio-group formControlName="class" aria-labelledby="competition_classes">
+                                        <mat-radio-button [value]="''"
+                                                          class="p-r-8">Все</mat-radio-button>
+                                        <mat-radio-button *ngFor="let _class of competition.classes"
+                                                          [value]="_class"
+                                                          class="p-r-8">{{_class}}</mat-radio-button>
+                                    </mat-radio-group>
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+                    </form>
+
+                    <mat-accordion>
+                        <mat-expansion-panel *ngFor="let athlet of athlets$|async|filter:['fio', 'number']:{'search': search, 'class': filterAthlets.controls['class'].value}">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title fxFlex="70">
+                                    <mat-icon mat-list-icon>person</mat-icon>
+                                    <b>&nbsp;{{athlet.number}}&nbsp;</b>
+                                    {{athlet.fio}}
+                                </mat-panel-title>
+                                <mat-panel-description fxFlex="30">
+                                    {{ athlet.class }}
+                                </mat-panel-description>
+                            </mat-expansion-panel-header>
+
+                            <mat-list>
+                                <mat-list-item *ngFor="let item of athlet|keyvalue">
+                                    <h4 mat-line>{{item.key}}</h4>
+                                    <p mat-line> {{item.value}} </p>
+                                </mat-list-item>
+                                <mat-divider></mat-divider>
+                            </mat-list>
+
+                        </mat-expansion-panel>
+                    </mat-accordion>
+                </mat-card-content>
+            </mat-card>
+
+
+        </ng-template>
+    </mat-tab>
+</mat-tab-group>
+
+
