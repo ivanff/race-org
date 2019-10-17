@@ -2,7 +2,7 @@ import {Routes} from '@angular/router'
 import {ResultsComponent} from "@src/app/web/results/results.component"
 import {SettingsComponent} from "@src/app/web/settings/settings.component"
 import {AdminRegisterComponent, RegisterComponent} from "@src/app/web/access/register/register.component"
-import {HelpComponent} from "@src/app/web/help/help.component"
+import {HelpComponent} from "@src/app/web/routes/help/help.component"
 import {AdminResolve} from "@src/app/shared/admin.resolver"
 import {ResultsPublicComponent} from "@src/app/web/results/results-public/results-public.component"
 import {ResultsAdminComponent} from "@src/app/web/results/results-admin/results-admin.component"

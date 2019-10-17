@@ -2,19 +2,37 @@
   "menu": [
     {
       "state": "dashboard",
-      "name": "Соревнования",
+      "name": "На главную",
       "type": "link",
-      "icon": "dashboard",
-      "badge": {
-        "color": "red-500",
-        "value": "5"
-      }
+      "icon": "home"
     },
     {
       "state": "add",
       "name": "Добавить соревнование",
       "type": "link",
       "icon": "add_circle_outline"
+    },
+    {
+      "state": "edit",
+      "name": "Соревнования",
+      "type": "sub",
+      "icon": "dashboard",
+      "badge": {
+        "value": 0,
+        "color": "red-500"
+      },
+      "children": []
+    },
+    {
+      "state": "results",
+      "name": "Результаты",
+      "type": "sub",
+      "icon": "assignment",
+      "badge": {
+        "value": 0,
+        "color": "red-500"
+      },
+      "children": []
     },
     {
       "state": "dashboard/sessions",

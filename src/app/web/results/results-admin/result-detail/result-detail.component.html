@@ -1,86 +1,130 @@
-<ul>
-    <li>
-        {{athlet.fio}}
-    </li>
-    <li>
-        <b>{{athlet.number}}</b>
-    </li>
-    <li>
-        {{athlet.nfc_id}}
-    </li>
-    <li>
-        г. {{athlet.city}}
-    </li>
-    <li>
-        тел. {{athlet.phone}}
-    </li>
-    <li>
-        Класс {{athlet.class}}
-    </li>
-</ul>
+<div fxLayout="row wrap" fxLayoutGap="20px" fxFlexAlign="start start">
+    <mat-card >
+        <mat-card-content>
+            <mat-card-title>
+                <b>{{athlet.number}}</b> {{athlet.fio}}
+            </mat-card-title>
+            <mat-card-subtitle>
+                {{athlet.class|titlecase}}
+            </mat-card-subtitle>
+            <mat-list>
+                <mat-list-item>
+                    <h4 class="m-r-16">
+                        Метка NFC:
+                    </h4>
+                    <p>
+                        {{athlet.nfc_id}}
+                    </p>
+                </mat-list-item>
+                <mat-divider></mat-divider>
+                <mat-list-item>
+                    <h4 class="m-r-16">
+                        Телефон:
+                    </h4>
+                    <p>
+                        <a [href]="'tel:+7'+athlet.phone">+7 {{athlet.phone}}</a>
+                    </p>
+                </mat-list-item>
+                <mat-divider></mat-divider>
+                <mat-list-item>
+                    <h4 class="m-r-16">
+                        Зарегистрировался:
+                    </h4>
+                    <p>
+                        {{ athlet.created|date:"HH:mm:ss":getTzOffset(competition.timezone) }}
+                    </p>
+                </mat-list-item>
+                <mat-divider></mat-divider>
+                <div *ngFor="let param of athlet|keyvalue|filter:'key':{key: athletBuiltInKeysExcluded}; let l = last">
+                    <mat-list-item>
+                        <h4 class="m-r-16">
+                            {{param.key|titlecase}}:
+                        </h4>
+                        <p>
+                            {{param.value}}
+                        </p>
+                    </mat-list-item>
+                    <mat-divider *ngIf="!l"></mat-divider>
+                </div>
+            </mat-list>
+        </mat-card-content>
+    </mat-card>
 
-<button mat-stroked-button
-        color="primary"
-        (click)="onAddTime()">
-    Добавить время
-</button>
-<br>
+    <mat-card>
+        <mat-card-content>
 
-<!--{{ athlet.checkpoints|json }}-->
+        </mat-card-content>
+    </mat-card>
 
-<!--{{checkpoints|json}}-->
+    <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
 
-<table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+        <ng-container matColumnDef="cp">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Точка</th>
+            <td mat-cell *matCellDef="let element">
+                <div>
+                    <p>
+                        {{ element.checkpoint.title }}
+                    </p>
+                    <small>
+                        <p>
+                            CP_{{ element.order }}
+                        </p>
+                    </small>
+                </div>
 
-    <ng-container matColumnDef="cp">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Checkpoint</th>
-        <td mat-cell *matCellDef="let element"> {{ element.checkpoint.key }} </td>
-    </ng-container>
+            </td>
+        </ng-container>
 
-    <ng-container matColumnDef="nfc">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> NFC отметка времени.</th>
-        <td mat-cell *matCellDef="let element"
-            [class.active]="element.mark?.manual && !element.mark?.missing">
-            {{ element.mark?.created?.toDate()|date:"HH:mm:ss" }}
-        </td>
-    </ng-container>
+        <ng-container matColumnDef="nfc">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>NFC отметка времени</th>
+            <td mat-cell *matCellDef="let element"
+                [class.active]="element.mark?.manual && !element.mark?.missing">
+                {{ element.mark?.created?.toDate()|date:"HH:mm:ss":getTzOffset(competition.timezone)  }}
+            </td>
+        </ng-container>
 
-    <ng-container matColumnDef="nfc_cp_offset">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> время до предыдущей отметки.</th>
-        <td mat-cell *matCellDef="let element; let i = index">
-            {{ diffTime(dataSource.data[i-1]?.mark?.created, element.mark?.created) }}
-        </td>
-    </ng-container>
+        <ng-container matColumnDef="nfc_cp_offset">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Время до предыдущей отметки.</th>
+            <td mat-cell *matCellDef="let element; let i = index">
+                {{ diffTime(dataSource.data[i - 1]?.mark?.created, element.mark?.created) }}
+            </td>
+        </ng-container>
 
-    <ng-container matColumnDef="local">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Local отметка времени.</th>
-        <td mat-cell *matCellDef="let element">
-            {{ element.local?.created?.toDate()|date:"HH:mm:ss":"+0300" }}
-        </td>
-    </ng-container>
-    <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>
-            <button mat-stroked-button color="warn" (click)="onSave()">
-                Сохранить
-            </button>
-        </th>
-        <td mat-cell *matCellDef="let element; let i = index">
-            <button mat-stroked-button
-                    color="primary"
-                    (click)="onSetTime(i)"
-                    [disabled]="!element.mark?.missing && !element.mark?.manual">
-                Установить время
-            </button>
-            <button mat-stroked-button
-                    color="primary"
-                    (click)="onDeleteTime(i)"
-                    [disabled]="!element.mark?.created">
-                Удалить
-            </button>
-        </td>
-    </ng-container>
+        <ng-container matColumnDef="local">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Local отметка времени</th>
+            <td mat-cell *matCellDef="let element">
+                {{ element.local?.created?.toDate()|date:"HH:mm:ss":getTzOffset(competition.timezone) }}
+            </td>
+        </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns; let i = index;"
-        [class.last-cp]="isLastCp(i)"></tr>
-</table>
+        <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>
+                <button mat-icon-button color="warn" (click)="onSave()">
+                    <mat-icon [matTooltip]="'Сохранить изменения'">save</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="onAddTime()">
+                    <mat-icon [matTooltip]="'Добавить отметку времени'">add_circle</mat-icon>
+                </button>
+            </th>
+            <td mat-cell *matCellDef="let element; let i = index">
+                <button mat-icon-button
+                        color="primary"
+                        (click)="onSetTime(i)"
+                        [disabled]="!element.mark?.missing && !element.mark?.manual" class="m-r-8">
+                    <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button
+                        color="primary"
+                        (click)="onDeleteTime(i)"
+                        [disabled]="!element.mark?.created">
+                    <mat-icon>clear</mat-icon>
+                </button>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns; let i = index;"
+            [class.last-cp]="isLastCp(i)"></tr>
+    </table>
+
+</div>

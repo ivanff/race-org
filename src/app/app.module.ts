@@ -14,9 +14,8 @@ import {SettingsComponent} from "@src/app/web/settings/settings.component"
 import {AdminRegisterComponent, RegisterComponent} from "@src/app/web/access/register/register.component"
 import {FormsModule, ReactiveFormsModule} from "@angular/forms"
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http"
-import {HelpComponent} from "@src/app/web/help/help.component"
+import {HelpComponent} from "@src/app/web/routes/help/help.component"
 import {AdminResolve} from "@src/app/shared/admin.resolver"
-import {Angular2CsvModule} from 'angular2-csv';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {
     RECAPTCHA_LANGUAGE,
@@ -61,7 +60,6 @@ export function StartupServiceFactory(startupService: StartupService) {
         ResultAddMarkComponent,
     ],
     declarations: [
-
         AppComponent,
         ResultsComponent,
         ResultsAdminComponent,
@@ -97,7 +95,6 @@ export function StartupServiceFactory(startupService: StartupService) {
         HttpClientModule,
         RecaptchaModule,
         RecaptchaFormsModule,
-        Angular2CsvModule,
         NgxMaterialTimepickerModule.setLocale('RU'),
         LocalStorageModule.forRoot({
             prefix: 'race-org',

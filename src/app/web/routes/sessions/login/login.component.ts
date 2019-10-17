@@ -5,6 +5,7 @@ import {WindowService} from "@src/app/web/core/services/window.service"
 import * as firebase from 'firebase/app';
 import 'firebase/auth'
 import {AuthService} from "@src/app/web/core"
+import UserCredential = firebase.auth.UserCredential
 
 @Component({
     selector: 'app-login',
@@ -52,27 +53,26 @@ export class LoginComponent implements OnInit, AfterViewInit {
     onVerifyLoginCode() {
         this.windowRef.confirmationResult
             .confirm(this.code)
-            .then(result => {
-                this.successRedirect()
+            .then((result: UserCredential) => {
+                this.successRedirect(result)
             }).catch(LoginComponent.googleAuthError)
     }
 
     onGoogleLogin() {
-        this.auth.googleLogin().then(result => {
-            this.successRedirect()
+        this.auth.googleLogin().then((result: UserCredential) => {
+            this.successRedirect(result)
         }).catch(LoginComponent.googleAuthError)
     }
 
     onFbLogin() {
-        this.auth.facebookLogin().then(result => {
-            this.successRedirect()
+        this.auth.facebookLogin().then((result: UserCredential) => {
+            this.successRedirect(result)
         }).catch(LoginComponent.googleAuthError)
     }
 
-    successRedirect() {
-        this.zone.run(() => {
-            this.router.navigate(['/dashboard']);
-        })
+    successRedirect(result: UserCredential) {
+        this.auth.user = result.user
+        this.router.navigate(['/dashboard'])
     }
 
     static googleAuthError(error) {

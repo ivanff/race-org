@@ -11,3 +11,14 @@ export interface Athlet {
     [key: string]: any
     created: Date
 }
+
+export const athletBuiltInKeys: string[] = [
+    'nfc_id',
+    'phone',
+    'id',
+    'created',
+    'number',
+    'checkpoints',
+    'fio',
+    'class'
+]

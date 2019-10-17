@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {catchError, first} from 'rxjs/operators';
 import {MenuService} from './menu.service';
-import {SettingsService} from './settings.service';
 import {AuthService} from "@src/app/web/core/services/auth.service"
 import 'firebase/auth'
 import {AngularFireAuth} from "@angular/fire/auth"
@@ -10,7 +9,6 @@ import {AngularFireAuth} from "@angular/fire/auth"
 @Injectable()
 export class StartupService {
     constructor(private menuService: MenuService,
-                private settings: SettingsService,
                 private http: HttpClient,
                 private afAuth: AngularFireAuth,
                 private auth: AuthService) {

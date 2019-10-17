@@ -1,18 +1,16 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core'
 import {ActivatedRoute} from "@angular/router"
-import {Athlet} from "@src/app/home/athlet"
 import {Mark} from "@src/app/web/results/results.component"
 import {AngularFirestore, AngularFirestoreDocument} from "@angular/fire/firestore"
-import {CheckPoint} from "@src/app/home/checkpoint"
 import {MatDialog, MatTableDataSource} from "@angular/material"
 import {ResultSetTimeComponent} from "@src/app/web/results/results-admin/result-detail/result-set-time/result-set-time.component"
 import * as moment from "moment-timezone"
-import {LocalStorageService} from "angular-2-local-storage"
 import * as firebase from "firebase/app"
 import {ResultAddMarkComponent} from "@src/app/web/results/results-admin/result-detail/result-add-mark/result-add-mark.component"
 import * as _ from "lodash"
-
-const today = moment.tz('2019-09-28 00:00:00', 'Europe/Moscow').startOf('day')
+import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
+import {Competition} from "@src/app/shared/interfaces/competition"
+import {Athlet, athletBuiltInKeys} from "@src/app/shared/interfaces/athlet"
 
 @Component({
     selector: 'app-result-detail',
@@ -23,17 +21,24 @@ export class ResultDetailComponent implements OnInit {
 
     dataSource = new MatTableDataSource<any>([])
     displayedColumns: string[] = ['cp', 'nfc', 'nfc_cp_offset', 'local', 'actions']
-    checkpoints: Array<CheckPoint> = []
     marks: Array<Mark> = []
+    competition: Competition
     athlet: Athlet
-    circle: number
-    start_time = today.clone().add(12, 'hours')
+    athletBuiltInKeysExcluded: string[] = [...athletBuiltInKeys].map((item) => '!' + item)
+    checkpoints: Array<Checkpoint> = []
+    circles: number = 0
+    start_time: moment
+    end_time: moment
 
     constructor(private route: ActivatedRoute,
                 private firestore: AngularFirestore,
-                private dialog: MatDialog,
-                private _localStorageService: LocalStorageService) {
+                private dialog: MatDialog) {
         this.athlet = route.snapshot.data['athlet']
+        this.competition = route.snapshot.data['competition']
+        this.checkpoints = this.competition.checkpoints.filter((checkpoint: Checkpoint) => checkpoint.classes.indexOf(this.athlet.class) > -1)
+        this.circles = Math.ceil(this.athlet.checkpoints.length / this.checkpoints.length)
+        this.start_time = moment(this.competition.start_date.toMillis()).add(this.competition.start_time, 's')
+        this.end_time = moment(this.competition.end_date.toMillis()).add(this.competition.start_time + this.competition.duration, 's')
     }
 
     ngOnInit() {
@@ -42,31 +47,39 @@ export class ResultDetailComponent implements OnInit {
     }
 
     private buildRows() {
-        const cp_in_circle = (this.checkpoints.length / this.circle)
+        const cp_in_circle = this.checkpoints.length
+        let total_checkpoints: Array<Checkpoint> = []
         let rows: Array<any> = []
 
-        for (const i of _.range(0, this.checkpoints.length + 1, 1)) {
-            const order = i % cp_in_circle
-            const mark = this.marks[i]
+        _.range(0, this.circles, 1).forEach(() => {
+            this.checkpoints.forEach((checkpoint: Checkpoint) => {
+                total_checkpoints.push(checkpoint)
+            })
+        })
+
+
+        total_checkpoints.forEach((checkpoint: Checkpoint, index: number) => {
+            const mark = this.marks[index]
             if (mark) {
-                if (mark.order != order) {
-                    this.marks.splice(i, 0, {
+                if (mark.order != checkpoint.order) {
+                    this.marks.splice(index, 0, {
                         missing: true,
                         created: null,
-                        key: `CP${order + 1}`,
-                        order: order,
+                        key: `CP_${(index % cp_in_circle) + 1}`,
+                        order: checkpoint.order,
                     })
                 }
             }
-        }
-
-        this.checkpoints.forEach((cp: CheckPoint, i: number) => {
-            rows.push({
-                checkpoint: cp,
-                mark: this.marks[i]
-            })
         })
-        this.dataSource.data = rows
+
+
+        this.dataSource.data = total_checkpoints.map((checkpoint: Checkpoint, index: number) => {
+            return {
+                checkpoint: checkpoint,
+                mark: this.marks[index],
+                order: (index % cp_in_circle) + 1
+            }
+        })
     }
 
     onSetTime(index: number): void {
@@ -76,12 +89,14 @@ export class ResultDetailComponent implements OnInit {
             //build validator
         })
         dialogRef.afterClosed().subscribe(result => {
-            delete this.marks[index].missing
-            this.marks[index].manual = true
+            if (result) {
+                delete this.marks[index].missing
+                this.marks[index].manual = true
 
-            this.marks[index].created = firebase.firestore.Timestamp.fromMillis(
-                this.start_time.clone().set('hour', result[0]).set('minutes', result[1]).set('seconds', result[2]).format('x')
-            )
+                this.marks[index].created = firebase.firestore.Timestamp.fromMillis(
+                    this.start_time.clone().set('hour', result[0]).set('minutes', result[1]).set('seconds', result[2]).format('x')
+                )
+            }
         })
     }
 
@@ -90,6 +105,7 @@ export class ResultDetailComponent implements OnInit {
         this.marks = this.marks.filter((mark: Mark) => !mark.missing)
         this.buildRows()
     }
+
     onAddTime(): void {
         const dialogRef = this.dialog.open(ResultAddMarkComponent, {
             width: '250px',
@@ -98,39 +114,35 @@ export class ResultDetailComponent implements OnInit {
             }
             //build validator
         })
-        dialogRef.afterClosed().subscribe((result: Mark) => {
-            this.marks.push(result)
-            this.onSave()
+        dialogRef.afterClosed().subscribe((result: Mark | undefined) => {
+            if (result) {
+                this.marks.push(result)
+                this.onSave()
+            }
         })
     }
 
     onSave(): void {
-        const athletDoc: AngularFirestoreDocument<Athlet> = this.firestore.doc<Athlet>(`athlets/${this.athlet.id}`)
+        const athletDoc: AngularFirestoreDocument<Athlet> = this.firestore.doc<Athlet>(`athlets_${this.competition.id}/${this.athlet.id}`)
 
         athletDoc.update({
-            checkpoints: this.marks.filter((mark: Mark) => {
-                if (mark.missing && !mark.created) {
-                    return false
-                }
-                return true
-            })
+            checkpoints: this.marks.filter((mark: Mark) => !(mark.missing && !mark.created))
         }).then((result) => console.log(result)).catch((err) => alert(err))
     }
 
     diffTime(a: firebase.firestore.Timestamp | null, b: firebase.firestore.Timestamp | null): string {
         if (a && b) {
             const diff: number = moment(b.toMillis()).diff(moment(a.toMillis()))
-            return `+${Math.round(moment.duration(diff).asMinutes())}`
+            return `+${Math.round(moment.duration(diff).asMinutes())}m`
         }
         return ''
     }
 
     isLastCp(index: number): boolean {
-        const cp_in_circle = this.checkpoints.length / this.circle
-        if ((index % cp_in_circle) == (cp_in_circle - 1)) {
-            return true
-        }
+        return ((index % this.checkpoints.length) == (this.checkpoints.length - 1))
+    }
 
-        return false
+    getTzOffset(timezone: string) {
+        return moment.tz(timezone).format('z')
     }
 }

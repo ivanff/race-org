@@ -1,8 +1,5 @@
 <mat-tab-group style="height:100%">
-    <mat-tab label="Open">
-        <app-results [circles]="5" [classes]="['open']"></app-results>
-    </mat-tab>
-    <mat-tab label="Hobby">
-        <app-results [circles]="5" [classes]="['hobby']"></app-results>
+    <mat-tab *ngFor="let _class of classes" [label]="_class|titlecase">
+        <app-results [classes]="[_class]"></app-results>
     </mat-tab>
 </mat-tab-group>

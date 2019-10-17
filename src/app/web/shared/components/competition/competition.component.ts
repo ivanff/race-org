@@ -93,7 +93,7 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
     thirdFormGroup: FormGroup
     fourFromGroup: FormGroup
 
-    protected _onDestroy = new Subject<void>()
+    protected _onDestroy = new ReplaySubject<any>(1)
 
     @Input('competition') competition: Competition = null
     @Input('competition$') competition$: Observable<Competition> = null
@@ -196,7 +196,7 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
 
 
     ngOnDestroy() {
-        this._onDestroy.next();
+        this._onDestroy.next(null);
         this._onDestroy.complete();
     }
 

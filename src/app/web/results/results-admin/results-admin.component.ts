@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core'
 import {ActivatedRoute} from "@angular/router"
+import {Competition} from "@src/app/shared/interfaces/competition"
 
 @Component({
   selector: 'app-results-admin',
@@ -7,28 +8,14 @@ import {ActivatedRoute} from "@angular/router"
   styleUrls: ['./results-admin.component.scss']
 })
 export class ResultsAdminComponent implements OnInit {
-  circle = 5
-  classes_checkpoints_map = {}
-  classes = ['open', 'hobby']
+  classes: Array<string> = []
 
-  constructor(public route: ActivatedRoute) {}
-
-  ngOnInit() {
-  }
-
-  onActivate(comRef) {
-    comRef.circle = this.circle
-    comRef.checkpoints = this.classes_checkpoints_map[comRef.athlet.class]
-  }
-
-  checkpointsHandler($event: any) {
-    $event.classes.forEach((cl: string) => {
-      this.classes_checkpoints_map[cl] = $event.checkpoints
+  constructor(private route: ActivatedRoute) {
+    this.route.params.subscribe(() => {
+      this.classes = (this.route.snapshot.data['competition'] as Competition).classes
     })
   }
 
-  keysLength(obj: any): number {
-    return Object.keys(obj).length
+  ngOnInit() {
   }
-
 }

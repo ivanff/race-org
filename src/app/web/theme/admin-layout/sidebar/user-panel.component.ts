@@ -10,18 +10,12 @@ import {AuthService} from "@src/app/web/core"
       fxLayout="column"
       fxLayoutAlign="center center"
     >
-      <img
-        class="matero-user-panel-avatar m-b-8 r-full"
-        src="assets/images/avatar.jpg"
-        alt="avatar"
-        width="64"
-      />
-      <h4 class="matero-user-panel-name m-t-0 m-b-8 f-w-400">Zongbin</h4>
-      <h5 class="matero-user-panel-email m-t-0 m-b-8 f-w-400">nzb329@163.com</h5>
+      <h4 class="matero-user-panel-name m-t-0 m-b-8 f-w-400">{{auth.user.displayName}}</h4>
+      <h5 class="matero-user-panel-email m-t-0 m-b-8 f-w-400">{{auth.user.email || auth.user.phoneNumber}}</h5>
       <div class="matero-user-panel-icons text-nowrap">
-        <a routerLink="/profile/overview" mat-icon-button>
-          <mat-icon class="icon-18">account_circle</mat-icon>
-        </a>
+<!--        <a routerLink="/profile/overview" mat-icon-button>-->
+<!--          <mat-icon class="icon-18">account_circle</mat-icon>-->
+<!--        </a>-->
         <a routerLink="/profile/settings" mat-icon-button>
           <mat-icon class="icon-18">settings</mat-icon>
         </a>
@@ -34,7 +28,6 @@ import {AuthService} from "@src/app/web/core"
 })
 export class UserPanelComponent {
   constructor(private route: Router, private auth: AuthService) {
-
   }
 
   onLogout() {
@@ -42,4 +35,7 @@ export class UserPanelComponent {
       this.route.navigate(['/auth/login'])
     })
   }
+
+
+
 }

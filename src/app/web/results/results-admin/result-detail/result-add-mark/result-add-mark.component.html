@@ -1,5 +1,5 @@
-<h1 mat-dialog-title>Enter new mark data</h1>
-<form [formGroup]="addMarkForm" #formDirective="ngForm"
+<h1 mat-dialog-title>Добавление новой отметки</h1>
+<form [formGroup]="addMarkForm"
       (ngSubmit)="onEnter(addMarkForm.valid)">
     <div mat-dialog-content>
         <mat-form-field>
@@ -16,6 +16,7 @@
         </mat-form-field>
     </div>
     <div mat-dialog-actions>
-        <button mat-button type="submit">Добавить</button>
+        <button mat-button cdkFocusInitial type="submit">Ок</button>
+        <button mat-button mat-dialog-close>Закрыть</button>
     </div>
 </form>

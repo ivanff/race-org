@@ -1,20 +1,21 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Competition} from "@src/app/shared/interfaces/competition"
 import {ActivatedRoute, Router} from "@angular/router"
 import {FormControl, FormGroup} from "@angular/forms"
 import * as moment from 'moment-timezone'
 import {AngularFirestore} from "@angular/fire/firestore"
-import {debounceTime, distinctUntilChanged, map, tap} from "rxjs/operators"
-import {Observable} from "rxjs"
+import {debounceTime, distinctUntilChanged, map, takeUntil} from "rxjs/operators"
+import {Observable, ReplaySubject, Subscription} from "rxjs"
 import {Athlet} from "@src/app/shared/interfaces/athlet"
-import * as firebase from "firebase/app"
 
 @Component({
     selector: 'app-dashboard-detail',
     templateUrl: './dashboard-detail.component.html',
 })
-export class DashboardDetailComponent implements OnInit {
+export class DashboardDetailComponent implements OnInit, OnDestroy {
     athlets$: Observable<Array<Athlet>>
+    protected _onDestroy = new ReplaySubject<any>(1)
+    protected _subscribers: Array<Subscription> = []
     competition: Competition
     edit_competition: Competition
     active_tab = 3
@@ -22,30 +23,33 @@ export class DashboardDetailComponent implements OnInit {
     filterAthlets: FormGroup
     search = ''
 
+
     constructor(private route: ActivatedRoute,
                 private afs: AngularFirestore,
                 private router: Router) {
-        this.competition = this.route.snapshot.data.competition
-        this.edit_competition = this.route.snapshot.data.competition
 
+        this.route.params.pipe(
+            takeUntil(this._onDestroy)
+        ).subscribe(params => {
+            this.competition = this.route.snapshot.data.competition
+            this.edit_competition = this.route.snapshot.data.competition
 
-        this.afs.collection('competitions').doc(this.competition.id).collection('stages')
-            .valueChanges({idField: 'id'}).pipe(map((stages: Array<any>) => {
-            Object.assign(this.competition, {stages})
-            Object.assign(this.edit_competition, {stages})
-        })).subscribe()
+            this._subscribers.push(
+                this.afs.collection('competitions').doc(this.competition.id).collection('stages')
+                    .valueChanges({idField: 'id'}).pipe(map((stages: Array<any>) => {
+                    Object.assign(this.competition, {stages})
+                    Object.assign(this.edit_competition, {stages})
+                })).pipe(
+                    takeUntil(this._onDestroy)
+                ).subscribe()
+            )
 
-        this.athlets$ = this.afs.collection<Athlet>(`athlets_${this.competition.id}`)
-            .valueChanges({idField: 'id'})
-
-        // this.afs.collection<Athlet>(`athlets`).get().subscribe((docs: firebase.firestore.QuerySnapshot) => {
-        //     return docs.forEach((doc) => {
-        //       const data = {...doc.data()}
-        //       data.created = firebase.firestore.Timestamp.fromDate(new Date())
-        //       this.afs.collection<Athlet>(`athlets_${this.competition.id}`).doc(doc.id).set(doc.data() as Athlet)
-        //       return data as Athlet
-        //     })
-        // })
+            this.athlets$ = this.afs.collection<Athlet>(`athlets_${this.competition.id}`)
+                .valueChanges({idField: 'id'})
+                .pipe(
+                    takeUntil(this._onDestroy)
+                )
+        })
     }
 
     ngOnInit() {
@@ -61,6 +65,11 @@ export class DashboardDetailComponent implements OnInit {
             .pipe(debounceTime(500))
             .pipe(distinctUntilChanged())
             .subscribe((value => this.search = value))
+    }
+
+    ngOnDestroy(): void {
+        this._onDestroy.next(null)
+        this._onDestroy.complete()
     }
 
     setActiveTab($event) {

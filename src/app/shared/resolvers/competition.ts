@@ -9,20 +9,26 @@ import {Competition} from "@src/app/shared/interfaces/competition"
 export class CompetitionResolve implements Resolve<Competition> {
 
     constructor(private afs: AngularFirestore) {
-
     }
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Competition> {
         return this.afs.doc<Competition>(`competitions/${route.params.id}`)
-            .valueChanges().pipe(first()).pipe(map((doc) => {
-                doc.id = route.params.id
-                return doc
-            })).pipe(
+            .valueChanges()
+            .pipe(map((doc) => {
+                    doc.id = route.params.id
+                    return doc
+                }),
+                first(),
                 switchMap((doc): Observable<Competition> => {
                     return this.afs.collection('competitions').doc(doc.id)
-                        .collection('stages').valueChanges({idField: 'id'}).pipe(first()).pipe(map((stages: Array<any>) => {
-                            return Object.assign(doc, {stages})
-                        }))
+                        .collection('stages')
+                        .valueChanges({idField: 'id'})
+                        .pipe(
+                            map((stages: Array<any>) => {
+                                return Object.assign(doc, {stages})
+                            }),
+                            first()
+                        )
                 })
             )
     }

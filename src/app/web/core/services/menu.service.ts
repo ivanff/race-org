@@ -6,16 +6,16 @@ export interface Tag {
 }
 
 export interface ChildrenItem {
-    state: string;
+    state: string | Array<string>;
     name: string;
-    type: 'link' | 'sub' | 'extLink' | 'extTabLink';
+    type: 'link' | 'sub' | 'extLink' | 'extTabLink' | 'state';
     children?: ChildrenItem[];
 }
 
 export interface Menu {
-    state: string;
+    state: string | Array<string>;
     name: string;
-    type: 'link' | 'sub' | 'extLink' | 'extTabLink';
+    type: 'link' | 'sub' | 'extLink' | 'extTabLink' | 'state';
     icon: string;
     label?: Tag;
     badge?: Tag;
@@ -35,6 +35,16 @@ export class MenuService {
     set(menu: Menu[]): Menu[] {
         this.menu = this.menu.concat(menu);
         return this.menu;
+    }
+
+    setChildren(state, children: ChildrenItem[]) {
+        if (children.length) {
+            this.menu.map((item: Menu) => {
+                if (item.state == state) {
+                    item.children = [...children]
+                }
+            })
+        }
     }
 
     add(menu: Menu) {

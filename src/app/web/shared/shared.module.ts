@@ -17,6 +17,7 @@ import {NgProgressRouterModule} from "@ngx-progressbar/router"
 import {NgxMatSelectSearchModule} from "ngx-mat-select-search"
 import {CompetitionComponent} from "@src/app/web/shared/components/competition/competition.component"
 import {FilterPipe} from "@src/app/shared/pipes/filter.pipe"
+import {CsvComponent} from "@src/app/web/shared/components/csv/csv.component"
 
 const THIRD_MODULES = [
     DemoMaterialModule,
@@ -33,6 +34,7 @@ const COMPONENTS = [
     Text3dComponent,
     ErrorCodeComponent,
 
+    CsvComponent,
     CompetitionComponent,
 ];
 const DIRECTIVES = [];

@@ -3,11 +3,14 @@ import {AngularFirestore} from '@angular/fire/firestore'
 import {MatSort, MatTableDataSource} from '@angular/material'
 import * as moment from 'moment-timezone'
 import {NgxTimepickerFieldComponent} from 'ngx-material-timepicker'
-import {Athlet} from "@src/app/home/athlet"
 import {Mark as FbMark} from "@src/app/home/mark"
-import {CheckPoint} from "@src/app/home/checkpoint"
 import {ActivatedRoute} from "@angular/router"
 import * as _ from "lodash"
+import {Competition} from "@src/app/shared/interfaces/competition"
+import {Athlet} from "@src/app/shared/interfaces/athlet"
+import {takeUntil} from "rxjs/operators"
+import {ReplaySubject} from "rxjs"
+import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 
 
 export interface Mark extends FbMark {
@@ -31,15 +34,15 @@ export interface Filter {
     class: string
 }
 
-const today = moment.tz('2019-09-28 00:00:00', 'Europe/Moscow').startOf('day')
-
 @Component({
     selector: 'app-results',
     templateUrl: './results.component.html',
     styleUrls: ['./results.component.scss']
 })
 export class ResultsComponent implements OnInit, AfterViewInit {
+    competition: Competition
     dataSource = new MatTableDataSource<TableRow>([])
+    protected _onDestroy = new ReplaySubject<any>(1)
     displayedColumns: string[] = ['place', 'number', 'class', 'athlet']
     filter: Filter = {class: '', str: ''}
     now: Date = new Date()
@@ -59,37 +62,36 @@ export class ResultsComponent implements OnInit, AfterViewInit {
     hide_start_time = false
     hide_place = false
     hide_class_filter = false
-    checkpoints: Array<CheckPoint> = []
-    start_time = today.clone().add(12, 'hours')
-    end_time = today.clone().add(14, 'hours').add(30, 'minutes')
+    checkpoints: Array<Checkpoint> = []
+    start_time: moment
+    end_time: moment
     athlets: Array<Athlet> = []
     is_admin: boolean = false
+    circles: number
 
-    today: any
-
-    @Input('circles') circles: number = 5
-    @Input('classes') classes: Array<string> = ['open', 'hobby']
-
-    @Output() checkpointsEvent = new EventEmitter<{'classes': Array<string>, 'checkpoints': Array<CheckPoint>}>(true)
+    @Input('classes') classes: Array<string> = []
 
     @ViewChild('picker', {static: true}) picker: NgxTimepickerFieldComponent
     @ViewChild(MatSort, {static: true}) sort: MatSort
 
     constructor(private firestore: AngularFirestore,
                 private route: ActivatedRoute) {
-        this.hide_start_time = route.snapshot.data['hide_start_time']
-        this.hide_class_filter = route.snapshot.data['hide_class_filter']
-        this.hide_place = route.snapshot.data['hide_place']
-        this.is_admin = route.snapshot.data['is_admin']
+        this.competition = this.route.snapshot.data['competition']
+        this.hide_start_time = this.route.snapshot.data['hide_start_time']
+        this.hide_class_filter = this.route.snapshot.data['hide_class_filter']
+        this.hide_place = this.route.snapshot.data['hide_place']
+        this.is_admin = this.route.snapshot.data['is_admin']
 
         if (this.hide_place) {
             this.displayedColumns.shift()
         }
 
-        this.today = today
+        this.start_time = moment(this.competition.start_date.toMillis()).add(this.competition.start_time, 's')
+        this.end_time = moment(this.competition.end_date.toMillis()).add(this.competition.start_time + this.competition.duration, 's')
     }
 
-    ngAfterViewInit() {}
+    ngAfterViewInit() {
+    }
 
     ngOnInit() {
         this.dataSource.sortingDataAccessor = (item, property) => {
@@ -123,41 +125,53 @@ export class ResultsComponent implements OnInit, AfterViewInit {
             return result
         }
 
-        this.firestore.collection('checkpoints', ref => ref.orderBy('order')).valueChanges().subscribe((doc: Array<CheckPoint>) => {
-            this.checkpoints = []
-            _.range(0, this.circles, 1).forEach(() => {
-                doc.forEach((checkpoint: CheckPoint) => {
-                    this.checkpoints.push(checkpoint)
-                })
-            })
-            this.checkpointsEvent.emit({
-                classes: this.classes,
-                checkpoints: this.checkpoints
-            })
+        this.firestore.collection<Athlet>(`athlets_${this.competition.id}`).valueChanges({idField: 'id'})
+            .pipe(
+                takeUntil(this._onDestroy)
+            )
+            .subscribe((doc: Array<any>) => {
+                this.athlets = doc.filter((athlet: Athlet) => this.classes.indexOf(athlet.class) >= 0)
 
-            this.displayedColumns = [...this.displayedColumns.slice(0, this.displayedColumns.indexOf('athlet') + 1)]
-
-            this.checkpoints.forEach((checkpoint: CheckPoint, y: number) => {
-                this.displayedColumns.push(checkpoint.key + '_' + y)
+                this.circles = Math.ceil(
+                    _.max(this.athlets.map((athlet: Athlet) => athlet.checkpoints.length)) / this.competition.checkpoints.length
+                )
+                this.buildHeader()
+                this.buildRows()
             })
+    }
 
-            this.csv_export_options.keys = this.displayedColumns
-            this.csv_export_options.headers = this.displayedColumns
+    private buildHeader() {
+        this.checkpoints = []
+        const checkpoints: Array<Checkpoint> = this.competition.checkpoints.filter((checkpoint: Checkpoint) => _.intersection(
+            this.classes, checkpoint.classes
+        ).length)
+
+        _.range(0, this.circles, 1).forEach(() => {
+            checkpoints.forEach((checkpoint: Checkpoint) => {
+                this.checkpoints.push(checkpoint)
+            })
         })
-        this.firestore.collection('athlets').valueChanges({idField: 'id'}).subscribe((doc: Array<any>) => {
-            this.athlets = doc.filter((athlet: Athlet) => this.classes.indexOf(athlet.class) >= 0)
-            this.buildRows()
+
+        this.displayedColumns = [...this.displayedColumns.slice(0, this.displayedColumns.indexOf('athlet') + 1)]
+
+        this.checkpoints.forEach((checkpoint: Checkpoint, i: number) => {
+            this.displayedColumns.push(`CP_${i}`)
         })
+
+
+        this.csv_export_options.keys = this.displayedColumns
+        this.csv_export_options.headers = this.displayedColumns
     }
 
     private buildRows() {
         let rows: Array<TableRow> = []
+        const cp_in_circle = (this.checkpoints.length / this.circles)
+
         this.athlets.forEach((athlet: Athlet, y: number) => {
             // if (athlet.number != 888) {
             //     return
             // }
             const clean_marks: Array<Mark | null> = [...athlet.checkpoints.sort((a, b) => a.created < b.created ? -1 : a.created > b.created ? 1 : 0)]
-            const cp_in_circle = (this.checkpoints.length / this.circles)
 
             let last_cp = -1
 
@@ -181,8 +195,8 @@ export class ResultsComponent implements OnInit, AfterViewInit {
                         if (i == 0) {
                             last_cp = 0
                         } else {
-                            if (clean_marks[i-1]) {
-                                if(clean_marks[i-1].created == clean_marks[last_cp].created) {
+                            if (clean_marks[i - 1]) {
+                                if (clean_marks[i - 1].created == clean_marks[last_cp].created) {
                                     last_cp = i
                                 }
                             }
@@ -202,12 +216,13 @@ export class ResultsComponent implements OnInit, AfterViewInit {
 
         })
 
-        // Если подсчет по полным кругам
-        for (let row of rows) {
-            const [last_circle, last_first_cp] = this.getLastCircle(row.marks)
-            if (last_circle){
-                row.last_created = last_circle.pop().created
-                row.last_cp = last_first_cp
+        if (this.competition.result_by_full_circle) {
+            for (let row of rows) {
+                const [last_circle, last_first_cp] = this.getLastCircle(row.marks)
+                if (last_circle) {
+                    row.last_created = last_circle.pop().created
+                    row.last_cp = last_first_cp
+                }
             }
         }
 
@@ -239,24 +254,23 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         this.dataSource.filter = JSON.stringify(this.filter)
     }
 
-    diffTime(created: any) {
-        const created$ = moment(created.toDate())
+    diffTime(_created: any) {
+        const created = moment(_created.toDate())
 
-        if (created$ > this.start_time) {
-               return today.clone().add(created$.diff(this.start_time, 'ms'), 'ms').format("HH:mm:ss")
+        if (created > this.start_time) {
+            created.diff(this.start_time, 'ms')
         }
 
 
         const zero_time = new Date(Date.UTC(this.start_time.year(), this.start_time.month(), this.start_time.day(), 0, 0, 0, 0))
-        console.log(zero_time)
-        if (created$ > this.start_time) {
-            zero_time.setMilliseconds(created$.diff(this.start_time, 'ms') + zero_time.getTimezoneOffset() * 60000)
+
+        if (created > this.start_time) {
+            zero_time.setMilliseconds(created.diff(this.start_time, 'ms') + zero_time.getTimezoneOffset() * 60000)
             // return created$.diff(this.start_time, 'seconds')
             // console.log(
             //     moment({h:0, m:0, s:0, ms:0})
             // )
             return [zero_time.getHours(), zero_time.getMinutes(), zero_time.getSeconds()].join(':')
-
 
 
             // const duration = moment.duration(created$.diff(this.start_time))
@@ -327,19 +341,15 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         return rows
     }
 
-
     isLastCp(index: number): boolean {
         const cp_in_circle = this.checkpoints.length / this.circles
-        if ((index % cp_in_circle) == (cp_in_circle - 1)) {
-            return true
-        }
-        return false
+        return (index % cp_in_circle) == (cp_in_circle - 1)
     }
 
     getLastCircle(marks: Array<Mark>): [Array<Mark>, number] {
         const cp_in_circle = this.checkpoints.length / this.circles
         let circles_marks: Array<Array<Mark>> = _.chunk(marks, cp_in_circle)
-        circles_marks = circles_marks.filter((circle: Array<Mark|null>) => circle.filter((mark) => {
+        circles_marks = circles_marks.filter((circle: Array<Mark | null>) => circle.filter((mark) => {
             if (mark) {
                 if (!mark.elapsed) {
                     return true
@@ -348,5 +358,13 @@ export class ResultsComponent implements OnInit, AfterViewInit {
             return false
         }).length == cp_in_circle)
         return [circles_marks.pop(), circles_marks.length * cp_in_circle]
+    }
+
+    getTzOffset(timezone: string) {
+        return moment.tz(timezone).format('z')
+    }
+
+    trackByIndex(index, item) {
+        return index
     }
 }

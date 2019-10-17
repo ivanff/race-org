@@ -1,25 +1,23 @@
 import {Injectable} from '@angular/core'
 import {ActivatedRouteSnapshot, Resolve, RouterStateSnapshot} from '@angular/router'
-import {Athlet} from "@src/app/home/athlet"
 import {AngularFirestore} from "@angular/fire/firestore"
 import {Observable} from "rxjs"
 import {first, map} from "rxjs/operators"
+import {Athlet} from "@src/app/shared/interfaces/athlet"
 
 @Injectable()
 export class AthletResolve implements Resolve<Athlet> {
 
-    constructor(private firestore: AngularFirestore) {
-
-    }
+    constructor(private afs: AngularFirestore) {}
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Athlet> {
-        // console.log(
-        //     this.firestore.doc<Athlet>(`athlets/${route.params.id}`).valueChanges()
-        // )
-        return this.firestore.doc<Athlet>(`athlets/${route.params.id}`).valueChanges().pipe(first()).pipe(map((doc: Athlet) => {
-            doc.id = route.params.id
-            return doc
-        }))
-        // return true
+        return this.afs.doc<Athlet>(`athlets_${route.params.id}/${route.params.athlet_id}`)
+            .valueChanges()
+            .pipe(
+                first(),
+                map((doc: Athlet) => {
+                    doc.id = route.params.athlet_id
+                    return doc
+                }))
     }
 }

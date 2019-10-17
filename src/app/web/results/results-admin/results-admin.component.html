@@ -1,11 +1,6 @@
-<mat-tab-group [hidden]="route.children.length" style="height:100%">
-    <mat-tab label="Open">
-        <app-results [circles]="this.circle" [classes]="['open']" (checkpointsEvent)="checkpointsHandler($event)"></app-results>
-    </mat-tab>
-    <mat-tab label="Hobby">
-        <app-results [circles]="this.circle" [classes]="['hobby']" (checkpointsEvent)="checkpointsHandler($event)"></app-results>
+<mat-tab-group [hidden]="route.children.length">
+    <mat-tab *ngFor="let _class of classes" [label]="_class|titlecase">
+        <app-results [classes]="[_class]"></app-results>
     </mat-tab>
 </mat-tab-group>
-<div *ngIf="keysLength(classes_checkpoints_map) == classes.length">
-    <router-outlet (activate)="onActivate($event)"></router-outlet>
-</div>
+

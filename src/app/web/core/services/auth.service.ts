@@ -3,6 +3,7 @@ import {Observable, Subject} from 'rxjs';
 
 import * as firebase from 'firebase/app'
 import {AngularFireAuth} from "@angular/fire/auth"
+import UserCredential = firebase.auth.UserCredential
 
 @Injectable({
     providedIn: 'root',
@@ -45,9 +46,10 @@ export class AuthService implements OnDestroy{
 
     private socialSignIn(provider) {
         return this.afAuth.auth.signInWithPopup(provider)
-            .then((credential) =>  {
+            .then((credential: UserCredential) =>  {
                 // this.user = credential.user
                 // this.updateUserData()
+                return credential
             }).catch(error => console.log(error));
     }
 }

@@ -11,6 +11,9 @@ import {DashboardAddComponent} from "@src/app/web/routes/dashboard/dashboard-add
 import {ResultsComponent} from "@src/app/web/results/results.component"
 import {DashboardDetailComponent} from "@src/app/web/routes/dashboard/dashboard-detail/dashboard-detail.component"
 import {CompetitionResolve} from "@src/app/shared/resolvers/competition"
+import {ResultsAdminComponent} from "@src/app/web/results/results-admin/results-admin.component"
+import {ResultDetailComponent} from "@src/app/web/results/results-admin/result-detail/result-detail.component"
+import {AthletResolve} from "@src/app/shared/athlet.resolver"
 
 const routes: Routes = [
     // {
@@ -28,13 +31,13 @@ const routes: Routes = [
                 path: 'dashboard',
                 component: DashboardComponent,
                 data: {title: 'Соревнования', titleI18n: 'dashboard'},
-                children: [
-
-                ]
             }, {
                 path: 'add',
                 component: DashboardAddComponent,
                 data: {title: 'Добавить соревнование', titleI18n: 'dashboard'},
+            }, {
+                path: 'edit',
+                redirectTo: 'dashboard'
             }, {
                 path: 'edit/:id',
                 component: DashboardDetailComponent,
@@ -43,11 +46,22 @@ const routes: Routes = [
                     competition: CompetitionResolve
                 }
             }, {
-                path: 'results',
-                component: ResultsComponent,
-                data: {},
-            },
-            {
+                path: 'results/:id',
+                component: ResultsAdminComponent,
+                data: {
+                    is_admin: true
+                },
+                resolve: {
+                    competition: CompetitionResolve,
+                }
+            }, {
+                path: 'results/:id/detail/:athlet_id',
+                component: ResultDetailComponent,
+                resolve: {
+                    competition: CompetitionResolve,
+                    athlet: AthletResolve,
+                }
+            }, {
                 path: 'sessions',
                 loadChildren: () => import('./sessions/sessions.module').then(m => m.SessionsModule),
                 data: {title: 'Sessions', titleI18n: 'Sessions'},
