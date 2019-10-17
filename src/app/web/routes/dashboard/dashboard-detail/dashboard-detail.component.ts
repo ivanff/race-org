@@ -4,7 +4,7 @@ import {ActivatedRoute, Router} from "@angular/router"
 import {FormControl, FormGroup} from "@angular/forms"
 import * as moment from 'moment-timezone'
 import {AngularFirestore} from "@angular/fire/firestore"
-import {debounceTime, distinctUntilChanged, map, takeUntil} from "rxjs/operators"
+import {debounceTime, distinctUntilChanged, map, shareReplay, takeUntil, tap} from "rxjs/operators"
 import {Observable, ReplaySubject, Subscription} from "rxjs"
 import {Athlet} from "@src/app/shared/interfaces/athlet"
 
@@ -47,6 +47,7 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
             this.athlets$ = this.afs.collection<Athlet>(`athlets_${this.competition.id}`)
                 .valueChanges({idField: 'id'})
                 .pipe(
+                    shareReplay(1),
                     takeUntil(this._onDestroy)
                 )
         })

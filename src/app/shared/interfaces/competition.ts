@@ -21,7 +21,9 @@ export interface Competition {
     result_by_full_circle: boolean,
     classes: Array<string>,
     checkpoints: Array<Checkpoint>,
-    stages: Array<Competition>
+    is_stage: boolean,
+    stages: Array<Competition>,
+    athlet_extra_fields: Array<string>,
 
     created: firebase.firestore.Timestamp,
 }

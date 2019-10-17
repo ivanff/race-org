@@ -1,7 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms"
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material"
-import {AdminPromptComponent} from "@src/app/web/access/admin-prompt/admin-prompt.component"
 
 
 @Component({
@@ -14,7 +13,7 @@ export class ResultSetTimeComponent implements OnInit {
   time: string = '00:00:00'
 
   constructor(private _fb: FormBuilder,
-              private dialogRef: MatDialogRef<AdminPromptComponent>,
+              private dialogRef: MatDialogRef<ResultSetTimeComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any) {
 
   }

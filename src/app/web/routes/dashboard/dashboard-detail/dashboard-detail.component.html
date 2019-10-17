@@ -73,7 +73,7 @@
                 </mat-card>
             </div>
             <div fxFlex="60" fxFlex.lt-sm="100" class="p-l-4">
-                <app-competition [competition]="edit_competition"></app-competition>
+                <app-competition [competition]="edit_competition" [firstCompetition]="competition"></app-competition>
             </div>
         </div>
     </mat-tab>
@@ -109,7 +109,8 @@
                                     </label>
                                     <mat-radio-group formControlName="class" aria-labelledby="competition_classes">
                                         <mat-radio-button [value]="''"
-                                                          class="p-r-8">Все</mat-radio-button>
+                                                          class="p-r-8">Все
+                                        </mat-radio-button>
                                         <mat-radio-button *ngFor="let _class of competition.classes"
                                                           [value]="_class"
                                                           class="p-r-8">{{_class}}</mat-radio-button>
@@ -120,14 +121,18 @@
                     </form>
 
                     <mat-accordion>
-                        <mat-expansion-panel *ngFor="let athlet of athlets$|async|filter:['fio', 'number']:{'search': search, 'class': filterAthlets.controls['class'].value}">
-                            <mat-expansion-panel-header>
-                                <mat-panel-title fxFlex="70">
+                        <mat-expansion-panel
+                                *ngFor="let athlet of athlets$|async|filter:['fio', 'number']:{'search': search, 'class': filterAthlets.controls['class'].value}">
+                            <mat-expansion-panel-header fxLayout="row" fxLayoutAlign="start center">
+                                <mat-panel-title fxFlex="70" fxLayoutAlign="start center">
                                     <mat-icon mat-list-icon>person</mat-icon>
-                                    <b>&nbsp;{{athlet.number}}&nbsp;</b>
+                                    <a [routerLink]="['detail', athlet.id]" mat-icon-button color="warn">
+                                        <mat-icon>edit</mat-icon>
+                                    </a>
+                                    <b class="p-r-8">&nbsp;{{athlet.number}}&nbsp;</b>
                                     {{athlet.fio}}
                                 </mat-panel-title>
-                                <mat-panel-description fxFlex="30">
+                                <mat-panel-description fxFlex="30" fxLayoutAlign="start center">
                                     {{ athlet.class }}
                                 </mat-panel-description>
                             </mat-expansion-panel-header>

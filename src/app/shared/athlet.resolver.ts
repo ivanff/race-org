@@ -11,7 +11,12 @@ export class AthletResolve implements Resolve<Athlet> {
     constructor(private afs: AngularFirestore) {}
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Athlet> {
-        return this.afs.doc<Athlet>(`athlets_${route.params.id}/${route.params.athlet_id}`)
+        let competition_id = route.parent.params.id
+        if (!competition_id) {
+            competition_id = route.params.id
+        }
+
+        return this.afs.doc<Athlet>(`athlets_${competition_id}/${route.params.athlet_id}`)
             .valueChanges()
             .pipe(
                 first(),

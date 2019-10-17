@@ -23,10 +23,7 @@ import {BaseComponent} from "@src/app/shared/base.component"
 import {LocalLogComponent} from "@src/app/scan/local-log/local-log.component"
 import {AboutComponent} from "@src/app/home/about/about.component"
 import {AthletResolve} from "@src/app/shared/athlet.resolver";
-import { DashboardAddComponent } from '@src/app/web/routes/dashboard/dashboard-add/dashboard-add.component'
 import {ReactiveFormsModule} from "@angular/forms";
-import { DashboardDetailComponent } from '@src/app/web/routes/dashboard/dashboard-detail/dashboard-detail.component';
-import { DashboardEditComponent } from '@src/app/web/routes/dashboard/dashboard-edit/dashboard-edit.component'
 
 
 // Uncomment and add to NgModule imports if you need to use two-way binding
@@ -54,10 +51,7 @@ import { DashboardEditComponent } from '@src/app/web/routes/dashboard/dashboard-
         AboutComponent,
         HomeComponent,
         FilterPipe,
-        FoundDialogComponent,
-        DashboardAddComponent,
-        DashboardDetailComponent,
-        DashboardEditComponent,
+        FoundDialogComponent
     ],
     imports: [
         NativeScriptLocalizeModule,

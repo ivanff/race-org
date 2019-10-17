@@ -1,6 +1,10 @@
+<pre>
+    {{data.athlet_extra_fields|json}}
+</pre>
 <!--<pre>-->
-<!--    {{data|json}}-->
-<!--</pre><pre>-->
+<!--    {{data.classes|json}}-->
+<!--</pre>-->
+<!--<pre>-->
 <!--    {{data.checking|json}}-->
 <!--</pre>-->
 <!--<pre>-->
@@ -162,15 +166,14 @@
                 <form [formGroup]="thirdFormGroup">
                     <ng-template matStepLabel>Классы участников</ng-template>
                     <div formArrayName="classes">
-                        <div *ngFor="let item of classes; let i = index;">
+                        <div *ngFor="let item of thirdFormGroup.controls['classes'].controls; let i = index;">
                             <p>
                                 <mat-form-field>
-                                    <a matSuffix (click)="onRemoveClass(i)" *ngIf="classes.length > 1">
+                                    <a matSuffix (click)="onRemoveClass(i)" *ngIf="thirdFormGroup.controls['classes'].controls.length > 1">
                                         <mat-icon>remove</mat-icon>
                                     </a>
                                     <input matInput
                                            [placeholder]="'Класс ' + (i + 1)"
-                                           [(ngModel)]="item.value"
                                            [formControlName]="i" required>
                                 </mat-form-field>
                             </p>
@@ -205,12 +208,12 @@
                             </p>
                             <section formArrayName="classes" class="m-t-24 m-b-24">
                                 <h4>Классы участников</h4>
-                                <mat-checkbox *ngFor="let _class of classes; let y = index;"
-                                              [checked]="checkpoint.classes.indexOf(_class.value) >= 0"
+                                <mat-checkbox *ngFor="let item of thirdFormGroup.controls['classes'].controls; let y = index;"
+                                              [checked]="checkpoint.classes.indexOf(item.value) >= 0"
                                               (change)="onClassCheckboxChange($event, i)"
-                                              [value]="classes[y].value"
+                                              [value]="item.value"
                                               formControlName="{{ y }}"
-                                              class="m-r-16">{{ classes[y].value}}
+                                              class="m-r-16">{{ item.value}}
                                 </mat-checkbox>
                                 <p>
                                     <mat-error *ngIf="fourFromGroup.controls['checkpoints'].controls[i].controls['classes'].errors?.groupRequired">
@@ -223,6 +226,32 @@
 
                     <div>
                         <a (click)="onAddCp()" mat-mini-fab aria-label="Добавить чекпоинт">
+                            <mat-icon>add</mat-icon>
+                        </a>
+                        <button mat-button matStepperPrevious type="button">Назад</button>
+                        <button mat-button matStepperNext type="button">Далее</button>
+                    </div>
+                </form>
+            </mat-step>
+            <mat-step [stepControl]="fiveFromGroup">
+                <form [formGroup]="fiveFromGroup">
+                    <ng-template matStepLabel>Дополнительные данные атлетов</ng-template>
+                    <div formArrayName="athlet_extra_fields">
+                        <div *ngFor="let item of fiveFromGroup.controls['athlet_extra_fields'].controls; let i = index;">
+                            <p>
+                                <mat-form-field>
+                                    <a matSuffix (click)="onRemoveExtraField(i)">
+                                        <mat-icon>remove</mat-icon>
+                                    </a>
+                                    <input matInput
+                                           [placeholder]="'Опция ' + (i + 1)"
+                                           [formControlName]="i" required>
+                                </mat-form-field>
+                            </p>
+                        </div>
+                    </div>
+                    <div>
+                        <a (click)="onAddExtraField()" mat-mini-fab aria-label="Добавить опцию">
                             <mat-icon>add</mat-icon>
                         </a>
                         <button mat-button matStepperPrevious type="button">Назад</button>

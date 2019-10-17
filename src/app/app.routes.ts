@@ -1,70 +1,116 @@
-import {Routes} from '@angular/router'
-import {ResultsComponent} from "@src/app/web/results/results.component"
-import {SettingsComponent} from "@src/app/web/settings/settings.component"
-import {AdminRegisterComponent, RegisterComponent} from "@src/app/web/access/register/register.component"
-import {HelpComponent} from "@src/app/web/routes/help/help.component"
-import {AdminResolve} from "@src/app/shared/admin.resolver"
-import {ResultsPublicComponent} from "@src/app/web/results/results-public/results-public.component"
-import {ResultsAdminComponent} from "@src/app/web/results/results-admin/results-admin.component"
-import {ResultDetailComponent} from "@src/app/web/results/results-admin/result-detail/result-detail.component"
+import {NgModule} from '@angular/core';
+import {Routes, RouterModule} from '@angular/router';
+import {environment} from "@src/environments/environment"
+import {AdminLayoutComponent} from "@src/app/web/theme/admin-layout/admin-layout.component"
+import {DashboardComponent} from "@src/app/web/routes/dashboard/dashboard.component"
+import {AuthLayoutComponent} from "@src/app/web/theme/auth-layout/auth-layout.component"
+import {LoginComponent} from "@src/app/web/routes/sessions/login/login.component"
+// import {RegisterComponent} from "@src/app/web/routes/sessions/register/register.component"
+import {AuthGuard} from "@src/app/web/core/guard/auth.guard"
+import {DashboardAddComponent} from "@src/app/web/routes/dashboard/dashboard-add/dashboard-add.component"
+import {DashboardDetailComponent} from "@src/app/web/routes/dashboard/dashboard-detail/dashboard-detail.component"
+import {CompetitionResolve} from "@src/app/shared/resolvers/competition"
+import {ResultsAdminComponent} from "@src/app/web/routes/results/results-admin/results-admin.component"
+import {ResultDetailComponent} from "@src/app/web/routes/results/results-admin/result-detail/result-detail.component"
 import {AthletResolve} from "@src/app/shared/athlet.resolver"
-import {SigninComponent} from "@src/app/web/access/signin/signin.component"
+import {AppAthletRegisterComponent} from "@src/app/web/routes/app-athlet-register/app-athlet-register.component"
+import {DashboardEditComponent} from "@src/app/web/routes/dashboard/dashboard-edit/dashboard-edit.component"
 
-export const routes: Routes = [
+const routes: Routes = [
+    // {
+    //     path: '',
+    //     redirectTo: 'auth/login',
+    //     pathMatch: 'full'
+    // },
     {
         path: '',
-        redirectTo: 'access/signin',
-        pathMatch: 'full',
+        component: AdminLayoutComponent,
+        canActivate: [AuthGuard],
+        children: [
+            {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
+            {
+                path: 'dashboard',
+                component: DashboardComponent,
+                data: {title: 'Соревнования', titleI18n: 'dashboard'},
+            }, {
+                path: 'add',
+                component: DashboardAddComponent,
+                data: {title: 'Добавить соревнование', titleI18n: 'dashboard'},
+            }, {
+                path: 'edit',
+                redirectTo: 'dashboard'
+            }, {
+                path: 'edit/:id',
+                component: DashboardDetailComponent,
+                data: {title: 'Соревнование', titleI18n: 'dashboard'},
+                resolve: {
+                    competition: CompetitionResolve
+                }
+            }, {
+                path: 'edit/:id/detail/:athlet_id',
+                component: DashboardEditComponent,
+                resolve: {
+                    competition: CompetitionResolve,
+                    athlet: AthletResolve,
+                }
+            }, {
+                path: 'results/:id',
+                component: ResultsAdminComponent,
+                data: {
+                    is_admin: true
+                },
+                resolve: {
+                    competition: CompetitionResolve,
+                }
+            }, {
+                path: 'results/:id/detail/:athlet_id',
+                component: ResultDetailComponent,
+                resolve: {
+                    competition: CompetitionResolve,
+                    athlet: AthletResolve,
+                }
+            },
+            {
+                path: 'sessions',
+                loadChildren: () => import('@src/app/web/routes/sessions/sessions.module').then(m => m.SessionsModule),
+                data: {title: 'Sessions', titleI18n: 'Sessions'},
+            },
+        ],
     },
     {
-        path: 'results',
-        component: ResultsAdminComponent,
-        resolve: {is_admin: AdminResolve},
+        path: 'auth',
+        component: AuthLayoutComponent,
         children: [
             {
-                path: 'detail/:id',
-                component: ResultDetailComponent,
-                resolve: {athlet: AthletResolve},
-            }
-        ]
+                path: 'login',
+                component: LoginComponent,
+                data: {title: 'Вход', titleI18n: 'Login'},
+            },
+            // {
+            //     path: 'register',
+            //     component: RegisterComponent,
+            //     data: {title: 'Регистрация', titleI18n: 'Register'},
+            // },
+        ],
     },
     {
-        path: 'results/public',
-        component: ResultsPublicComponent,
-        data: {
-            hide_start_time: true,
-            hide_class_filter: true
+        path: 'athlet/register/:id',
+        component: AppAthletRegisterComponent,
+        resolve: {
+            competition: CompetitionResolve
         }
     },
-    {
-        path: 'list',
-        component: ResultsComponent,
-        data: {
-            hide_start_time: true,
-            hide_place: true
-        }
-    },
-    {
-        path: 'settings',
-        component: SettingsComponent,
-        resolve: {is_admin: AdminResolve}
-    },
-    {
-        path: 'access/register',
-        component: RegisterComponent
-    },
-    {
-        path: 'access/signin',
-        component: SigninComponent
-    },
-    {
-        path: 'access/register/admin',
-        component: AdminRegisterComponent,
-        resolve: {is_admin: AdminResolve}
-    },
-    {
-        path: 'help',
-        component: HelpComponent
-    },
-]
+    {path: '**', redirectTo: 'dashboard'},
+];
 
+@NgModule({
+    imports: [
+        RouterModule.forRoot(routes, {
+            useHash: environment.useHash,
+            // enableTracing: true
+        }),
+    ],
+    exports: [RouterModule],
+})
+export class RoutesRoutingModule {
+}

@@ -1,7 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms"
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material"
-import {AdminPromptComponent} from "@src/app/web/access/admin-prompt/admin-prompt.component"
 import {Mark} from "@src/app/home/mark"
 import * as firebase from "firebase/app"
 
@@ -16,7 +15,7 @@ export class ResultAddMarkComponent implements OnInit {
   mark: {key?: string, order?: number, time?: string} = {}
 
   constructor(private _fb: FormBuilder,
-              private dialogRef: MatDialogRef<AdminPromptComponent>,
+              private dialogRef: MatDialogRef<ResultAddMarkComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any) {
 
   }

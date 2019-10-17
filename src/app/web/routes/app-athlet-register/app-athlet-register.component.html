@@ -1,0 +1,12 @@
+<div class="matero-auth-container">
+    <div class="w-full h-full" fxLayout="row wrap" fxLayoutAlign="center center">
+        <mat-card class="mat-elevation-z4 m-b-0" fxFlex="400px" fxFlex.xs="90%">
+            <mat-card-title class="text-center m-b-24">{{competition.title}}</mat-card-title>
+            <mat-card-subtitle class="text-center m-b-24">Регистрация участника</mat-card-subtitle>
+            <mat-card-content>
+                <athlet-register [competition]="competition" (onCreated)="onCreated($event)"></athlet-register>
+            </mat-card-content>
+        </mat-card>
+    </div>
+
+</div>
