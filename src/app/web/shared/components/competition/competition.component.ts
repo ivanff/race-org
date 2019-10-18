@@ -406,7 +406,9 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
         if (this.competition) {
             competition.secret = this.competition.secret
             if (this.firstCompetition) {
-                collection = collection.doc(this.firstCompetition.id).collection('stages')
+                if (this.competition.id != this.firstCompetition.id) {
+                    collection = collection.doc(this.firstCompetition.id).collection('stages')
+                }
             }
 
             collection.doc(this.competition.id).set(competition, {merge: true}).then(() => {
