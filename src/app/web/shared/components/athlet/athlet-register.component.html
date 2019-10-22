@@ -59,17 +59,17 @@
         </mat-form-field>
         <div *ngIf="!registerForm.controls['code'].valid" class="mat-form-field full-width">
             <button mat-raised-button color="warn"
-                    [disabled]="!registerForm.controls['phone'].valid"
+                    [disabled]="registerForm.controls['phone'].invalid || registerForm.controls['captcha']?.invalid"
                     (click)="onSendSms()" type="button">Выслать код подтверждения номера
             </button>
         </div>
     </div>
-    <div class="mat-form-field full-width">
-<!--        <re-captcha formControlName="captcha" required></re-captcha>-->
+    <div *ngIf="registerForm.controls['captcha']" class="mat-form-field full-width">
+        <re-captcha formControlName="captcha" required></re-captcha>
     </div>
 
     <div class="mat-form-field full-width">
-        <button mat-raised-button [disabled]="!registerForm.valid" color="primary" type="submit">
+        <button mat-raised-button color="primary" [disabled]="registerForm.invalid" type="submit">
             {{ athlet?.id ? 'Сохранить' : 'Зарегистрироваться' }}
         </button>
     </div>

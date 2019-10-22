@@ -18,7 +18,9 @@ export class BaseComponent {
     }
 
     onDrawerButtonTap(): void {
-        const sideDrawer = <RadSideDrawer>getRootView();
-        sideDrawer.toggleDrawerState();
+        const sideDrawer = <RadSideDrawer>getRootView()
+        if (sideDrawer) {
+            sideDrawer.toggleDrawerState()
+        }
     }
 }

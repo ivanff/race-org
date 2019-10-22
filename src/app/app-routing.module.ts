@@ -5,7 +5,6 @@ import {LoginComponent} from "@src/app/web/routes/sessions/login/login.component
 // import {RegisterComponent} from "@src/app/web/routes/sessions/register/register.component"
 import {DashboardAddComponent} from '@src/app/web/routes/dashboard/dashboard-add/dashboard-add.component';
 import {DashboardDetailComponent} from '@src/app/web/routes/dashboard/dashboard-detail/dashboard-detail.component';
-import { AppAthletRegisterComponent } from '@src/app/web/routes/app-athlet-register/app-athlet-register.component'
 import {RoutesRoutingModule} from "@src/app/app.routes"
 import {DashboardEditComponent} from "@src/app/web/routes/dashboard/dashboard-edit/dashboard-edit.component"
 import {ResultsAdminComponent} from "@src/app/web/routes/results/results-admin/results-admin.component"
@@ -27,8 +26,6 @@ const COMPONENTS = [
     ResultSetTimeComponent,
 
     LoginComponent,
-
-    AppAthletRegisterComponent
 
     // RegisterComponent,
 ];

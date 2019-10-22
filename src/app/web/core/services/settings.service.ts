@@ -23,8 +23,6 @@ export class SettingsService implements OnDestroy {
 
     constructor(private afs: AngularFirestore,
                 private auth: AuthService) {
-
-
         this.competitions$ = this.afs.collection<Competition>('competitions', ref => ref.where('user', '==', this.auth.user.uid)
             .orderBy('created', 'desc'))
             .valueChanges({idField: 'id'})

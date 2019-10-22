@@ -30,7 +30,7 @@
     </StackLayout>
 
     <ScrollView row="2" col="0">
-        <ListView [items]="athlets|filter:['fio', 'number']:searchPhrase" class="items">
+        <ListView [items]="athlets|filter:['fio', 'number']:{search: searchPhrase}" class="items">
             <ng-template let-athlet="item" let-i="index" let-odd="odd" let-even="even">
                 <GridLayout (tap)="onItemTap(athlet)" columns="60, *" rows="*, *, *, *, *">
                     <Label [text]="athlet.number" col="0" rowSpan="4" verticalAlignment="top" horizontalAlignment="center" class="number"></Label>

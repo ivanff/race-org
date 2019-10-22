@@ -7,23 +7,29 @@ import {HomeComponent} from "@src/app/home/home.component"
 import {NativeScriptUISideDrawerModule} from "nativescript-ui-sidedrawer/angular"
 import {NativeScriptLocalizeModule} from "nativescript-localize/localize.module"
 import {NativeScriptUIListViewModule} from "nativescript-ui-listview/angular"
-import {AthletsComponent} from "@src/app/athlets/athlets.component"
 import {FilterPipe} from "@src/app/shared/pipes/filter.pipe"
-import {DetailComponent} from "@src/app/athlets/detail/detail.component"
 import {RootComponent} from "@src/app/root/root.component"
-import {ScanComponent} from "@src/app/scan/scan.component"
-import {OptionsComponent} from "@src/app/options/options.component"
+// import {ScanComponent} from "@src/app/scan/scan.component"
 import {CompetitionComponent} from "@src/app/competition/competition.component"
-import {SettingsService} from "@src/app/shared/settings.service"
-import {FoundDialogComponent} from "@src/app/scan/found-dialog/found-dialog.component"
+// import {FoundDialogComponent} from "@src/app/scan/found-dialog/found-dialog.component"
 import {StatComponent} from "@src/app/home/stat/stat.component"
 import {OrderModule} from "ngx-order-pipe"
 import {AdminResolve} from "@src/app/shared/admin.resolver"
 import {BaseComponent} from "@src/app/shared/base.component"
-import {LocalLogComponent} from "@src/app/scan/local-log/local-log.component"
+// import {LocalLogComponent} from "@src/app/scan/local-log/local-log.component"
 import {AboutComponent} from "@src/app/home/about/about.component"
-import {AthletResolve} from "@src/app/shared/athlet.resolver";
 import {ReactiveFormsModule} from "@angular/forms";
+import {AthletResolve} from "@src/app/shared/resolvers/athlet.resolver"
+import {EnterComponent} from "@src/app/enter/enter.component"
+import {AuthService} from "@src/app/mobile/services/auth.service"
+import {CompetitionResolve} from "@src/app/shared/resolvers/competition.resolver"
+import {CompetitionDetailComponent} from "@src/app/competition/competition-detail/competition-detail.component"
+import {DeviceNamePipe} from "@src/app/shared/pipes/device-name.pipe"
+import {GetDevicePipe} from "@src/app/shared/pipes/get-device.pipe"
+import {SqliteService} from "@src/app/mobile/services/sqlite.service"
+import {CompetitionService} from "@src/app/mobile/services/competition.service"
+import {AthletDetailComponent} from "@src/app/athlet/athlet-detail/athlet-detail.component"
+import {AthletComponent} from "@src/app/athlet/athlet.component"
 
 
 // Uncomment and add to NgModule imports if you need to use two-way binding
@@ -35,23 +41,31 @@ import {ReactiveFormsModule} from "@angular/forms";
 @NgModule({
     entryComponents: [
         RootComponent,
-        FoundDialogComponent,
+        // FoundDialogComponent,
     ],
     declarations: [
         BaseComponent,
         AppComponent,
-        AthletsComponent,
-        DetailComponent,
-        ScanComponent,
-        LocalLogComponent,
-        OptionsComponent,
-        CompetitionComponent,
         RootComponent,
+
+        EnterComponent,
+        HomeComponent,
         StatComponent,
         AboutComponent,
-        HomeComponent,
+
+        AthletComponent,
+        AthletDetailComponent,
+        // DetailComponent,
+        // ScanComponent,
+        // LocalLogComponent,
+        // OptionsComponent,
+        CompetitionComponent,
+        CompetitionDetailComponent,
+
         FilterPipe,
-        FoundDialogComponent
+        DeviceNamePipe,
+        GetDevicePipe,
+        // FoundDialogComponent
     ],
     imports: [
         NativeScriptLocalizeModule,
@@ -63,9 +77,13 @@ import {ReactiveFormsModule} from "@angular/forms";
         ReactiveFormsModule,
     ],
     providers: [
+        CompetitionResolve,
         AthletResolve,
         AdminResolve,
-        SettingsService,
+
+        CompetitionService,
+        SqliteService,
+        AuthService,
     ],
     bootstrap: [AppComponent],
     schemas: [NO_ERRORS_SCHEMA]

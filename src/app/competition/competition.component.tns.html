@@ -1,21 +1,30 @@
-<ActionBar [title]="'Options of competition'|L">
-    <NavigationButton (tap)="goBack()"
-                      text="Back"
-                      android.systemIcon="ic_menu_back"></NavigationButton>
-</ActionBar>
+<ScrollView>
+    <ListView height="100%"
+              [items]="competitions"
+              (itemTap)="onItemTap($event)">
+        <ng-template let-competition="item" let-i="index">
+            <GridLayout columns="*, auto, auto" rows="*" [class.active]="selected_competition?.id == competition.id">
+                <Label col="0" [text]="competition.title" horizontalAlignment="left"></Label>
+                <Label col="1" [text]="'reader'" *ngIf="isReader(competition.checkpoints)"></Label>
+                <Label col="2" [text]="'info'" [nsRouterLink]="[competition.id]"></Label>
+            </GridLayout>
+        </ng-template>
+    </ListView>
+</ScrollView>
 
-<StackLayout *ngIf="app_settings.competition">
-    <Label [text]="'UUID Device: ' + device_uuid" class="p-10 font-weight-bold"></Label>
-    <Label [text]="'Competition name: ' + app_settings.competition.name" class="p-10"></Label>
-    <Label [text]="'Count of devices: ' + app_settings.competition.devices.length" class="p-10"></Label>
-    <Label [text]="'This is admin device: ' + (app_settings.competition.admin_device.uuid == device_uuid)" class="p-10"></Label>
-    <Label [text]="'Завершение соревнований: ' + (app_settings.competition.finish|date)" class="p-10"></Label>
 
-    <Button (tap)="onSetAdmin()"
-            [text]="'Set this device to admin'"
-            [isEnabled]="app_settings.competition.admin_device.uuid != device_uuid" class="btn -outline"></Button>
-    <Button (tap)="onJoin()"
-            [text]="'Join'|L"
-            [isEnabled]="checkExists(app_settings.competition.devices)" class="btn -primary"></Button>
-</StackLayout>
+<!--<StackLayout *ngIf="app_settings.competition">-->
+<!--    <Label [text]="'UUID Device: ' + device_uuid" class="p-10 font-weight-bold"></Label>-->
+<!--    <Label [text]="'Competition name: ' + app_settings.competition.name" class="p-10"></Label>-->
+<!--    <Label [text]="'Count of devices: ' + app_settings.competition.devices.length" class="p-10"></Label>-->
+<!--    <Label [text]="'This is admin device: ' + (app_settings.competition.admin_device.uuid == device_uuid)" class="p-10"></Label>-->
+<!--    <Label [text]="'Завершение соревнований: ' + (app_settings.competition.finish|date)" class="p-10"></Label>-->
+
+<!--    <Button (tap)="onSetAdmin()"-->
+<!--            [text]="'Set this device to admin'"-->
+<!--            [isEnabled]="app_settings.competition.admin_device.uuid != device_uuid" class="btn -outline"></Button>-->
+<!--    <Button (tap)="onJoin()"-->
+<!--            [text]="'Join'|L"-->
+<!--            [isEnabled]="checkExists(app_settings.competition.devices)" class="btn -primary"></Button>-->
+<!--</StackLayout>-->
 

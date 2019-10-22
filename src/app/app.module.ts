@@ -35,8 +35,8 @@ import {ThemeModule} from "@src/app/web/theme/theme.module"
 import {AuthGuard} from "@src/app/web/core/guard/auth.guard"
 import {AngularFireAuth} from "@angular/fire/auth"
 import {MAT_DATE_LOCALE} from "@angular/material"
-import {CompetitionResolve} from "@src/app/shared/resolvers/competition"
-import {AthletResolve} from "@src/app/shared/athlet.resolver"
+import {CompetitionResolve} from "@src/app/shared/resolvers/competition.resolver"
+import {AthletResolve} from "@src/app/shared/resolvers/athlet.resolver"
 
 registerLocaleData(localeRu)
 
@@ -68,8 +68,6 @@ export function StartupServiceFactory(startupService: StartupService) {
         AppRoutingModule,
         DemoMaterialModule,
         HttpClientModule,
-        RecaptchaModule,
-        RecaptchaFormsModule,
         NgxMaterialTimepickerModule.setLocale('RU'),
         LocalStorageModule.forRoot({
             prefix: 'race-org',
@@ -84,14 +82,6 @@ export function StartupServiceFactory(startupService: StartupService) {
             useFactory: StartupServiceFactory,
             deps: [StartupService],
             multi: true,
-        },
-        {
-            provide: RECAPTCHA_SETTINGS,
-            useValue: {siteKey: '6LfXHrkUAAAAADpcaw0LZFCFsehMD9TxkV9a1mtv'} as RecaptchaSettings,
-        },
-        {
-            provide: RECAPTCHA_LANGUAGE,
-            useValue: 'ru', // use French language
         },
         {
             provide: LOCALE_ID,

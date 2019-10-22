@@ -5,86 +5,47 @@ import {firestore} from 'nativescript-plugin-firebase'
 import {SearchBar} from 'tns-core-modules/ui/search-bar'
 import {isAndroid} from 'tns-core-modules/platform'
 import {BaseComponent} from "@src/app/shared/base.component"
-import {NfcService} from "@src/app/shared/nfc.service"
-import {Athlet} from "@src/app/home/athlet"
+import {NfcService} from "@src/app/mobile/services/nfc.service"
 import {ActivatedRoute} from "@angular/router"
+import {Athlet} from "@src/app/shared/interfaces/athlet"
+import {CompetitionService} from "@src/app/mobile/services/competition.service"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
-const initial = [
-    {
-        'phone': 9603273301,
-        'fio': 'Черняев Данила Дмитриевич',
-        'number': 888,
-        'bike': 'Beta 300 RR',
-        'city': 'Саратов',
-        'checkpoints': []
-    },
-    {
-        'phone': 96054654302,
-        'fio': 'Ермаченков Дмитрий Владимирович',
-        'number': 74,
-        'bike': 'KTM 300',
-        'city': 'Уфа',
-        'checkpoints': []
-    },
-    {
-        'phone': 9634544303,
-        'fio': 'Миронов Данила Константинович',
-        'number': 313,
-        'bike': 'KTM EXC300 tpi',
-        'city': 'Москва',
-        'checkpoints': []
-    },
-    {
-        'phone': 963454304,
-        'fio': 'Степанов Владимир Васильевич',
-        'number': 46,
-        'bike': 'Beta 250 RR',
-        'city': 'Москва',
-        'checkpoints': []
-    },
-]
 
 @Component({
-    selector: 'app-athlets',
-    templateUrl: './athlets.component.html',
-    styleUrls: ['./athlets.component.scss']
+    selector: 'app-athlet',
+    templateUrl: './athlet.component.html',
+    styleUrls: ['./athlet.component.scss']
 })
-export class AthletsComponent extends BaseComponent implements OnInit, OnDestroy {
+export class AthletComponent extends BaseComponent implements OnInit, OnDestroy {
     athlets: Array<Athlet> = []
     searchPhrase = ''
     @ViewChild('activityIndicator', {static: false}) activityIndicatorRef: ElementRef
     @ViewChild('searchBar', {static: false}) searchBarRef: ElementRef
-    private unsubscribe: any
+    private unsubscribe: () => void
 
     constructor(public routerExtensions: RouterExtensions,
                 private zone: NgZone,
                 private nfc: NfcService,
-                private activeRoute: ActivatedRoute) {
+                private activeRoute: ActivatedRoute,
+                private _competition: CompetitionService) {
         super(routerExtensions)
+        console.log('>>> AthletComponent constructor')
     }
 
     ngOnInit() {
-        const $zone = this.zone
-        const collectionRef: firestore.Query = firebase.firestore().collection('athlets')
-        this.unsubscribe = collectionRef.onSnapshot({includeMetadataChanges: true}, (snapshot: firestore.QuerySnapshot) => {
-            $zone.run(() => {
+        console.log('>>> AthletComponent ngOnInit')
+        const collectionRef: firestore.CollectionReference = firebase.firestore().collection(`athlets_${this._competition.selected_competition.id}`)
+        this.unsubscribe = collectionRef.onSnapshot((snapshot: firestore.QuerySnapshot) => {
+            this.zone.run(() => {
                 this.athlets = []
                 snapshot.forEach((doc: firestore.DocumentSnapshot) => {
-                    this.athlets.push(doc.data() as Athlet)
+                    const id = doc.id
+                    this.athlets.push({id,...doc.data()} as Athlet)
                 })
             })
         })
-        // remove
-        // WARNING CHECK COLLECTION
-        // for (const athlet of initial) {
-        //     firebase.firestore().collection('athlets').doc(athlet.phone + '').get().then((doc: firestore.DocumentSnapshot) => {
-        //         if (!doc.exists) {
-        //             firebase.firestore().collection('athlets').doc(athlet.phone + '').set(athlet, {merge: true})
-        //         }
-        //     })
-        // }
     }
 
     ngOnDestroy(): void {
@@ -92,6 +53,7 @@ export class AthletsComponent extends BaseComponent implements OnInit, OnDestroy
             this.nfc.doStopTagListener()
         }
         this.unsubscribe()
+        console.log('>>> AthletComponent ngOnDestroy')
     }
 
     onItemTap(athlet: Athlet): void {
@@ -131,7 +93,7 @@ export class AthletsComponent extends BaseComponent implements OnInit, OnDestroy
     }
 
     searchAthlet(data: NfcTagData) {
-        const athlets = firebase.firestore().collection('athlets')
+        const athlets = firebase.firestore().collection(`athlets_${this._competition.selected_competition.id}`)
             .where('nfc_id', '==', data.id).get()
 
         athlets.then((snapshot: firestore.QuerySnapshot) => {

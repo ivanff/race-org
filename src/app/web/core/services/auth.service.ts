@@ -1,6 +1,4 @@
 import {Injectable, OnDestroy} from '@angular/core';
-import {Observable, Subject} from 'rxjs';
-
 import * as firebase from 'firebase/app'
 import {AngularFireAuth} from "@angular/fire/auth"
 import UserCredential = firebase.auth.UserCredential
@@ -8,7 +6,7 @@ import UserCredential = firebase.auth.UserCredential
 @Injectable({
     providedIn: 'root',
 })
-export class AuthService implements OnDestroy{
+export class AuthService implements OnDestroy {
     public user: firebase.User | null
     readonly unsubscribe: any
 

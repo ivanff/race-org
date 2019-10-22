@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms"
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material"
-import {Mark} from "@src/app/home/mark"
+import {Mark} from "@src/app/shared/interfaces/mark"
 import * as firebase from "firebase/app"
 
 @Component({

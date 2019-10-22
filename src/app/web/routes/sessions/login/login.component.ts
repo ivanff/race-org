@@ -20,8 +20,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
     constructor(private fb: FormBuilder,
                 private window: WindowService,
                 private router: Router,
-                private auth: AuthService,
-                private zone: NgZone) {
+                private auth: AuthService) {
         this.onResetForm()
     }
 

@@ -9,22 +9,21 @@ import {
     ViewContainerRef
 } from '@angular/core'
 import {firestore} from 'nativescript-plugin-firebase'
-import {getString} from 'tns-core-modules/application-settings'
 import {ModalDialogOptions, ModalDialogService, RouterExtensions} from 'nativescript-angular'
 import {NfcTagData} from 'nativescript-nfc'
 import {BaseComponent} from "@src/app/shared/base.component"
-import {Athlet} from "@src/app/home/athlet"
-import {NfcService} from "@src/app/shared/nfc.service"
-import {Mark} from "@src/app/home/mark"
-import {CheckPoint} from "@src/app/home/checkpoint"
+import {NfcService} from "@src/app/mobile/services/nfc.service"
+import {Mark} from "@src/app/shared/interfaces/mark"
 import {device, isAndroid} from "tns-core-modules/platform"
 import {FoundDialogComponent} from "@src/app/scan/found-dialog/found-dialog.component"
 import {ActivatedRoute} from "@angular/router"
 import * as moment from 'moment'
-import {SettingsService} from "@src/app/shared/settings.service"
 import {TextField} from "tns-core-modules/ui/text-field"
-import {BehaviorSubject, defer, empty, ReplaySubject} from "rxjs"
+import {BehaviorSubject, defer, EMPTY, ReplaySubject} from "rxjs"
 import {debounceTime, map, switchMap, takeUntil} from "rxjs/operators"
+import {Athlet} from "@src/app/shared/interfaces/athlet"
+import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
+import {SqliteService} from "@src/app/mobile/services/sqlite.service"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
@@ -35,7 +34,7 @@ const firebase = require('nativescript-plugin-firebase/app')
 })
 export class ScanComponent extends BaseComponent implements AfterViewInit, OnInit, OnDestroy {
     last_athlet: Athlet
-    current_checkpoint: CheckPoint = null
+    current_checkpoint: Checkpoint = null
     number$ = new BehaviorSubject(null)
     destroy = new ReplaySubject<any>(1)
     collection = firebase.firestore().collection('athlets')
@@ -49,7 +48,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
                 private modalService: ModalDialogService,
                 private viewContainerRef: ViewContainerRef,
                 private activeRoute: ActivatedRoute,
-                private app_settings: SettingsService) {
+                private options: SqliteService) {
         super(routerExtensions)
     }
 
@@ -67,7 +66,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
             if (snapshot.docs.length === 1) {
                 snapshot.forEach((doc: firestore.DocumentSnapshot) => {
                     const id = doc.id
-                    this.current_checkpoint = {id, ...doc.data()} as CheckPoint
+                    this.current_checkpoint = {id, ...doc.data()} as Checkpoint
                 })
             } else {
                 alert('This device is\'t READER in current competition!')
@@ -85,7 +84,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
                         map((snapshot: firestore.QuerySnapshot) => {
                             let athlet: Athlet | null
                             if (snapshot.docs.length === 1) {
-                                if (this.app_settings.hasCp()) {
+                                if (this.options.hasCp()) {
                                     snapshot.forEach((doc: firestore.DocumentSnapshot) => {
                                         const id = doc.id
                                         athlet = {id, ...doc.data()} as Athlet
@@ -99,7 +98,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
                         takeUntil(this.destroy)
                     )
                 } else {
-                    return empty()
+                    return EMPTY
                 }
             })
         ).subscribe((athlet: Athlet) => {
@@ -159,7 +158,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
             }
         }
 
-        if (moment() > moment(this.app_settings.competition.finish)) {
+        if (moment() > moment(this.options.competition.finish)) {
             this.onFound(this.last_athlet, 'Соревнование окончено, время вышло!', true)
         }
 
@@ -176,20 +175,19 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
     setNfcMark(data: NfcTagData) {
         if (this.current_checkpoint) {
             const mark: Mark = {
-                key: this.current_checkpoint.key,
                 order: this.current_checkpoint.order,
                 created: new Date(),
             }
-            this.app_settings.insert(data.id, '', mark).then((sqlite_id: number) => {
+            this.options.insert(data.id, '', mark).then((sqlite_id: number) => {
                 const athlets = this.collection.where('nfc_id', '==', data.id).get()
                 athlets.then((snapshot: firestore.QuerySnapshot) => {
                     if (snapshot.docs.length === 1) {
-                        if (this.app_settings.hasCp()) {
+                        if (this.options.hasCp()) {
                             snapshot.forEach((doc: firestore.DocumentSnapshot) => {
                                 const id = doc.id
                                 this.last_athlet = {id, ...doc.data()} as Athlet
                                 if (sqlite_id) {
-                                    this.app_settings.update(sqlite_id, data.id, `id[${this.last_athlet.id}]`, mark)
+                                    this.options.update(sqlite_id, data.id, `id[${this.last_athlet.id}]`, mark)
                                 }
                                 this.setMark(mark)
                             })
@@ -211,12 +209,11 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
     setNumberMark(textField: TextField) {
         if (this.current_checkpoint) {
             const mark: Mark = {
-                key: this.current_checkpoint.key,
                 order: this.current_checkpoint.order,
                 created: new Date(),
             }
             let sqlite_id: number = null
-            this.app_settings.insert([], `number[${this.last_athlet.number}]`, mark).then(id => sqlite_id = id)
+            this.options.insert([], `number[${this.last_athlet.number}]`, mark).then(id => sqlite_id = id)
 
             this.setMark(mark)
             this.last_athlet = null

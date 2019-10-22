@@ -1,6 +1,5 @@
-
 export interface Mark {
-    key: string
+    key?: string
     created: any
     order: number
 }

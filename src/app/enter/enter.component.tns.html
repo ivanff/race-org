@@ -1,0 +1,11 @@
+<GridLayout rows="*,*" columns="*">
+    <StackLayout row="0" col="1">
+        <Button text="Google" (tap)="auth.googleLogin()"></Button>
+        <Button text="Facebook" (tap)="auth.facebookLogin()"></Button>
+        <Button text="Phone"></Button>
+    </StackLayout>
+    <StackLayout row="1" col="2">
+        <TextField hint="Код соревнования"></TextField>
+        <Button text="Scan QR code"></Button>
+    </StackLayout>
+</GridLayout>

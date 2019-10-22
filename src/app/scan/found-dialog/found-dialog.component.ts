@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ModalDialogParams} from "nativescript-angular"
-import {Athlet} from "@src/app/home/athlet"
+import {Athlet} from "@src/app/shared/interfaces/athlet"
 
 @Component({
     selector: 'app-found-dialog',

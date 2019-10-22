@@ -1,37 +1,71 @@
 import {Component, NgZone, OnDestroy, OnInit} from '@angular/core'
 import {firestore} from "nativescript-plugin-firebase"
-import {SettingsService} from "@src/app/shared/settings.service"
+import {SqliteService} from "@src/app/mobile/services/sqlite.service"
+import {Competition} from "@src/app/shared/interfaces/competition"
+import {ActivatedRoute} from "@angular/router"
+import {switchMap, takeUntil} from "rxjs/operators"
+import {CompetitionService} from "@src/app/mobile/services/competition.service"
+import {ReplaySubject} from "rxjs"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
 @Component({
-  selector: 'app-stat',
-  templateUrl: './stat.component.html',
-  styleUrls: ['./stat.component.scss']
+    selector: 'app-stat',
+    templateUrl: './stat.component.html',
+    styleUrls: ['./stat.component.scss']
 })
 export class StatComponent implements OnInit, OnDestroy {
-  athlets_count: number = 0
-  open_count: number = 0
-  hobby_count: number = 0
-  private unsubscribe: any
+    athlets_count: number = 0
+    by_class_count: { [key: string]: number } = {}
+    competition: Competition | null
+    private destroy = new ReplaySubject<any>(1)
+    private unsubscribe: () => void
 
-  constructor(private zone: NgZone) {
-  }
+    constructor(private zone: NgZone,
+                private router: ActivatedRoute,
+                private _competition: CompetitionService) {
+        console.log('>> StatComponent constructor')
 
-  ngOnInit() {
-    const $zone = this.zone
-    const athletsCollRef: firestore.Query = firebase.firestore().collection('athlets')
-    this.unsubscribe = athletsCollRef.onSnapshot({includeMetadataChanges: true}, (snapshot: firestore.QuerySnapshot) => {
-      $zone.run(() => {
-        this.athlets_count = snapshot.docs.length
-        this.hobby_count = snapshot.docs.filter((doc: firestore.QueryDocumentSnapshot) => {return doc.data().class === 'hobby'}).length
-        this.open_count = snapshot.docs.filter((doc: firestore.QueryDocumentSnapshot) => {return doc.data().class === 'open'}).length
-      })
-    })
-  }
+        this._competition.selected_competition_id$.pipe(
+            takeUntil(this.destroy)
+        ).subscribe((competition) => {
+            this.competition = competition
+            if (this.competition) {
+                this.competition.classes.forEach((_class) => {
+                    this.by_class_count[_class] = 0
+                })
+                if (this.unsubscribe) {
+                    this.unsubscribe()
+                }
 
-  ngOnDestroy(): void {
-    this.unsubscribe()
-  }
+                this.unsubscribe = firebase.firestore().collection(`athlets_${this.competition.id}`)
+                    .onSnapshot({includeMetadataChanges: true}, (snapshot: firestore.QuerySnapshot) => {
+                        this.zone.run(() => {
+                            this.athlets_count = snapshot.docs.length
+
+                            this.competition.classes.forEach((_class) => {
+                                this.by_class_count[_class] = snapshot.docs.filter((doc: firestore.QueryDocumentSnapshot) => {
+                                    return doc.data().class === _class
+                                }).length
+                            })
+                        })
+                    })
+
+            }
+        })
+    }
+
+    ngOnInit() {
+        console.log('>> StatComponent ngOnInit')
+    }
+
+    ngOnDestroy(): void {
+        if (this.unsubscribe) {
+            this.unsubscribe()
+        }
+        this.destroy.next(null)
+        this.destroy.complete()
+        console.log('>> StatComponent ngOnDestroy')
+    }
 
 }

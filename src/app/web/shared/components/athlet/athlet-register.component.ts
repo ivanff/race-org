@@ -50,9 +50,11 @@ export class AthletRegisterComponent implements OnInit {
             class: ['', [<any>Validators.required]],
             phone: ['', [<any>Validators.minLength(10), <any>Validators.maxLength(10), Validators.pattern("^[0-9]*$")], [AthletRegisterComponent.usedValue(this.athlet_collection, 'phone')]],
             code: ['', [<any>Validators.minLength(6), <any>Validators.required], [this.checkSmsCode()]],
-            captcha: ['', [<any>Validators.required]],
         })
         this.competition.athlet_extra_fields.forEach((item) => this.registerForm.addControl(item, new FormControl('', [])))
+        if (!this.athlet) {
+            this.registerForm.addControl('captcha', new FormControl('', [<any>Validators.required]))
+        }
     }
 
     onSave(model, is_valid: boolean, formDirective?: FormGroupDirective): void {
@@ -74,9 +76,10 @@ export class AthletRegisterComponent implements OnInit {
     }
 
     onSendSms(): void {
+
         if (this.registerForm.controls['phone'].valid) {
             this.http.post(environment.backend_gateway + '/sms',
-                JSON.stringify({phone: this.registerForm.controls['phone'].value}),
+                JSON.stringify({phone: this.registerForm.controls['phone'].value, competition_id: this.competition.id}),
                 {headers: new HttpHeaders({'Content-Type': 'application/json'})}).pipe(
                 catchError((err: HttpErrorResponse) => {
                     if (err.error) {
@@ -132,6 +135,7 @@ export class AthletRegisterComponent implements OnInit {
             return this.http.post(environment.backend_gateway + '/check',
                 JSON.stringify({
                     phone: this.registerForm.controls['phone'].value,
+                    competition_id: this.competition.id,
                     code: control.value
                 }), {headers: new HttpHeaders({'Content-Type': 'application/json'})}).pipe(
                 debounceTime(300),

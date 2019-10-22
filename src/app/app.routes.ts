@@ -9,11 +9,11 @@ import {LoginComponent} from "@src/app/web/routes/sessions/login/login.component
 import {AuthGuard} from "@src/app/web/core/guard/auth.guard"
 import {DashboardAddComponent} from "@src/app/web/routes/dashboard/dashboard-add/dashboard-add.component"
 import {DashboardDetailComponent} from "@src/app/web/routes/dashboard/dashboard-detail/dashboard-detail.component"
-import {CompetitionResolve} from "@src/app/shared/resolvers/competition"
+import {CompetitionResolve} from "@src/app/shared/resolvers/competition.resolver"
 import {ResultsAdminComponent} from "@src/app/web/routes/results/results-admin/results-admin.component"
 import {ResultDetailComponent} from "@src/app/web/routes/results/results-admin/result-detail/result-detail.component"
-import {AthletResolve} from "@src/app/shared/athlet.resolver"
-import {AppAthletRegisterComponent} from "@src/app/web/routes/app-athlet-register/app-athlet-register.component"
+import {AthletResolve} from "@src/app/shared/resolvers/athlet.resolver"
+// import {AppAthletRegisterComponent} from "@src/app/web/routes/app-athlet-register/app-athlet-register.component"
 import {DashboardEditComponent} from "@src/app/web/routes/dashboard/dashboard-edit/dashboard-edit.component"
 
 const routes: Routes = [
@@ -70,11 +70,6 @@ const routes: Routes = [
                     athlet: AthletResolve,
                 }
             },
-            {
-                path: 'sessions',
-                loadChildren: () => import('@src/app/web/routes/sessions/sessions.module').then(m => m.SessionsModule),
-                data: {title: 'Sessions', titleI18n: 'Sessions'},
-            },
         ],
     },
     {
@@ -92,14 +87,17 @@ const routes: Routes = [
             //     data: {title: 'Регистрация', titleI18n: 'Register'},
             // },
         ],
+    }, {
+        path: 'public',
+        loadChildren: () => import('@src/app/web/routes/app-athlet-register/app-athlet-register.module').then(m => m.AppAthletRegisterModule),
     },
-    {
-        path: 'athlet/register/:id',
-        component: AppAthletRegisterComponent,
-        resolve: {
-            competition: CompetitionResolve
-        }
-    },
+    // {
+    //     path: 'athlet/register/:id',
+    //     component: AppAthletRegisterComponent,
+    //     resolve: {
+    //         competition: CompetitionResolve
+    //     }
+    // },
     {path: '**', redirectTo: 'dashboard'},
 ];
 

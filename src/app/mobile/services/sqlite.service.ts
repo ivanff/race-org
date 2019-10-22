@@ -1,17 +1,17 @@
 import {Injectable, OnDestroy} from '@angular/core'
-import {Competition} from "@src/app/competition/competition"
-import {BehaviorSubject, empty, fromEventPattern, ReplaySubject} from "rxjs"
+import {BehaviorSubject, EMPTY, fromEventPattern, ReplaySubject} from "rxjs"
 import {map, switchMap, takeUntil} from "rxjs/operators"
 import {firestore} from "nativescript-plugin-firebase"
-import {CheckPoint} from "@src/app/home/checkpoint"
 import {getString, hasKey, setString} from "tns-core-modules/application-settings"
-import {Mark} from "@src/app/home/mark"
 import {Item} from "@src/app/scan/local-log/item"
-import {knownFolders, Folder, File} from "tns-core-modules/file-system";
+import {knownFolders, Folder, File} from "tns-core-modules/file-system"
 import {Request} from "nativescript-background-http"
 import {environment} from "@src/environments/environment"
 import {device} from "tns-core-modules/platform"
 import * as moment from 'moment'
+import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
+import {Mark} from "@src/app/shared/interfaces/mark"
+import {Competition} from "@src/app/shared/interfaces/competition"
 
 const bghttp = require("nativescript-background-http")
 const firebase = require('nativescript-plugin-firebase/app')
@@ -20,7 +20,7 @@ const Sqlite = require("nativescript-sqlite")
 @Injectable({
     providedIn: 'root'
 })
-export class SettingsService implements OnDestroy {
+export class SqliteService implements OnDestroy {
     competition: Competition
     competition$ = new BehaviorSubject<Competition | null>(null)
     destroy = new ReplaySubject<any>(1)
@@ -61,9 +61,8 @@ export class SettingsService implements OnDestroy {
                     )
 
                 } else {
-                    return empty()
+                    return EMPTY
                 }
-
             })
         ).subscribe((next: Competition | null) => {
             if (next) {
@@ -88,14 +87,14 @@ export class SettingsService implements OnDestroy {
         this.destroy.complete()
     }
 
-    setCp(checkpoint: CheckPoint): void {
+    setCp(checkpoint: Checkpoint): void {
         setString('cp', JSON.stringify(checkpoint))
     }
 
-    getCp(): CheckPoint | null {
+    getCp(): Checkpoint | null {
         if (this.hasCp()) {
             try {
-                return JSON.parse(getString('cp')) as CheckPoint
+                return JSON.parse(getString('cp')) as Checkpoint
             } catch (e) {
                 console.error(e)
             }
@@ -131,11 +130,11 @@ export class SettingsService implements OnDestroy {
 
     async insert(nfc_id: Array<number>, athlet_id: string, mark: Mark) {
 
-        const rows =  await this.check(nfc_id, athlet_id, mark)
+        const rows = await this.check(nfc_id, athlet_id, mark)
 
         if (rows.length) {
             const row = rows[0]
-            const created = row[row.length-1]
+            const created = row[row.length - 1]
             if (moment(created).diff(mark.created, 'minutes') <= 5) {
                 return
             }

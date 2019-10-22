@@ -1,6 +1,7 @@
 import * as firebase from "firebase/app"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 import {Secret} from "@src/app/shared/interfaces/secret"
+import {MobileDevice} from "@src/app/shared/interfaces/mobile-device"
 
 export interface Competition {
     id?: string,
@@ -23,6 +24,7 @@ export interface Competition {
     checkpoints: Array<Checkpoint>,
     is_stage: boolean,
     stages: Array<Competition>,
+    mobile_devices: Array<MobileDevice>,
     athlet_extra_fields: Array<string>,
 
     created: firebase.firestore.Timestamp,

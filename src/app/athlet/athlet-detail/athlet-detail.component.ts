@@ -5,25 +5,25 @@ import {firestore} from 'nativescript-plugin-firebase'
 import {ActivatedRoute} from '@angular/router'
 import {confirm} from 'tns-core-modules/ui/dialogs'
 import {BaseComponent} from "@src/app/shared/base.component"
-import {Athlet} from "@src/app/home/athlet"
-import {NfcService} from "@src/app/shared/nfc.service"
-import {Mark} from "@src/app/home/mark"
-import {SettingsService} from "@src/app/shared/settings.service"
-import {CheckPoint} from "@src/app/home/checkpoint"
+import {NfcService} from "@src/app/mobile/services/nfc.service"
+import {Mark} from "@src/app/shared/interfaces/mark"
+import {Athlet} from "@src/app/shared/interfaces/athlet"
+import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
+import {SqliteService} from "@src/app/mobile/services/sqlite.service"
 
 const firebase = require('nativescript-plugin-firebase/app')
 const phone = require("nativescript-phone")
 
 @Component({
-    selector: 'app-detail',
-    templateUrl: './detail.component.html',
-    styleUrls: ['./detail.component.scss']
+    selector: 'app-athlet-detail',
+    templateUrl: './athlet-detail.component.html',
+    styleUrls: ['./athlet-detail.component.scss']
 })
-export class DetailComponent extends BaseComponent implements OnInit, OnDestroy {
+export class AthletDetailComponent extends BaseComponent implements OnInit, OnDestroy {
     private unsubscribe: any
     athlet: Athlet
     tap_remove_index: number | null
-    checkpoint: CheckPoint
+    checkpoint: Checkpoint
     collection: firestore.CollectionReference = firebase.firestore().collection('athlets')
 
     @ViewChild('activityIndicator', {static: false}) activityIndicatorRef: ElementRef
@@ -32,15 +32,15 @@ export class DetailComponent extends BaseComponent implements OnInit, OnDestroy 
                 private zone: NgZone,
                 private activeRoute: ActivatedRoute,
                 private nfc: NfcService,
-                private app_settings: SettingsService
+                private options: SqliteService
     ) {
         super(routerExtensions)
     }
 
     ngOnInit() {
         this.athlet = this.activeRoute.snapshot.data['athlet']
-        if (this.app_settings.hasCp()) {
-            this.checkpoint = this.app_settings.getCp()
+        if (this.options.hasCp()) {
+            this.checkpoint = this.options.getCp()
         }
 
         this.unsubscribe = this.collection.doc(this.athlet.id).onSnapshot({includeMetadataChanges: true}, (doc: firestore.DocumentSnapshot) => {
@@ -106,16 +106,16 @@ export class DetailComponent extends BaseComponent implements OnInit, OnDestroy 
             alert(`This device is't manage any checkpoint`)
             return
         } else {
-            if (mark.key == this.checkpoint.key) {
+            if (mark.order == this.checkpoint.order) {
                 const options = {
                     title: '',
-                    message: `Удалить прохождени отметки ${mark.key}`,
+                    message: `Удалить прохождени отметки ${this.checkpoint.title}`,
                     okButtonText: 'Да',
                     cancelButtonText: 'Нет',
                 }
                 confirm(options).then((result: boolean) => {
                     if (result) {
-                        const new_checkpoints: Array<Mark> = this.athlet.checkpoints.filter((item: Mark) => {return item.key != mark.key})
+                        const new_checkpoints: Array<Mark> = this.athlet.checkpoints.filter((item: Mark) => {return item.order != mark.order})
 
                         if (new_checkpoints.length != this.athlet.checkpoints.length) {
                             firestore.collection('athlets').doc(this.athlet.id).update({

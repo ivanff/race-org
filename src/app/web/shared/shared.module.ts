@@ -20,6 +20,13 @@ import {FilterPipe} from "@src/app/shared/pipes/filter.pipe"
 import {CsvComponent} from "@src/app/web/shared/components/csv/csv.component"
 import {AthletChangeComponent} from "@src/app/web/shared/components/athlet/athlet-change.component"
 import {AthletRegisterComponent} from "@src/app/web/shared/components/athlet/athlet-register.component"
+import {
+    RECAPTCHA_LANGUAGE,
+    RECAPTCHA_SETTINGS,
+    RecaptchaFormsModule,
+    RecaptchaModule,
+    RecaptchaSettings
+} from "ng-recaptcha"
 
 const THIRD_MODULES = [
     DemoMaterialModule,
@@ -28,6 +35,8 @@ const THIRD_MODULES = [
     NgProgressRouterModule,
     NgSelectModule,
     NgxMatSelectSearchModule,
+    RecaptchaModule,
+    RecaptchaFormsModule,
 ];
 const COMPONENTS = [
     BreadcrumbComponent,
@@ -59,6 +68,16 @@ const PIPES = [
         ...DIRECTIVES,
         ...PIPES,
     ],
+    providers: [
+        {
+            provide: RECAPTCHA_SETTINGS,
+            useValue: {siteKey: '6LfXHrkUAAAAADpcaw0LZFCFsehMD9TxkV9a1mtv'} as RecaptchaSettings,
+        },
+        {
+            provide: RECAPTCHA_LANGUAGE,
+            useValue: 'ru',
+        },
+    ]
 })
 export class SharedModule {
 }

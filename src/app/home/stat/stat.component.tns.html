@@ -1,9 +1,10 @@
-<StackLayout class="p-10">
-    <Label [text]="'Всего зарегестрированно участников: ' + athlets_count"></Label>
-    <Label [text]="'Класс open: ' + open_count"></Label>
-    <Label [text]="'Класс hobby: ' + hobby_count"></Label>
-    <Button class="btn -primary scan" [text]="'Сканировать'|L" [nsRouterLink]="['/scan']"></Button>
-</StackLayout>
-<StackLayout>
-    <Image src="~/images/surskie_zori.jpg"></Image>
+<StackLayout [ngSwitch]="competition" class="p-10">
+    <StackLayout *ngSwitchDefault>
+        <Label [text]="'Всего зарегестрированно участников: ' + athlets_count"></Label>
+        <Label *ngFor="let _class of competition.classes" [text]="'Класс ' + _class + ': ' + by_class_count[_class]"></Label>
+        <Button class="btn -primary scan" [text]="'Сканировать'|L" [nsRouterLink]="['/scan']"></Button>
+    </StackLayout>
+    <StackLayout *ngSwitchCase="null">
+        <Button class="btn -primary scan" [text]="'Назначить\nсоревнование'|L" [nsRouterLink]="['competitions']"></Button>
+    </StackLayout>
 </StackLayout>

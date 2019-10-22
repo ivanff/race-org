@@ -1,0 +1,30 @@
+<GridLayout columns="*, *" rows="auto, *">
+    <StackLayout col="0" row="0" class="p-t-10 p-b-10">
+        <Label text="Admin devices" class="font-weight-bold" horizontalAlignment="center"></Label>
+    </StackLayout>
+    <ListView col="0"
+              row="1"
+              height="100%"
+              [items]="competition?.mobile_devices">
+        <ng-template let-device="item" let-i="index">
+            <Label [text]="device|deviceName"></Label>
+        </ng-template>
+    </ListView>
+    <StackLayout col="1" row="0" class="p-t-10 p-b-10">
+        <Label text="Checkpoints" class="font-weight-bold" horizontalAlignment="center"></Label>
+    </StackLayout>
+    <ListView col="1"
+              row="1"
+              height="100%"
+              [items]="competition?.checkpoints"
+              (itemTap)="onItemTap($event)">
+        <ng-template let-checkpoint="item" let-i="index">
+            <StackLayout [class.active]="isReader(checkpoint)">
+                <Label [text]="checkpoint.order + ': ' + checkpoint.title"></Label>
+                <Label [text]="checkpoint.marshal" *ngIf="checkpoint.marshal" class="font-italic"></Label>
+                <Label [text]="device|getDevice:competition|deviceName" *ngFor="let device of checkpoint.devices" class="font-italic"></Label>
+            </StackLayout>
+        </ng-template>
+    </ListView>
+</GridLayout>
+

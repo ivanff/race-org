@@ -1,9 +1,9 @@
-import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core'
+import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core'
 import {AngularFirestore} from '@angular/fire/firestore'
 import {MatSort, MatTableDataSource} from '@angular/material'
 import * as moment from 'moment-timezone'
 import {NgxTimepickerFieldComponent} from 'ngx-material-timepicker'
-import {Mark as FbMark} from "@src/app/home/mark"
+import {Mark} from "@src/app/shared/interfaces/mark"
 import {ActivatedRoute} from "@angular/router"
 import * as _ from "lodash"
 import {Competition} from "@src/app/shared/interfaces/competition"
@@ -13,7 +13,7 @@ import {ReplaySubject} from "rxjs"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 
 
-export interface Mark extends FbMark {
+export interface ResultMark extends Mark {
     missing?: boolean
     manual?: boolean
     elapsed?: boolean
@@ -24,7 +24,7 @@ export interface TableRow {
     place: number,
     number: number,
     athlet: Athlet,
-    marks: Array<Mark>,
+    marks: Array<ResultMark>,
     last_created: Date,
     last_cp: number
 }
@@ -171,7 +171,7 @@ export class ResultsComponent implements OnInit, AfterViewInit {
             // if (athlet.number != 888) {
             //     return
             // }
-            const clean_marks: Array<Mark | null> = [...athlet.checkpoints.sort((a, b) => a.created < b.created ? -1 : a.created > b.created ? 1 : 0)]
+            const clean_marks: Array<ResultMark | null> = [...athlet.checkpoints.sort((a, b) => a.created < b.created ? -1 : a.created > b.created ? 1 : 0)]
 
             let last_cp = -1
 
@@ -322,7 +322,7 @@ export class ResultsComponent implements OnInit, AfterViewInit {
                         break
                     }
                     default: {
-                        const mark: Mark | undefined = item.marks[i]
+                        const mark: ResultMark | undefined = item.marks[i]
 
                         if (mark) {
                             row[key] = moment(mark.created.toDate()).format('HH:mm:ss')
@@ -346,10 +346,10 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         return (index % cp_in_circle) == (cp_in_circle - 1)
     }
 
-    getLastCircle(marks: Array<Mark>): [Array<Mark>, number] {
+    getLastCircle(marks: Array<ResultMark>): [Array<ResultMark>, number] {
         const cp_in_circle = this.checkpoints.length / this.circles
-        let circles_marks: Array<Array<Mark>> = _.chunk(marks, cp_in_circle)
-        circles_marks = circles_marks.filter((circle: Array<Mark | null>) => circle.filter((mark) => {
+        let circles_marks: Array<Array<ResultMark>> = _.chunk(marks, cp_in_circle)
+        circles_marks = circles_marks.filter((circle: Array<ResultMark | null>) => circle.filter((mark) => {
             if (mark) {
                 if (!mark.elapsed) {
                     return true

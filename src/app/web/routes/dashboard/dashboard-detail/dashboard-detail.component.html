@@ -2,20 +2,29 @@
 
 <mat-tab-group [selectedIndex]="active_tab" (selectedIndexChange)="setActiveTab($event)">
     <mat-tab label="Статистика">
-        <ul>
-            <li>
-                Этапов: {{ competition.stages.length + 1}}
-            </li>
-            <li>
-                Классы: {{ competition.classes.length }}
+        <mat-card>
+            <mat-card-content>
+                <a mat-raised-button [routerLink]="['/public/athlet/register', competition.id]" target="_blank">
+                    Открыть регистрацию
+                </a>
                 <ul>
-                    <li *ngFor="let _class of competition.classes">
-                        {{_class}}: {{ (athlets$|async|filter:[]:{class: _class}).length }}
+                    <li>
+                        Этапов: {{ competition.stages.length + 1}}
+                    </li>
+                    <li>
+                        Классы: {{ competition.classes.length }}
+                        <ul>
+                            <li *ngFor="let _class of competition.classes">
+                                {{_class}}: {{ (athlets$|async|filter:[]:{class: _class}).length }}
+                            </li>
+                        </ul>
                     </li>
                 </ul>
-            </li>
-        </ul>
-        {{ competition.stages|json }}
+
+                {{ competition.stages|json }}
+
+            </mat-card-content>
+        </mat-card>
     </mat-tab>
     <mat-tab label="Редактировать">
         <div fxLayout="row wrap" fxLayoutAlign="space-between stretch" class="p-t-8">

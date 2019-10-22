@@ -7,6 +7,7 @@ import {AngularFirestore} from "@angular/fire/firestore"
 import {debounceTime, distinctUntilChanged, map, shareReplay, takeUntil, tap} from "rxjs/operators"
 import {Observable, ReplaySubject, Subscription} from "rxjs"
 import {Athlet} from "@src/app/shared/interfaces/athlet"
+import {LocalStorageService} from "angular-2-local-storage"
 
 @Component({
     selector: 'app-dashboard-detail',
@@ -18,7 +19,7 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
     protected _subscribers: Array<Subscription> = []
     competition: Competition
     edit_competition: Competition
-    active_tab = 3
+    active_tab:number = 0
     selectCompetition: FormGroup
     filterAthlets: FormGroup
     search = ''
@@ -26,7 +27,9 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
 
     constructor(private route: ActivatedRoute,
                 private afs: AngularFirestore,
-                private router: Router) {
+                private router: Router,
+                private localStorageService: LocalStorageService) {
+        this.active_tab = this.localStorageService.get(`ActiveTab_${this.route.component['name']}`) || 0
 
         this.route.params.pipe(
             takeUntil(this._onDestroy)
@@ -75,6 +78,7 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
 
     setActiveTab($event) {
         this.active_tab = $event
+        this.localStorageService.set(`ActiveTab_${this.route.component['name']}`, $event)
     }
 
     getTzOffset(timezone: string) {
