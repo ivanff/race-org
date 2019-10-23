@@ -1,6 +1,8 @@
-import {Injectable, NgZone, OnDestroy} from '@angular/core'
+import {Injectable, NgZone, OnDestroy, ViewContainerRef} from '@angular/core'
 import {AuthStateChangeListener, LoginOptions, User} from "nativescript-plugin-firebase"
-import {RouterExtensions} from "nativescript-angular"
+import {ModalDialogOptions, ModalDialogParams, ModalDialogService, RouterExtensions} from "nativescript-angular"
+import {RootComponent} from "@src/app/root/root.component"
+import {BehaviorSubject, Subject} from "rxjs"
 
 const firebase = require("nativescript-plugin-firebase")
 
@@ -10,30 +12,48 @@ const firebase = require("nativescript-plugin-firebase")
 })
 export class AuthService implements OnDestroy {
     public user: User | null
+    public user$ = new BehaviorSubject(null)
+    private vcRef: any
     private authListener = {
         onAuthStateChanged: (data) => {
+            console.log('>>> authListener')
             this.zone.run(() => {
                 if (data.loggedIn) {
-                    this.user = data.user
-                    this.routerExtensions.navigate(['/home'], )
+                    this.user$.next(data.user)
+                    this.routerExtensions.navigate(['/home'], {clearHistory: true})
                 } else {
-                    this.user = null
-                    this.routerExtensions.navigate(['/enter'], )
+                    this.user$.next(null)
+                    this.openModalLogin()
                 }
             })
         },
         thisArg: this
     } as AuthStateChangeListener
 
-    constructor(private routerExtensions: RouterExtensions, private zone: NgZone) {
+    constructor(private routerExtensions: RouterExtensions,
+                private zone: NgZone,
+                private modalService: ModalDialogService,
+                ) {
         console.log('>> AuthService __init__')
         firebase.getCurrentUser().then((user: User) => {
             this.authListener.onAuthStateChanged({
                 loggedIn: true,
                 user: user
             })
+        }).catch(() => {
+            this.authListener.onAuthStateChanged({
+                loggedIn: false,
+                user: null
+            })
         })
         firebase.addAuthStateListener(this.authListener)
+        this.user$.subscribe((user: User | null) => {
+            this.user = user
+        })
+    }
+
+    setVcRef(vcRef) {
+        this.vcRef = vcRef
     }
 
     ngOnDestroy(): void {
@@ -55,5 +75,18 @@ export class AuthService implements OnDestroy {
         firebase.login({
             type: firebase.LoginType.FACEBOOK
         } as LoginOptions)
+    }
+
+    openModalLogin() {
+        const options: ModalDialogOptions = {
+            fullscreen: true,
+            viewContainerRef: this.vcRef,
+            context: {
+                path: ['enter']
+            }
+        }
+        this.modalService.showModal(RootComponent, options).then((result) => {
+            console.log('>>> openModalLogin', result)
+        })
     }
 }

@@ -5,7 +5,9 @@ import {AuthService} from "@src/app/mobile/services/auth.service"
 import {shareReplay, switchMap, takeUntil} from "rxjs/operators"
 import {firestore} from "nativescript-plugin-firebase"
 import {setString, remove} from "tns-core-modules/application-settings"
-
+import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
+import {device} from "tns-core-modules/platform"
+import * as moment from 'moment-timezone'
 const firebase = require('nativescript-plugin-firebase/app')
 
 @Injectable({
@@ -13,7 +15,9 @@ const firebase = require('nativescript-plugin-firebase/app')
 })
 export class CompetitionService implements OnDestroy {
     selected_competition: Competition
+    current_checkpoint: Checkpoint
     selected_competition_id$: any
+    finish_time: any
     private destroy = new ReplaySubject<any>(1)
 
     constructor(private auth: AuthService, private zone: NgZone) {
@@ -36,10 +40,19 @@ export class CompetitionService implements OnDestroy {
             this.selected_competition = competition
             if (competition) {
                 setString('selected_competition_id', competition.id)
+                this.setCp()
+                this.setStartTime()
             } else {
                 remove('selected_competition_id')
+                this.current_checkpoint = null
+                this.finish_time = null
             }
         })
+    }
+
+    ngOnDestroy(): void {
+        this.destroy.next(null)
+        this.destroy.complete()
     }
 
     firestoreCollectionObservable(id) {
@@ -59,8 +72,20 @@ export class CompetitionService implements OnDestroy {
         })
     }
 
-    ngOnDestroy(): void {
-        this.destroy.next(null)
-        this.destroy.complete()
+    private setCp() {
+        const checkpoints = this.selected_competition.checkpoints.filter((item: Checkpoint) => item.devices.indexOf(device.uuid) > -1)
+        if (checkpoints.length <= 0) {
+            alert('This device is\'t READER in current competition!')
+        } else if (checkpoints.length == 1) {
+            this.current_checkpoint = checkpoints[0]
+        } else {
+            alert('This device is\'t MULTIPLE READER in current competition!')
+        }
+        return this.current_checkpoint
     }
+
+    private setStartTime() {
+        this.finish_time = moment(this.selected_competition.start_date).add(this.selected_competition.start_time, 's').add(this.selected_competition.duration, 's')
+    }
+
 }

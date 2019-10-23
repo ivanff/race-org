@@ -1,8 +1,8 @@
-<RadSideDrawer gesturesEnabled="true" [allowEdgeSwipe]="_activatedUrl != '/enter'" #sideDrawer>
+<RadSideDrawer gesturesEnabled="true" tkToggleNavButton [allowEdgeSwipe]="_activatedUrl != '/enter'">
     <GridLayout tkDrawerContent rows="56, *" class="fix-release-color">
-        <StackLayout *ngIf="_competition.selected_competition" class="side-title" row="0">
-            <Label [text]="'<' + (_competition?.selected_competition_id$|async)?.title + '>'" class="h2"></Label>
-        </StackLayout>
+<!--        <StackLayout *ngIf="_competition.selected_competition" class="side-title" row="0">-->
+<!--            <Label [text]="'<' + (_competition?.selected_competition_id$|async)?.title + '>'" class="h2"></Label>-->
+<!--        </StackLayout>-->
         <ScrollView row="1">
             <StackLayout>
                 <StackLayout>
@@ -12,11 +12,12 @@
                 </StackLayout>
                 <StackLayout class="m-10"></StackLayout>
                 <StackLayout *ngIf="_competition.selected_competition">
-<!--                    <Label [text]="'Scan'|L" (tap)="navigateTo('scan')" [class.active]="_activatedUrl === '/scan'" class="side-label font-weight-bold"></Label>-->
+                    <Label [text]="'Scan'|L" (tap)="navigateTo('scan')" [class.active]="_activatedUrl === '/scan'" class="side-label font-weight-bold"></Label>
                     <Label [text]="'Athlets'|L" (tap)="navigateTo('/athlets')" [class.active]="_activatedUrl === '/athlets'" class="side-label"></Label>
                 </StackLayout>
                 <StackLayout class="m-10"></StackLayout>
-                <Label [text]="'Logout'|L" class="side-label" (tap)="onLogout()"></Label>
+                <Label [text]="'Enter'|L" class="side-label" (tap)="openModal('enter')"></Label>
+                <Label [text]="'Logout'|L" *ngIf="auth.user" class="side-label" (tap)="onLogout()"></Label>
                 <Label [text]="'Back'|L" class="side-label" (tap)="onCloseDrawerTap()"></Label>
                 <Label [text]="'Exit'|L" class="side-label" (tap)="onExit()"></Label>
             </StackLayout>

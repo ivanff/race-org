@@ -11,10 +11,9 @@
         <Label *ngSwitchCase="null" text="Это устройство не назначено считывателем" class="text-center warning"></Label>
         <Label *ngSwitchDefault class="text-center" textWrap="true">
             <FormattedString>
-                <span [text]="current_checkpoint.key + '&#xa;'" class="font-weight-bold"></span>
-                <span [text]="'Название: ' + current_checkpoint.name + '&#xa;'"></span>
+                <span [text]="'Название: ' + current_checkpoint.title + '&#xa;'" class="font-weight-bold"></span>
                 <span [text]="'Порядок: ' + current_checkpoint.order + '&#xa;'"></span>
-                <span [text]="'Класс: ' + current_checkpoint.kind + '&#xa;'"></span>
+                <span [text]="'Класс: ' + (current_checkpoint.classes|join:', ') + '&#xa;'"></span>
             </FormattedString>
         </Label>
     </StackLayout>

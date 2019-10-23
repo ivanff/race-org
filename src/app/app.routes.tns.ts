@@ -12,16 +12,21 @@ import {CompetitionResolve} from "@src/app/shared/resolvers/competition.resolver
 import {CompetitionDetailComponent} from "@src/app/competition/competition-detail/competition-detail.component"
 import {AthletResolve} from "@src/app/shared/resolvers/athlet.resolver"
 import {AthletDetailComponent} from "@src/app/athlet/athlet-detail/athlet-detail.component"
+import {AuthResolve} from "@src/app/shared/resolvers/auth.resolver"
+import {AuthGuard} from "@src/app/web/core/guard/auth.guard"
+import {ScanComponent} from "@src/app/scan/scan.component"
+import {LocalLogComponent} from "@src/app/scan/local-log/local-log.component"
 
 export const routes: Routes = [
     {
         path: '',
-        redirectTo: '/enter',
+        redirectTo: '/home',
         pathMatch: 'full',
     },
     {
         path: 'home',
         component: HomeComponent,
+        canActivate: [AuthGuard],
         resolve: {
             competition: CompetitionResolve
         },
@@ -44,11 +49,16 @@ export const routes: Routes = [
                 resolve: {
                     competition: CompetitionResolve
                 }
-            }
+            },
         ]
     }, {
         path: 'enter',
-        component: EnterComponent
+        component: EnterComponent,
+        // canActivate: [],
+        outlet: 'root'
+        // resolve: {
+        //
+        // }
     },
     {
         path: 'athlets',
@@ -60,6 +70,14 @@ export const routes: Routes = [
         resolve: {
             athlet: AthletResolve
         }
+    },
+    {
+        path: "scan",
+        component: ScanComponent,
+    },
+    {
+        path: "scan/local_log",
+        component: LocalLogComponent,
     },
     // {
     //     path: 'athlets',

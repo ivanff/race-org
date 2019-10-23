@@ -1,12 +1,10 @@
 import {Component, OnDestroy, OnInit} from '@angular/core'
 import {RouterExtensions} from "nativescript-angular"
 import {device} from "tns-core-modules/platform"
-import * as _ from "lodash"
 import * as dialogs from "tns-core-modules/ui/dialogs"
 import {PromptResult} from "tns-core-modules/ui/dialogs"
 import {firestore} from "nativescript-plugin-firebase"
 import {Competition} from "@src/app/shared/interfaces/competition"
-import {getString, hasKey, setString} from "tns-core-modules/application-settings"
 import {AuthService} from "@src/app/mobile/services/auth.service"
 import {BaseComponent} from "@src/app/shared/base.component"
 import {MobileDevice} from "@src/app/shared/interfaces/mobile-device"
@@ -14,18 +12,9 @@ import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
 import {ReplaySubject} from "rxjs"
 import {takeUntil} from "rxjs/operators"
+import * as _ from "lodash"
 
 const firebase = require('nativescript-plugin-firebase/app')
-
-// const device_obj = {
-//   manufacturer: device.manufacturer,
-//   model: device.model,
-//   osVersion: device.osVersion,
-//   deviceType: device.deviceType,
-//   uuid: device.uuid,
-//   language: device.language,
-//   region: device.region,
-// }
 
 @Component({
     selector: 'app-competition',
@@ -87,6 +76,7 @@ export class CompetitionComponent extends BaseComponent implements OnInit, OnDes
             competition.mobile_devices.push({
                 isAdmin,...this.mobile_device
             })
+            competition.mobile_devices = _.unionBy(competition.mobile_devices, 'uuid')
         }
         this.collection.doc(competition.id).set(competition, {merge: true})
     }

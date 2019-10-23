@@ -10,6 +10,7 @@ import {Mark} from "@src/app/shared/interfaces/mark"
 import {Athlet} from "@src/app/shared/interfaces/athlet"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 import {SqliteService} from "@src/app/mobile/services/sqlite.service"
+import {CompetitionService} from "@src/app/mobile/services/competition.service"
 
 const firebase = require('nativescript-plugin-firebase/app')
 const phone = require("nativescript-phone")
@@ -20,11 +21,12 @@ const phone = require("nativescript-phone")
     styleUrls: ['./athlet-detail.component.scss']
 })
 export class AthletDetailComponent extends BaseComponent implements OnInit, OnDestroy {
-    private unsubscribe: any
     athlet: Athlet
     tap_remove_index: number | null
-    checkpoint: Checkpoint
-    collection: firestore.CollectionReference = firebase.firestore().collection('athlets')
+    current_checkpoint: Checkpoint
+    checkpoints: {[key:number]: Checkpoint} = {}
+    private unsubscribe: any
+    private collection: firestore.CollectionReference
 
     @ViewChild('activityIndicator', {static: false}) activityIndicatorRef: ElementRef
 
@@ -32,27 +34,32 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
                 private zone: NgZone,
                 private activeRoute: ActivatedRoute,
                 private nfc: NfcService,
-                private options: SqliteService
+                private options: SqliteService,
+                private _competition: CompetitionService
     ) {
         super(routerExtensions)
+        this.collection = firebase.firestore().collection(`athlets_${this._competition.selected_competition.id}`)
+        this.current_checkpoint = {...this._competition.current_checkpoint}
+        this._competition.selected_competition.checkpoints.forEach((item: Checkpoint) => {
+            this.checkpoints[item.order] = item
+        })
     }
 
     ngOnInit() {
         this.athlet = this.activeRoute.snapshot.data['athlet']
-        if (this.options.hasCp()) {
-            this.checkpoint = this.options.getCp()
-        }
-
-        this.unsubscribe = this.collection.doc(this.athlet.id).onSnapshot({includeMetadataChanges: true}, (doc: firestore.DocumentSnapshot) => {
+        this.unsubscribe = this.collection.doc(this.athlet.id).onSnapshot((doc: firestore.DocumentSnapshot) => {
             if (doc.exists) {
-                this.athlet = {...doc.data()} as Athlet
+                const id = doc.id
+                this.athlet = {id,...doc.data()} as Athlet
             }
         })
     }
 
     ngOnDestroy(): void {
         this.nfc.doStopTagListener()
-        this.unsubscribe()
+        if (this.unsubscribe) {
+            this.unsubscribe()
+        }
     }
 
     setNfcId(data: NfcTagData) {
@@ -102,23 +109,22 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
             }
         , 500)
 
-        if (!this.checkpoint) {
+        if (!this.current_checkpoint) {
             alert(`This device is't manage any checkpoint`)
             return
         } else {
-            if (mark.order == this.checkpoint.order) {
+            if (mark.order == this.current_checkpoint.order) {
                 const options = {
                     title: '',
-                    message: `Удалить прохождени отметки ${this.checkpoint.title}`,
+                    message: `Удалить прохождени отметки ${this.current_checkpoint.title}`,
                     okButtonText: 'Да',
                     cancelButtonText: 'Нет',
                 }
                 confirm(options).then((result: boolean) => {
                     if (result) {
-                        const new_checkpoints: Array<Mark> = this.athlet.checkpoints.filter((item: Mark) => {return item.order != mark.order})
-
+                        const new_checkpoints: Array<Mark> = this.athlet.checkpoints.filter((item: Mark) => {return item.created != mark.created})
                         if (new_checkpoints.length != this.athlet.checkpoints.length) {
-                            firestore.collection('athlets').doc(this.athlet.id).update({
+                            this.collection.doc(this.athlet.id).update({
                                 checkpoints: new_checkpoints
                             })
                         }

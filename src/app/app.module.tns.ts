@@ -30,6 +30,11 @@ import {SqliteService} from "@src/app/mobile/services/sqlite.service"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
 import {AthletDetailComponent} from "@src/app/athlet/athlet-detail/athlet-detail.component"
 import {AthletComponent} from "@src/app/athlet/athlet.component"
+import {AuthResolve} from "@src/app/shared/resolvers/auth.resolver"
+import {AuthGuard} from "@src/app/web/core/guard/auth.guard"
+import {ScanComponent} from "@src/app/scan/scan.component"
+import {JoinPipe} from "@src/app/shared/pipes/join.pipe"
+import {LocalLogComponent} from "@src/app/scan/local-log/local-log.component"
 
 
 // Uncomment and add to NgModule imports if you need to use two-way binding
@@ -55,16 +60,15 @@ import {AthletComponent} from "@src/app/athlet/athlet.component"
 
         AthletComponent,
         AthletDetailComponent,
-        // DetailComponent,
-        // ScanComponent,
-        // LocalLogComponent,
-        // OptionsComponent,
+        ScanComponent,
+        LocalLogComponent,
         CompetitionComponent,
         CompetitionDetailComponent,
 
         FilterPipe,
         DeviceNamePipe,
         GetDevicePipe,
+        JoinPipe,
         // FoundDialogComponent
     ],
     imports: [
@@ -80,6 +84,9 @@ import {AthletComponent} from "@src/app/athlet/athlet.component"
         CompetitionResolve,
         AthletResolve,
         AdminResolve,
+        AuthResolve,
+
+        AuthGuard,
 
         CompetitionService,
         SqliteService,

@@ -5,7 +5,7 @@
         <Label text="&#xf0c7;" class="far p-r-10"></Label>
     </ActionItem>
     <ActionItem [text]="'Upload to server'|L"
-                (tap)="app_settings.upload()"
+                (tap)="options.upload()"
                 ios.position="right"
                 android.position="popup"></ActionItem>
 </ActionBar>
@@ -14,12 +14,11 @@
         <ListView height="100%"
                   [items]="items" style="line-height: 20px">
             <ng-template let-item="item" let-i="index" let-odd="odd" let-even="even">
-                <GridLayout columns="*" rows="*, *, *, *, *">
+                <GridLayout columns="*" rows="*, *, *, *">
                     <Label [text]="'nfc_id: ' + item.nfc_id" col="0" row="0" class="option"></Label>
                     <Label [text]="'athlet_id: ' + item.athlet_id" col="0" row="1" class="option"></Label>
-                    <Label [text]="'checkpoint_key: ' + item.checkpoint_key" col="0" row="2" class="option"></Label>
-                    <Label [text]="'order: ' + item.checkpoint_order" col="0" row="3" class="option"></Label>
-                    <Label [text]="'created: ' + (item.created|date:'HH:MM')" col="0" row="4" class="option"></Label>
+                    <Label [text]="'order: ' + item.checkpoint_order" col="0" row="2" class="option"></Label>
+                    <Label [text]="'created: ' + (item.created|date:'HH:mm:ss')" col="0" row="3" class="option"></Label>
                 </GridLayout>
             </ng-template>
         </ListView>

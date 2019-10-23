@@ -6,6 +6,8 @@ import {MobileDevice} from "@src/app/shared/interfaces/mobile-device"
 })
 export class DeviceNamePipe implements PipeTransform {
     transform(item: MobileDevice): string {
-      return item.model || `${item.deviceType} ОС: ${item.osVersion}`
+        if (item) {
+            return item.model || `${item.deviceType} ОС: ${item.osVersion}`
+        }
     }
 }

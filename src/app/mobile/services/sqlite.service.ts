@@ -1,30 +1,23 @@
 import {Injectable, OnDestroy} from '@angular/core'
-import {BehaviorSubject, EMPTY, fromEventPattern, ReplaySubject} from "rxjs"
-import {map, switchMap, takeUntil} from "rxjs/operators"
-import {firestore} from "nativescript-plugin-firebase"
-import {getString, hasKey, setString} from "tns-core-modules/application-settings"
-import {Item} from "@src/app/scan/local-log/item"
-import {knownFolders, Folder, File} from "tns-core-modules/file-system"
+import {ReplaySubject} from "rxjs"
+import {Folder, File} from "tns-core-modules/file-system"
 import {Request} from "nativescript-background-http"
 import {environment} from "@src/environments/environment"
 import {device} from "tns-core-modules/platform"
 import * as moment from 'moment'
-import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 import {Mark} from "@src/app/shared/interfaces/mark"
-import {Competition} from "@src/app/shared/interfaces/competition"
+import {CompetitionService} from "@src/app/mobile/services/competition.service"
+import {SqlRow} from "@src/app/shared/interfaces/sql-row"
 
 const bghttp = require("nativescript-background-http")
-const firebase = require('nativescript-plugin-firebase/app')
 const Sqlite = require("nativescript-sqlite")
 
 @Injectable({
     providedIn: 'root'
 })
 export class SqliteService implements OnDestroy {
-    competition: Competition
-    competition$ = new BehaviorSubject<Competition | null>(null)
     destroy = new ReplaySubject<any>(1)
-    private sqlite_db_name = "race_org_local.db"
+    private sqlite_db_name: string
     private upload_params: Request = {
         url: environment.backend_gateway + '/local_log',
         method: 'POST',
@@ -43,36 +36,12 @@ export class SqliteService implements OnDestroy {
     }
     private database: any
 
-    constructor() {
-        this.competition = this.competition$.getValue()
-        this.competition$.pipe(
-            switchMap((doc: Competition, i: number) => {
-                if (doc) {
-                    const db = firebase.firestore()
-                    db.settings({timestampsInSnapshots: true})
-                    return fromEventPattern((handler => {
-                        return firebase.firestore().collection("competitions").doc(doc.id).onSnapshot({includeMetadataChanges: true}, handler)
-                    }), (handler, unsubscribe) => unsubscribe()).pipe(
-                        map((doc: firestore.DocumentSnapshot) => {
-                            const id = doc.id
-                            return {id, ...doc.data()} as Competition
-                        }),
-                        takeUntil(this.destroy)
-                    )
-
-                } else {
-                    return EMPTY
-                }
-            })
-        ).subscribe((next: Competition | null) => {
-            if (next) {
-                this.competition = next
-            }
-        })
+    constructor(private _competition: CompetitionService) {
+        this.sqlite_db_name = `race_org_local_${this._competition.selected_competition.id}.db`
 
         new Sqlite(this.sqlite_db_name).then(db => {
             // db.execSQL("DROP TABLE nfc_scan_events")
-            db.execSQL("CREATE TABLE IF NOT EXISTS nfc_scan_events (id INTEGER PRIMARY KEY AUTOINCREMENT, nfc_id TEXT, athlet_id TEXT, checkpoint_key TEXT NOT NULL, checkpoint_order INTEGER NOT NULL, created DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL)").then(id => {
+            db.execSQL("CREATE TABLE IF NOT EXISTS nfc_scan_events (id INTEGER PRIMARY KEY AUTOINCREMENT, nfc_id TEXT, athlet_id TEXT, checkpoint_order INTEGER NOT NULL, created DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL)").then(id => {
                 this.database = db;
             }, error => {
                 console.log("CREATE TABLE ERROR", error);
@@ -86,66 +55,41 @@ export class SqliteService implements OnDestroy {
         this.destroy.next(null)
         this.destroy.complete()
     }
-
-    setCp(checkpoint: Checkpoint): void {
-        setString('cp', JSON.stringify(checkpoint))
-    }
-
-    getCp(): Checkpoint | null {
-        if (this.hasCp()) {
-            try {
-                return JSON.parse(getString('cp')) as Checkpoint
-            } catch (e) {
-                console.error(e)
-            }
-
-        }
-    }
-
-    hasCp(): boolean {
-        if (hasKey('cp')) {
-            try {
-                JSON.parse(getString('cp'))
-                return true
-            } catch (e) {
-                console.error(e)
-                return false
-            }
-        } else {
-            return false
-        }
-    }
-
     async check(nfc_id: Array<number>, athlet_id: string, mark: Mark) {
         let check_sql: [string, Array<any>]
 
         if (athlet_id) {
-            check_sql = ["SELECT id FROM nfc_scan_events WHERE athlet_id = ? AND checkpoint_key = ? ORDER BY created DESC LIMIT 1", [athlet_id, mark.key]]
-        } else {
-            check_sql = ["SELECT id FROM nfc_scan_events WHERE nfc_id = ? AND checkpoint_key = ? ORDER BY created DESC LIMIT 1", [nfc_id.join(','), mark.key]]
+            check_sql = ["SELECT id, created FROM nfc_scan_events WHERE athlet_id = ? AND checkpoint_order = ? ORDER BY id DESC LIMIT 1", [athlet_id, mark.order]]
+        } else if (nfc_id.length) {
+            check_sql = ["SELECT id, created FROM nfc_scan_events WHERE nfc_id = ? AND checkpoint_order = ? ORDER BY id DESC LIMIT 1", [nfc_id.join(','), mark.order]]
         }
 
-        return await this.database.execSQL(check_sql[0], check_sql[1])
+        return await this.database.all(check_sql[0], check_sql[1])
     }
 
     async insert(nfc_id: Array<number>, athlet_id: string, mark: Mark) {
 
         const rows = await this.check(nfc_id, athlet_id, mark)
-
-        if (rows.length) {
-            const row = rows[0]
-            const created = row[row.length - 1]
-            if (moment(created).diff(mark.created, 'minutes') <= 5) {
-                return
+        if (rows) {
+            if (rows.length) {
+                const row = rows[0]
+                const created = row[row.length - 1]
+                console.log(
+                    rows,
+                    moment(created),
+                    moment(mark.created).diff(created, 'minutes')
+                )
+                if (moment(mark.created).diff(created, 'minutes') <= 5) {
+                    return
+                }
             }
         }
 
-        return await this.database.execSQL("INSERT INTO nfc_scan_events (nfc_id, athlet_id, checkpoint_key, checkpoint_order, created) VALUES (?, ?, ?, ?, ?)", [
+        return await this.database.execSQL("INSERT INTO nfc_scan_events (nfc_id, athlet_id, checkpoint_order, created) VALUES (?, ?, ?, ?)", [
             nfc_id.join(','),
             athlet_id,
-            mark.key,
             mark.order,
-            mark.created
+            mark.created.toISOString()
         ]).then(id => {
             console.log("ID", id)
         }, error => {
@@ -154,12 +98,11 @@ export class SqliteService implements OnDestroy {
     }
 
     update(id: number, nfc_id: Array<number>, athlet_id: string, mark: Mark) {
-        this.database.execSQL("UPDATE nfc_scan_events SET (nfc_id, athlet_id, checkpoint_key, checkpoint_order, created) VALUES (?, ?, ?, ?, ?) WHERE id = ?", [
+        this.database.execSQL("UPDATE nfc_scan_events SET (nfc_id, athlet_id, checkpoint_order, created) VALUES (?, ?, ?, ?) WHERE id = ?", [
             nfc_id.join(','),
             athlet_id,
-            mark.key,
             mark.order,
-            mark.created,
+            mark.created.toISOString(),
             id
         ]).then(id => {
             console.log("ID", id)
@@ -169,16 +112,15 @@ export class SqliteService implements OnDestroy {
     }
 
     fetch() {
-        return this.database.all("SELECT * FROM nfc_scan_events ORDER BY created ASC LIMIT 1000").then((rows: Array<Array<any>>) => {
-            return rows.map((row: Array<any>): Item => {
+        return this.database.all("SELECT * FROM nfc_scan_events ORDER BY id DESC LIMIT 1000").then((rows: Array<Array<any>>) => {
+            return rows.map((row: Array<any>): SqlRow => {
                 return {
                     id: row[0],
                     nfc_id: row[1],
                     athlet_id: row[2],
-                    checkpoint_key: row[3],
-                    checkpoint_order: row[4],
-                    created: row[5]
-                } as Item
+                    checkpoint_order: row[3],
+                    created: moment(row[4]).toDate()
+                } as SqlRow
             })
         })
     }

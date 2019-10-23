@@ -1,4 +1,13 @@
-import {Component, OnInit, ViewContainerRef, ViewChild, OnDestroy, AfterViewInit, NgZone} from "@angular/core";
+import {
+    Component,
+    OnInit,
+    ViewContainerRef,
+    ViewChild,
+    OnDestroy,
+    AfterViewInit,
+    NgZone,
+    ChangeDetectorRef
+} from "@angular/core";
 import {ModalDialogOptions, ModalDialogService} from "nativescript-angular/modal-dialog";
 import {RouterExtensions} from "nativescript-angular/router";
 import {RadSideDrawerComponent} from "nativescript-ui-sidedrawer/angular";
@@ -6,14 +15,12 @@ import * as application from "tns-core-modules/application"
 import {confirm} from "tns-core-modules/ui/dialogs"
 import {exit} from "nativescript-exit"
 import {RootComponent} from "./root/root.component"
-import {NavigationEnd} from "@angular/router"
+import {NavigationEnd, NavigationStart} from "@angular/router"
 import {filter} from "rxjs/operators"
-import {SqliteService} from "./mobile/services/sqlite.service"
 import {AuthService} from "./mobile/services/auth.service"
 import {CompetitionService} from "./mobile/services/competition.service"
 
 const firebase = require('nativescript-plugin-firebase')
-const firebase_app = require('nativescript-plugin-firebase/app')
 
 @Component({
     selector: 'app-root',
@@ -22,15 +29,18 @@ const firebase_app = require('nativescript-plugin-firebase/app')
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     _activatedUrl: string
+
     @ViewChild(RadSideDrawerComponent, {static: false}) sideDrawerComponent: RadSideDrawerComponent
 
     constructor(private routerExtensions: RouterExtensions,
                 private modalService: ModalDialogService,
+                private _changeDetectionRef: ChangeDetectorRef,
                 private vcRef: ViewContainerRef,
                 private zone: NgZone,
-                private auth: AuthService,
+                public auth: AuthService,
                 public _competition: CompetitionService) {
         this._activatedUrl = "/home"
+        this.auth.setVcRef(this.vcRef)
     }
 
     ngOnInit(){
@@ -46,9 +56,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit(): void {
+        this._changeDetectionRef.detectChanges()
         this.routerExtensions.router.events
             .pipe(filter((event: any) => event instanceof NavigationEnd))
-            .subscribe((event: NavigationEnd) => this._activatedUrl = event.urlAfterRedirects)
+            .subscribe((event: NavigationEnd) => {
+                this._activatedUrl = event.urlAfterRedirects
+            })
     }
 
     ngOnDestroy(): void {
@@ -89,7 +102,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             }
         )
     }
-
 
     onCloseDrawerTap(): void {
         if (this.sideDrawerComponent) {
