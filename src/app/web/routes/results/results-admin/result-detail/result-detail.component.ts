@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core'
 import {ActivatedRoute} from "@angular/router"
-import {Mark} from "@src/app/web/routes/results/results.component"
+import {ResultMark as Mark} from "@src/app/web/routes/results/results.component"
 import {AngularFirestore, AngularFirestoreDocument} from "@angular/fire/firestore"
 import {MatDialog, MatTableDataSource} from "@angular/material"
 import {ResultSetTimeComponent} from "@src/app/web/routes/results/results-admin/result-detail/result-set-time/result-set-time.component"

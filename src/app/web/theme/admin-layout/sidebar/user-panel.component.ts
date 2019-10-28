@@ -27,7 +27,7 @@ import {AuthService} from "@src/app/web/core"
   `,
 })
 export class UserPanelComponent {
-  constructor(private route: Router, private auth: AuthService) {
+  constructor(private route: Router, public auth: AuthService) {
   }
 
   onLogout() {

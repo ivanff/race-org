@@ -1,4 +1,4 @@
-<mat-tab-group [hidden]="route.children.length">
+<mat-tab-group [hidden]="hasChildren">
     <mat-tab *ngFor="let _class of classes" [label]="_class|titlecase">
         <app-results [classes]="[_class]"></app-results>
     </mat-tab>

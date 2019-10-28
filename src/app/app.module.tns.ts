@@ -9,21 +9,19 @@ import {NativeScriptLocalizeModule} from "nativescript-localize/localize.module"
 import {NativeScriptUIListViewModule} from "nativescript-ui-listview/angular"
 import {FilterPipe} from "@src/app/shared/pipes/filter.pipe"
 import {RootComponent} from "@src/app/root/root.component"
-// import {ScanComponent} from "@src/app/scan/scan.component"
-import {CompetitionComponent} from "@src/app/competition/competition.component"
-// import {FoundDialogComponent} from "@src/app/scan/found-dialog/found-dialog.component"
+import {CompetitionComponent} from "@src/app/home/competition/competition.component"
+import {FoundDialogComponent} from "@src/app/scan/found-dialog/found-dialog.component"
 import {StatComponent} from "@src/app/home/stat/stat.component"
 import {OrderModule} from "ngx-order-pipe"
 import {AdminResolve} from "@src/app/shared/admin.resolver"
 import {BaseComponent} from "@src/app/shared/base.component"
-// import {LocalLogComponent} from "@src/app/scan/local-log/local-log.component"
 import {AboutComponent} from "@src/app/home/about/about.component"
 import {ReactiveFormsModule} from "@angular/forms";
 import {AthletResolve} from "@src/app/shared/resolvers/athlet.resolver"
 import {EnterComponent} from "@src/app/enter/enter.component"
 import {AuthService} from "@src/app/mobile/services/auth.service"
 import {CompetitionResolve} from "@src/app/shared/resolvers/competition.resolver"
-import {CompetitionDetailComponent} from "@src/app/competition/competition-detail/competition-detail.component"
+import {CompetitionDetailComponent} from "@src/app/home/competition/competition-detail/competition-detail.component"
 import {DeviceNamePipe} from "@src/app/shared/pipes/device-name.pipe"
 import {GetDevicePipe} from "@src/app/shared/pipes/get-device.pipe"
 import {SqliteService} from "@src/app/mobile/services/sqlite.service"
@@ -35,6 +33,8 @@ import {AuthGuard} from "@src/app/web/core/guard/auth.guard"
 import {ScanComponent} from "@src/app/scan/scan.component"
 import {JoinPipe} from "@src/app/shared/pipes/join.pipe"
 import {LocalLogComponent} from "@src/app/scan/local-log/local-log.component"
+import {CheckpointResolver} from "@src/app/shared/resolvers/checkpoint.resolver"
+import {EnterSecretComponent} from "@src/app/enter/enter-secret/enter-secret.component"
 
 
 // Uncomment and add to NgModule imports if you need to use two-way binding
@@ -46,7 +46,7 @@ import {LocalLogComponent} from "@src/app/scan/local-log/local-log.component"
 @NgModule({
     entryComponents: [
         RootComponent,
-        // FoundDialogComponent,
+        FoundDialogComponent,
     ],
     declarations: [
         BaseComponent,
@@ -54,6 +54,7 @@ import {LocalLogComponent} from "@src/app/scan/local-log/local-log.component"
         RootComponent,
 
         EnterComponent,
+        EnterSecretComponent,
         HomeComponent,
         StatComponent,
         AboutComponent,
@@ -69,7 +70,7 @@ import {LocalLogComponent} from "@src/app/scan/local-log/local-log.component"
         DeviceNamePipe,
         GetDevicePipe,
         JoinPipe,
-        // FoundDialogComponent
+        FoundDialogComponent
     ],
     imports: [
         NativeScriptLocalizeModule,
@@ -85,6 +86,7 @@ import {LocalLogComponent} from "@src/app/scan/local-log/local-log.component"
         AthletResolve,
         AdminResolve,
         AuthResolve,
+        CheckpointResolver,
 
         AuthGuard,
 

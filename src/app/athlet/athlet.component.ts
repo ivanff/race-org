@@ -9,6 +9,7 @@ import {NfcService} from "@src/app/mobile/services/nfc.service"
 import {ActivatedRoute} from "@angular/router"
 import {Athlet} from "@src/app/shared/interfaces/athlet"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
+import {ListViewEventData, RadListView} from "nativescript-ui-listview"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
@@ -42,7 +43,7 @@ export class AthletComponent extends BaseComponent implements OnInit, OnDestroy 
                 this.athlets = []
                 snapshot.forEach((doc: firestore.DocumentSnapshot) => {
                     const id = doc.id
-                    this.athlets.push({id,...doc.data()} as Athlet)
+                    this.athlets.push({id, ...doc.data()} as Athlet)
                 })
             })
         })
@@ -61,9 +62,11 @@ export class AthletComponent extends BaseComponent implements OnInit, OnDestroy 
         if (isAndroid) {
             this.searchBarRef.nativeElement.android.clearFocus()
         }
-
-        this.activityIndicatorRef.nativeElement.busy = false
+        if (this.activityIndicatorRef.nativeElement.busy) {
+            this.activityIndicatorRef.nativeElement.busy = false
+        }
         this.routerExtensions.navigate([athlet.phone], {relativeTo: this.activeRoute})
+        return
     }
 
     searchBarLoaded(args) {

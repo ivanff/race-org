@@ -1,25 +1,91 @@
-<RadSideDrawer gesturesEnabled="true" tkToggleNavButton [allowEdgeSwipe]="_activatedUrl != '/enter'">
-    <GridLayout tkDrawerContent rows="56, *" class="fix-release-color">
-<!--        <StackLayout *ngIf="_competition.selected_competition" class="side-title" row="0">-->
-<!--            <Label [text]="'<' + (_competition?.selected_competition_id$|async)?.title + '>'" class="h2"></Label>-->
-<!--        </StackLayout>-->
+<RadSideDrawer [allowEdgeSwipe]="_activatedUrl != '/'">
+    <GridLayout tkDrawerContent rows="auto, *">
+        <StackLayout row="0" class="sidedrawer-header">
+            <GridLayout [ngSwitch]="auth.user?.isAnonymous" columns="auto, *">
+                <Image *ngSwitchCase="false" [src]="auth.user?.photoURL" col="0" class="logo" stretch="aspectFit"></Image>
+                <Image *ngSwitchDefault src="font://&#xf21b;" col="0" class="fas logo" stretch="aspectFit"></Image>
+                <Label [text]="auth.displayName()" col="1" verticalAlignment="center" textWrap="true"></Label>
+            </GridLayout>
+        </StackLayout>
+        <!--        <StackLayout *ngIf="_competition.selected_competition" class="side-title" row="0">-->
+        <!--            <Label [text]="'<' + (_competition?.selected_competition_id$|async)?.title + '>'" class="h2"></Label>-->
+        <!--        </StackLayout>-->
         <ScrollView row="1">
             <StackLayout>
-                <StackLayout>
-                    <!--                <Label [text]="_activatedUrl"></Label>-->
-                    <Label [text]="'Home'|L" (tap)="navigateTo('home', {clearHistory: true})" [class.active]="_activatedUrl === '/home'" class="side-label"></Label>
-                    <Label [text]="'Competitions'|L" (tap)="navigateTo('/home/competitions')" [class.active]="_activatedUrl === '/home/competitions'" class="side-label"></Label>
-                </StackLayout>
+                <GridLayout [class.active]="_activatedUrl == '/home'"
+                            (tap)="navigateTo('/home')"
+                            columns="auto, *"
+                            class="side-label">
+                    <Label col="0" text="&#xf015;" class="fas"></Label>
+                    <Label [text]="'Home'|L" col="1"></Label>
+                </GridLayout>
+
+                <GridLayout [class.active]="_activatedUrl == '/home/competitions'"
+                            (tap)="navigateTo('/home/competitions')"
+                            columns="auto, *"
+                            class="side-label">
+                    <Label col="0" text="&#xf559;" class="fas"></Label>
+                    <Label [text]="'Competition'|L" col="1"></Label>
+                </GridLayout>
+
+                <GridLayout *ngIf="_competition.selected_competition"
+                            [class.active]="_activatedUrl == '/scan'"
+                            (tap)="navigateTo('/scan')"
+                            columns="auto, *"
+                            class="side-label">
+                    <Label col="0" text="&#xf1eb;" class="fas"></Label>
+                    <Label [text]="'Scan'|L" col="1"></Label>
+                </GridLayout>
+
+                <GridLayout *ngIf="_competition.selected_competition"
+                            [class.active]="_activatedUrl == '/athlets'"
+                            (tap)="navigateTo('/athlets')"
+                            columns="auto, *"
+                            class="side-label">
+                    <Label col="0" text="&#xf0c0;" class="fas"></Label>
+                    <Label [text]="'Athlets'|L" col="1"></Label>
+                </GridLayout>
+
                 <StackLayout class="m-10"></StackLayout>
-                <StackLayout *ngIf="_competition.selected_competition">
-                    <Label [text]="'Scan'|L" (tap)="navigateTo('scan')" [class.active]="_activatedUrl === '/scan'" class="side-label font-weight-bold"></Label>
-                    <Label [text]="'Athlets'|L" (tap)="navigateTo('/athlets')" [class.active]="_activatedUrl === '/athlets'" class="side-label"></Label>
-                </StackLayout>
+
+                <GridLayout *ngIf="_competition.isAdmin"
+                            (tap)="goTo('https://raceorg.agestart.ru/edit/' + _competition.selected_competition.id)"
+                            columns="auto, *"
+                            class="side-label">
+                    <Label col="0" text="&#xf044;" class="fas"></Label>
+                    <Label [text]="'Edit competition'|L" col="1"></Label>
+                </GridLayout>
+                <GridLayout *ngIf="_competition.selected_competition"
+                            (tap)="goTo('https://raceorg.agestart.ru/public/athlet/register/' + _competition.selected_competition.id)"
+                            columns="auto, *"
+                            class="side-label">
+                    <Label col="0" text="&#xf234;" class="fas"></Label>
+                    <Label [text]="'Registration'|L" col="1"></Label>
+                </GridLayout>
+
                 <StackLayout class="m-10"></StackLayout>
-                <Label [text]="'Enter'|L" class="side-label" (tap)="openModal('enter')"></Label>
-                <Label [text]="'Logout'|L" *ngIf="auth.user" class="side-label" (tap)="onLogout()"></Label>
-                <Label [text]="'Back'|L" class="side-label" (tap)="onCloseDrawerTap()"></Label>
-                <Label [text]="'Exit'|L" class="side-label" (tap)="onExit()"></Label>
+
+                <GridLayout *ngIf="auth.user"
+                            (tap)="onLogout()"
+                            columns="auto, *"
+                            class="side-label">
+                    <Label col="0" text="&#xf2f5;" class="fas"></Label>
+                    <Label [text]="'Logout'|L" col="1"></Label>
+                </GridLayout>
+                <GridLayout (tap)="onCloseDrawerTap()"
+                            columns="auto, *"
+                            class="side-label">
+                    <Label col="0" text="&#xf137;" class="fas"></Label>
+                    <Label [text]="'Back'|L" col="1"></Label>
+                </GridLayout>
+                <GridLayout (tap)="onExit()"
+                            columns="auto, *"
+                            class="side-label">
+                    <Label col="0" text="&#xf52b;" class="fas"></Label>
+                    <Label [text]="'Exit'|L" col="1"></Label>
+                </GridLayout>
+
+                <!--                <Label [text]="'Enter'|L" class="side-label" (tap)="openModal('enter')"></Label>-->
             </StackLayout>
         </ScrollView>
     </GridLayout>

@@ -166,10 +166,10 @@
                 <form [formGroup]="thirdFormGroup">
                     <ng-template matStepLabel>Классы участников</ng-template>
                     <div formArrayName="classes">
-                        <div *ngFor="let item of thirdFormGroup.controls['classes'].controls; let i = index;">
+                        <div *ngFor="let item of thirdFormGroup.controls['classes']['controls']; let i = index;">
                             <p>
                                 <mat-form-field>
-                                    <a matSuffix (click)="onRemoveClass(i)" *ngIf="thirdFormGroup.controls['classes'].controls.length > 1">
+                                    <a matSuffix (click)="onRemoveClass(i)" *ngIf="thirdFormGroup.controls['classes']['controls'].length > 1">
                                         <mat-icon>remove</mat-icon>
                                     </a>
                                     <input matInput
@@ -208,7 +208,7 @@
                             </p>
                             <section formArrayName="classes" class="m-t-24 m-b-24">
                                 <h4>Классы участников</h4>
-                                <mat-checkbox *ngFor="let item of thirdFormGroup.controls['classes'].controls; let y = index;"
+                                <mat-checkbox *ngFor="let item of thirdFormGroup.controls['classes']; let y = index;"
                                               [checked]="checkpoint.classes.indexOf(item.value) >= 0"
                                               (change)="onClassCheckboxChange($event, i)"
                                               [value]="item.value"
@@ -216,7 +216,7 @@
                                               class="m-r-16">{{ item.value}}
                                 </mat-checkbox>
                                 <p>
-                                    <mat-error *ngIf="fourFromGroup.controls['checkpoints'].controls[i].controls['classes'].errors?.groupRequired">
+                                    <mat-error *ngIf="fourFromGroup.controls['checkpoints']['controls'][i]['controls']['classes'].errors?.groupRequired">
                                         Установите хотябы одно значение
                                     </mat-error>
                                 </p>
@@ -230,14 +230,14 @@
                         </a>
                         <button mat-button matStepperPrevious type="button">Назад</button>
                         <button mat-button matStepperNext type="button">Далее</button>
-                    </div>
+                    </div>controls
                 </form>
             </mat-step>
             <mat-step [stepControl]="fiveFromGroup">
                 <form [formGroup]="fiveFromGroup">
                     <ng-template matStepLabel>Дополнительные данные атлетов</ng-template>
                     <div formArrayName="athlet_extra_fields">
-                        <div *ngFor="let item of fiveFromGroup.controls['athlet_extra_fields'].controls; let i = index;">
+                        <div *ngFor="let item of fiveFromGroup.controls['athlet_extra_fields']['controls']; let i = index;">
                             <p>
                                 <mat-form-field>
                                     <a matSuffix (click)="onRemoveExtraField(i)">

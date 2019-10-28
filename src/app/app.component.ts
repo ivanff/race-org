@@ -15,10 +15,11 @@ import * as application from "tns-core-modules/application"
 import {confirm} from "tns-core-modules/ui/dialogs"
 import {exit} from "nativescript-exit"
 import {RootComponent} from "./root/root.component"
-import {NavigationEnd, NavigationStart} from "@angular/router"
+import {NavigationEnd} from "@angular/router"
 import {filter} from "rxjs/operators"
 import {AuthService} from "./mobile/services/auth.service"
 import {CompetitionService} from "./mobile/services/competition.service"
+import {openUrl} from "tns-core-modules/utils/utils"
 
 const firebase = require('nativescript-plugin-firebase')
 
@@ -28,7 +29,7 @@ const firebase = require('nativescript-plugin-firebase')
     styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
-    _activatedUrl: string
+    _activatedUrl: string = '/'
 
     @ViewChild(RadSideDrawerComponent, {static: false}) sideDrawerComponent: RadSideDrawerComponent
 
@@ -39,7 +40,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                 private zone: NgZone,
                 public auth: AuthService,
                 public _competition: CompetitionService) {
-        this._activatedUrl = "/home"
         this.auth.setVcRef(this.vcRef)
     }
 
@@ -87,6 +87,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.onCloseDrawerTap()
     }
 
+    goTo(url): void {
+        openUrl(url)
+    }
+
     onBackPressed():void {
         console.log('>> AppComponent onBackPressed')
         application.android.on(application.AndroidApplication.activityBackPressedEvent, (args: any) => {
@@ -110,6 +114,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     onLogout(): void {
+        this._competition.selected_competition_id$.next(null)
         this.auth.logout().then(() => {
             this.onCloseDrawerTap()
         })

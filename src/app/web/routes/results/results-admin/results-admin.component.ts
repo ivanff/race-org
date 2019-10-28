@@ -8,12 +8,14 @@ import {Competition} from "@src/app/shared/interfaces/competition"
   styleUrls: ['./results-admin.component.scss']
 })
 export class ResultsAdminComponent implements OnInit {
+  hasChildren: boolean
   classes: Array<string> = []
 
   constructor(private route: ActivatedRoute) {
     this.route.params.subscribe(() => {
       this.classes = (this.route.snapshot.data['competition'] as Competition).classes
     })
+    this.hasChildren = Boolean(route.children.length)
   }
 
   ngOnInit() {

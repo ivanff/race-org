@@ -167,14 +167,14 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
         this.secondFormGroup = this.fb.group({})
 
         this.thirdFormGroup = new FormGroup({
-            'classes': this.formArrayClasses()
+            'classes': this.formArrayClasses() as FormArray
         })
         this.thirdFormGroup.valueChanges.subscribe((values) => {
             this.data.classes = values.classes
         })
 
         this.fourFromGroup = new FormGroup({
-            'checkpoints': this.formArrayCheckpoints()
+            'checkpoints': this.formArrayCheckpoints() as FormArray
         })
 
         this.fiveFromGroup = new FormGroup({

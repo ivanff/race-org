@@ -1,34 +1,28 @@
-import {Component, NgZone, OnDestroy, OnInit} from '@angular/core'
+import {Component, OnDestroy, OnInit} from '@angular/core'
 import {Page} from "tns-core-modules/ui/page"
 import {AuthService} from "@src/app/mobile/services/auth.service"
-import {ModalDialogParams} from "nativescript-angular"
-import {AuthStateChangeListener} from "nativescript-plugin-firebase"
+import {TextField} from "tns-core-modules/ui/text-field"
+import * as firebase from 'nativescript-plugin-firebase'
+import {VerificationObservableModel} from "@src/app/mobile/observable/verification-custom-observable"
+firebase["requestPhoneAuthVerificationCode"] = onRequestPhoneAuthVerificationCode;
 
-const firebase = require("nativescript-plugin-firebase")
+const verificationObservable: VerificationObservableModel = new VerificationObservableModel()
 
+function onRequestPhoneAuthVerificationCode(onUserResponse: (phoneAuthVerificationCode: string) => void, verificationPrompt: string) {
+  verificationObservable.on("onverify", (data) => {
+    onUserResponse(data.object.get("verificationCode"));
+  });
+}
 
 @Component({
   selector: 'app-enter',
   templateUrl: './enter.component.html',
 })
 export class EnterComponent implements OnInit, OnDestroy {
-
-  private authListener2 = {
-    onAuthStateChanged: (data) => {
-      this.zone.run(() => {
-        if (data.loggedIn) {
-          this.modalDialogParams.closeCallback()
-        }
-      })
-    },
-    thisArg: this
-  } as AuthStateChangeListener
+  phoneNumber: string = '9603273301'
 
   constructor(private page: Page,
-              private modalDialogParams: ModalDialogParams,
-              private zone: NgZone,
               public auth: AuthService) {
-    firebase.addAuthStateListener(this.authListener2)
   }
 
   ngOnInit() {
@@ -38,6 +32,20 @@ export class EnterComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     console.log('>>> EnterComponent ngOnDestroy')
-    firebase.removeAuthStateListener(this.authListener2)
+  }
+
+  getPhone() {
+    return this.phoneNumber
+  }
+
+  onPhoneNumberChange($event) {
+    const textField = <TextField>$event.object
+    this.phoneNumber = textField.text
+  }
+
+  onPhoneNumberLogin(): void {
+    if (this.phoneNumber) {
+      this.auth.phoneLogin(`+7${this.phoneNumber}`)
+    }
   }
 }

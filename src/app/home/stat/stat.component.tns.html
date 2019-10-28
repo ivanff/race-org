@@ -1,7 +1,8 @@
 <StackLayout [ngSwitch]="competition" class="p-10">
     <StackLayout *ngSwitchDefault>
+        <Label class="h1" [text]="competition.title" textWrap="true"></Label>
         <Label [text]="'Всего зарегестрированно участников: ' + athlets_count"></Label>
-        <Label *ngFor="let _class of competition.classes" [text]="'Класс ' + _class + ': ' + by_class_count[_class]"></Label>
+        <Label *ngFor="let _class of competition.classes" [text]="'Класс ' + _class + ': ' + (by_class_count[_class] || 'wait')"></Label>
         <Button class="btn -primary scan" [text]="'Сканировать'|L" [nsRouterLink]="['/scan']"></Button>
     </StackLayout>
     <StackLayout *ngSwitchCase="null">

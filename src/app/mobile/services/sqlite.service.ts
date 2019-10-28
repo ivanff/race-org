@@ -8,6 +8,7 @@ import * as moment from 'moment'
 import {Mark} from "@src/app/shared/interfaces/mark"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
 import {SqlRow} from "@src/app/shared/interfaces/sql-row"
+import {AuthService} from "@src/app/mobile/services/auth.service"
 
 const bghttp = require("nativescript-background-http")
 const Sqlite = require("nativescript-sqlite")
@@ -36,7 +37,8 @@ export class SqliteService implements OnDestroy {
     }
     private database: any
 
-    constructor(private _competition: CompetitionService) {
+    constructor(private _competition: CompetitionService,
+                private auth: AuthService) {
         this.sqlite_db_name = `race_org_local_${this._competition.selected_competition.id}.db`
 
         new Sqlite(this.sqlite_db_name).then(db => {
@@ -55,6 +57,7 @@ export class SqliteService implements OnDestroy {
         this.destroy.next(null)
         this.destroy.complete()
     }
+
     async check(nfc_id: Array<number>, athlet_id: string, mark: Mark) {
         let check_sql: [string, Array<any>]
 
@@ -134,6 +137,8 @@ export class SqliteService implements OnDestroy {
                 const session = bghttp.session("db-upload")
                 const task = session.multipartUpload([
                     {name: 'device_uuid', value: device.uuid},
+                    {name: 'competition_id', value: this._competition.selected_competition.id},
+                    {name: 'user_uid', value: this.auth.user.uid},
                     {name: 'fileToUpload', filename: db_file.path, mimeType: "application/x-sqlite3"},
                 ], this.upload_params)
                 task.on("error", (err) => console.log(err))

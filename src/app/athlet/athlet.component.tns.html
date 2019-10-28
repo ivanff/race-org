@@ -17,7 +17,8 @@
                 col="0"
                 class="btn">
         </Button>
-        <StackLayout horizontalAlignment="center" [visibility]="activityIndicator.busy ? 'visible' : 'collapse'" verticalAlignment="center">
+        <StackLayout horizontalAlignment="center" [visibility]="activityIndicator.busy ? 'visible' : 'collapse'"
+                     verticalAlignment="center">
             <ActivityIndicator height="20"
                                width="20"
                                #activityIndicator
@@ -30,19 +31,22 @@
     </StackLayout>
 
     <ScrollView row="2" col="0">
-        <ListView [items]="athlets|filter:['fio', 'number']:{search: searchPhrase}" class="items">
-            <ng-template let-athlet="item" let-i="index" let-odd="odd" let-even="even">
-                <GridLayout (tap)="onItemTap(athlet)" columns="60, *" rows="*, *, *, *, *">
-                    <Label [text]="athlet.number" col="0" rowSpan="4" verticalAlignment="top" horizontalAlignment="center" class="number"></Label>
+        <RadListView [items]="athlets|filter:['fio', 'number']:{search: searchPhrase}" class="items">
+            <ng-template tkListItemTemplate let-athlet="item" let-i="index" let-odd="odd">
+                <GridLayout (tap)="onItemTap(athlet)" columns="60, *" rows="*, *, *, *, *" [class.odd]="odd">
+                    <Label [text]="athlet.number" col="0" rowSpan="4" verticalAlignment="top"
+                           horizontalAlignment="center" class="number"></Label>
                     <Label [text]="athlet.class" col="0" row="5" class="option" horizontalAlignment="center"></Label>
 
                     <Label [text]="'Имя: ' + athlet.fio" col="1" row="0" class="option"></Label>
                     <Label [text]="'Город: ' + athlet.city" col="1" row="1" class="option"></Label>
                     <Label [text]="'Марка мотоцикла: ' + athlet.bike" col="1" row="2" class="option"></Label>
-                    <Label [text]="'NFC: ' + (athlet.nfc_id ? 'назначено' : 'не назначено')" col="1" row="3" [class.-warning]="!athlet.nfc_id" class="option font-weight-bold"></Label>
-                    <Label [text]="'Пройдено отметок: ' + athlet.checkpoints.length" col="1" row="4" class="font-weight-bold option"></Label>
+                    <Label [text]="'NFC: ' + (athlet.nfc_id ? 'назначено' : 'не назначено')" col="1" row="3"
+                           [class.-warning]="!athlet.nfc_id" class="option font-weight-bold"></Label>
+                    <Label [text]="'Пройдено отметок: ' + athlet.checkpoints.length" col="1" row="4"
+                           class="font-weight-bold option"></Label>
                 </GridLayout>
             </ng-template>
-        </ListView>
+        </RadListView>
     </ScrollView>
 </GridLayout>

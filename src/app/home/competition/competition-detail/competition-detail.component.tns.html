@@ -6,8 +6,10 @@
               row="1"
               height="100%"
               [items]="competition?.mobile_devices">
-        <ng-template let-device="item" let-i="index">
-            <Label [text]="device|deviceName"></Label>
+        <ng-template let-test="item" let-i="index">
+            <StackLayout>
+                <Label [text]="test|deviceName"></Label>
+            </StackLayout>
         </ng-template>
     </ListView>
     <StackLayout col="1" row="0" class="p-t-10 p-b-10">

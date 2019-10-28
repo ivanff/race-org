@@ -21,4 +21,7 @@ export class LocalLogComponent extends BaseComponent implements  OnInit {
     this.pending = this.options.fetch().then((items: Array<SqlRow>) => this.items = [...items]).pending
   }
 
+  onUpload(): void {
+    this.options.upload()
+  }
 }

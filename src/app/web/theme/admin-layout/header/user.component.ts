@@ -13,7 +13,7 @@ import {AuthService} from "@src/app/web/core"
 <!--                    alt="avatar"-->
 <!--            />-->
             <span class="align-middle">
-                {{auth.user.displayName || auth.user.email || auth.user.phoneNumber}}
+                {{auth.displayName()}}
             </span>
         </a>
 

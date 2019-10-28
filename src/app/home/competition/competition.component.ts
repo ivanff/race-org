@@ -11,7 +11,7 @@ import {MobileDevice} from "@src/app/shared/interfaces/mobile-device"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
 import {ReplaySubject} from "rxjs"
-import {takeUntil} from "rxjs/operators"
+import {filter, skip, takeUntil} from "rxjs/operators"
 import * as _ from "lodash"
 
 const firebase = require('nativescript-plugin-firebase/app')
@@ -22,7 +22,7 @@ const firebase = require('nativescript-plugin-firebase/app')
     styleUrls: ['./competition.component.scss']
 })
 export class CompetitionComponent extends BaseComponent implements OnInit, OnDestroy {
-    competitions: Competition[]
+    competitions: Competition[] = []
     selected_competition: Competition
     collection: firestore.CollectionReference = firebase.firestore().collection('competitions')
     mobile_device: MobileDevice = {
@@ -38,15 +38,22 @@ export class CompetitionComponent extends BaseComponent implements OnInit, OnDes
                 private auth: AuthService,
                 private _competition: CompetitionService) {
         super(routerExtensions)
-        this._competition.selected_competition_id$.pipe(takeUntil(this.destroy)).subscribe((competition: Competition) => {
-            console.log('>> CompetitionComponent constructor subscribe', competition ? competition.title : '')
-            this.selected_competition = this._competition.selected_competition
+        this.selected_competition = this._competition.selected_competition
+
+        this._competition.selected_competition_id$.pipe(
+            takeUntil(this.destroy)
+        ).subscribe((competition: Competition) => {
+            console.log('>> CompetitionComponent constructor')
+            this.selected_competition = competition
+            if (competition) {
+                if (!this.competitions.filter((item: Competition) => item.id == competition.id).length) {
+                    this.competitions.unshift({...competition})
+                }
+            }
         })
     }
 
     ngOnInit() {
-        this.competitions = []
-
         this.collection.where('user', '==', this.auth.user.uid).get().then((docs) => {
             docs.forEach((doc) => {
                 const id = doc.id
@@ -54,52 +61,34 @@ export class CompetitionComponent extends BaseComponent implements OnInit, OnDes
                     {id, ...doc.data()} as Competition
                 )
             })
+            if (this.selected_competition) {
+                if (!this.competitions.filter((item: Competition) => item.id == this.selected_competition.id).length) {
+                    this.competitions.unshift({...this.selected_competition})
+                }
+            }
+
         })
     }
 
     ngOnDestroy(): void {
         this.destroy.next(null)
         this.destroy.complete()
-        console.log('>> CompetitionComponen ngOnDestroy')
+        console.log('>> CompetitionComponent ngOnDestroy')
     }
 
     onItemTap($event): void {
         const competition = {...this.competitions[$event.index]}
 
-        if (this._competition.selected_competition && competition.id == this._competition.selected_competition.id) {
-            this._competition.selected_competition_id$.next(null)
-            console.log('null')
+        if (this.selected_competition && competition.id == this.selected_competition.id) {
             competition.mobile_devices = competition.mobile_devices.filter((item: MobileDevice) => item.uuid !== this.mobile_device.uuid)
+            this._competition.selected_competition_id$.next(null)
+            this.collection.doc(competition.id).set(competition, {merge: true})
         } else {
             this._competition.selected_competition_id$.next(competition.id)
-            const isAdmin = competition.user == this.auth.user.uid
-            competition.mobile_devices.push({
-                isAdmin,...this.mobile_device
-            })
-            competition.mobile_devices = _.unionBy(competition.mobile_devices, 'uuid')
         }
-        this.collection.doc(competition.id).set(competition, {merge: true})
     }
 
     isReader(checkpoints: Checkpoint[]): boolean {
         return checkpoints.filter((item: Checkpoint) => item.devices.indexOf(device.uuid) > -1).length > 0
     }
-
-    onJoin(): void {
-        dialogs.prompt("Enter secret key to JOIN into competition", "").then((r: PromptResult) => {
-            // if (r.result && initial.secret === r.text){
-            //   this.collection.doc(initial.id).get().then((doc: firestore.QueryDocumentSnapshot) =>{
-            //     const competition = doc.data() as Competition
-            //     const current_devices = competition.devices.filter((item: Device) => item.uuid == device.uuid)
-            //     if (!current_devices.length) {
-            //       competition.devices.push({...this.device_obj})
-            //       this.collection.doc(doc.id).update({
-            //         devices: competition.devices
-            //       }).then(value => alert('Success'))
-            //     }
-            //   })
-            // }
-        })
-    }
-
 }

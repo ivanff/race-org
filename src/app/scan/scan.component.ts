@@ -14,7 +14,7 @@ import {NfcTagData} from 'nativescript-nfc'
 import {BaseComponent} from "@src/app/shared/base.component"
 import {NfcService} from "@src/app/mobile/services/nfc.service"
 import {Mark} from "@src/app/shared/interfaces/mark"
-import {device, isAndroid} from "tns-core-modules/platform"
+import {isAndroid} from "tns-core-modules/platform"
 import {FoundDialogComponent} from "@src/app/scan/found-dialog/found-dialog.component"
 import {ActivatedRoute} from "@angular/router"
 import * as moment from 'moment'
@@ -53,7 +53,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
                 private options: SqliteService) {
         super(routerExtensions)
         this.collection = firebase.firestore().collection(`athlets_${_competition.selected_competition.id}`)
-        this.current_checkpoint = {...this._competition.current_checkpoint}
+        this.current_checkpoint = activeRoute.snapshot.data['current_checkpoint']
     }
 
     ngAfterViewInit() {

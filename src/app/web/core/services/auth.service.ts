@@ -42,6 +42,13 @@ export class AuthService implements OnDestroy {
         return this.socialSignIn(provider);
     }
 
+    displayName(): string {
+        if (this.user) {
+            return this.user.displayName || this.user.email || this.user.phoneNumber
+        }
+        return ''
+    }
+
     private socialSignIn(provider) {
         return this.afAuth.auth.signInWithPopup(provider)
             .then((credential: UserCredential) =>  {

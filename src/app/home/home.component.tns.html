@@ -1,9 +1,6 @@
 <ActionBar [title]="'Race org: ' + version">
     <NavigationButton icon="res://round_menu_black_24"
                       (tap)="onDrawerButtonTap()"></NavigationButton>
-    <ActionItem *ngIf="pending" text="Push to server" position="right">
-        <Label text="&#xf0c7;" class="far p-r-10"></Label>
-    </ActionItem>
     <ActionItem [text]="'About'|L"
                 [nsRouterLink]="['/home/about']"
                 ios.position="right"

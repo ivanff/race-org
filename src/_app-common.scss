@@ -46,3 +46,43 @@
 .-warning{
   color: orangered;
 }
+
+.sidedrawer-header {
+  padding: 10;
+  border-bottom-width: 1px;
+  border-bottom-color: gray;
+  .logo {
+    margin-right: 10;
+    border-radius: 50;
+    width: 150px;
+    height: 150px;
+  }
+}
+
+.side-label {
+  padding: 10;
+  font-size: 16;
+  .fas {
+    text-align: center;
+    width: 100px;
+    margin-right: 10;
+  }
+  &.active {
+    background-color: $focus
+  }
+}
+
+.odd {
+  background-color: const(grey-light)
+}
+
+.label-detail {
+  border-left-color: $grey-background;
+  border-left-width: 1;
+  //background-color: $focus;
+  height: 50;
+  padding: 13 10 10 10;
+  margin-left: 10;
+  text-align: center;
+}
+

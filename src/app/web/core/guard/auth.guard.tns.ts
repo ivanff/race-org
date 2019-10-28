@@ -3,16 +3,18 @@ import {ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot} from '@angular
 import {Observable} from 'rxjs/Observable';
 import {AuthService} from "@src/app/mobile/services/auth.service"
 import {map} from "rxjs/operators"
+import {RouterExtensions} from "nativescript-angular"
 @Injectable()
-export class AuthGuard implements CanActivate {
-    constructor(private auth: AuthService) {
+export class AuthGuard {
+    constructor(private auth: AuthService, private routerExtensions: RouterExtensions) {
     }
 
-    canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-        return this.auth.user$.pipe(
-            map((user) => {
-                return !!user
-            })
-        )
+    canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+        if (!!this.auth.user) {
+            return true
+        } else {
+            this.routerExtensions.navigate([''])
+            return false
+        }
     }
 }

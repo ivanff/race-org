@@ -1,8 +1,9 @@
-import {Injectable, NgZone, OnDestroy, ViewContainerRef} from '@angular/core'
-import {AuthStateChangeListener, LoginOptions, User} from "nativescript-plugin-firebase"
-import {ModalDialogOptions, ModalDialogParams, ModalDialogService, RouterExtensions} from "nativescript-angular"
-import {RootComponent} from "@src/app/root/root.component"
-import {BehaviorSubject, Subject} from "rxjs"
+import {Injectable, NgZone, OnDestroy} from '@angular/core'
+import {AuthStateChangeListener, FirebasePhoneLoginOptions, LoginOptions, User} from "nativescript-plugin-firebase"
+import {RouterExtensions} from "nativescript-angular"
+import {BehaviorSubject} from "rxjs"
+import {VerificationObservableModel} from "@src/app/mobile/observable/verification-custom-observable"
+import {EventData} from "tns-core-modules/data/observable"
 
 const firebase = require("nativescript-plugin-firebase")
 
@@ -11,29 +12,31 @@ const firebase = require("nativescript-plugin-firebase")
     providedIn: 'root',
 })
 export class AuthService implements OnDestroy {
-    public user: User | null
-    public user$ = new BehaviorSubject(null)
+    verificationObservable: VerificationObservableModel = new VerificationObservableModel()
+    user: User | null
+    user$ = new BehaviorSubject(null)
     private vcRef: any
     private authListener = {
         onAuthStateChanged: (data) => {
-            console.log('>>> authListener')
+            console.dir('>>> authListener loggedIn', data.loggedIn)
             this.zone.run(() => {
+                const extras = {clearHistory: true}
                 if (data.loggedIn) {
                     this.user$.next(data.user)
-                    this.routerExtensions.navigate(['/home'], {clearHistory: true})
+                    this.routerExtensions.navigate(['/home'], extras)
                 } else {
                     this.user$.next(null)
-                    this.openModalLogin()
+                    this.routerExtensions.navigate([''], extras)
                 }
             })
+            return data
         },
         thisArg: this
     } as AuthStateChangeListener
 
     constructor(private routerExtensions: RouterExtensions,
-                private zone: NgZone,
-                private modalService: ModalDialogService,
-                ) {
+                private zone: NgZone
+    ) {
         console.log('>> AuthService __init__')
         firebase.getCurrentUser().then((user: User) => {
             this.authListener.onAuthStateChanged({
@@ -52,17 +55,30 @@ export class AuthService implements OnDestroy {
         })
     }
 
-    setVcRef(vcRef) {
-        this.vcRef = vcRef
-    }
-
     ngOnDestroy(): void {
         firebase.removeAuthStateListener(this.authListener)
         console.log('>> AuthService ngOnDestroy')
     }
 
+    setVcRef(vcRef) {
+        this.vcRef = vcRef
+    }
+
+    displayName(): string {
+        if (this.user) {
+            if (!this.user.isAnonymous) {
+                return this.user.displayName || this.user.email || this.user.phoneNumber
+            } else {
+                return 'Анонимный\nпользователь'
+            }
+        }
+        return ''
+    }
+
     logout(): Promise<any> {
-        return firebase.logout()
+        return firebase.logout().then(() => {
+            this.routerExtensions.navigate(['/home'], {clearHistory: true})
+        })
     }
 
     googleLogin() {
@@ -77,16 +93,32 @@ export class AuthService implements OnDestroy {
         } as LoginOptions)
     }
 
-    openModalLogin() {
-        const options: ModalDialogOptions = {
-            fullscreen: true,
-            viewContainerRef: this.vcRef,
-            context: {
-                path: ['enter']
+    phoneLogin(phoneNumber: string) {
+        firebase.login({
+            type: firebase.LoginType.PHONE,
+            phoneOptions: {phoneNumber, verificationPrompt: 'verificationPrompt'} as FirebasePhoneLoginOptions
+        } as LoginOptions).then((resp) => {
+
+        }).then((response) => {
+            this.verificationObservable.set("verificationResponse", response);
+            let eventData: EventData = {
+                eventName: "onverificationsuccess",
+                object: this.verificationObservable
             }
-        }
-        this.modalService.showModal(RootComponent, options).then((result) => {
-            console.log('>>> openModalLogin', result)
+            this.verificationObservable.notify(eventData);
+        }).catch((err) => {
+            this.verificationObservable.set("verificationError", err);
+            let eventData: EventData = {
+                eventName: "onverificationerror",
+                object: this.verificationObservable
+            }
+            this.verificationObservable.notify(eventData);
         })
+    }
+
+    anonymousLogin(): Promise<User> {
+        return firebase.login({
+            type: firebase.LoginType.ANONYMOUS
+        } as LoginOptions)
     }
 }
