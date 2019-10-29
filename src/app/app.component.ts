@@ -20,6 +20,7 @@ import {filter} from "rxjs/operators"
 import {AuthService} from "./mobile/services/auth.service"
 import {CompetitionService} from "./mobile/services/competition.service"
 import {openUrl} from "tns-core-modules/utils/utils"
+import {RadSideDrawer} from "nativescript-ui-sidedrawer"
 
 const firebase = require('nativescript-plugin-firebase')
 
@@ -30,8 +31,8 @@ const firebase = require('nativescript-plugin-firebase')
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     _activatedUrl: string = '/'
-
-    @ViewChild(RadSideDrawerComponent, {static: false}) sideDrawerComponent: RadSideDrawerComponent
+    private drawer: RadSideDrawer
+    @ViewChild("sideDrawerId", {static: false}) drawerComponent: RadSideDrawerComponent
 
     constructor(private routerExtensions: RouterExtensions,
                 private modalService: ModalDialogService,
@@ -56,12 +57,15 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit(): void {
-        this._changeDetectionRef.detectChanges()
+        this.drawer = this.drawerComponent.sideDrawer
         this.routerExtensions.router.events
-            .pipe(filter((event: any) => event instanceof NavigationEnd))
+            .pipe(
+                filter((event: any) => event instanceof NavigationEnd),
+            )
             .subscribe((event: NavigationEnd) => {
                 this._activatedUrl = event.urlAfterRedirects
             })
+        this._changeDetectionRef.detectChanges()
     }
 
     ngOnDestroy(): void {
@@ -69,8 +73,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     navigateTo(path: string, extras?: any): void {
-        this.routerExtensions.navigate([path], extras)
-        this.onCloseDrawerTap()
+        this.routerExtensions.navigate([path], extras).then((result) => {
+            if (result) {
+                this.closeDrawer()
+            }
+        })
     }
 
     openModal(path: string): void {
@@ -84,7 +91,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.modalService.showModal(RootComponent, options).then((result) => {
             this.onBackPressed()
         })
-        this.onCloseDrawerTap()
+        this.closeDrawer()
     }
 
     goTo(url): void {
@@ -98,7 +105,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.zone.run(() => {
                     if (this.routerExtensions.canGoBack()) {
                         this.routerExtensions.back()
-                        this.onCloseDrawerTap()
+                        this.closeDrawer()
                     } else {
                         this.onExit()
                     }
@@ -107,16 +114,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         )
     }
 
-    onCloseDrawerTap(): void {
-        if (this.sideDrawerComponent) {
-            this.sideDrawerComponent.sideDrawer.closeDrawer()
-        }
+    closeDrawer(): void {
+        this.drawer.closeDrawer()
     }
 
     onLogout(): void {
         this._competition.selected_competition_id$.next(null)
         this.auth.logout().then(() => {
-            this.onCloseDrawerTap()
+            this.closeDrawer()
         })
     }
 

@@ -208,7 +208,7 @@
                             </p>
                             <section formArrayName="classes" class="m-t-24 m-b-24">
                                 <h4>Классы участников</h4>
-                                <mat-checkbox *ngFor="let item of thirdFormGroup.controls['classes']; let y = index;"
+                                <mat-checkbox *ngFor="let item of thirdFormGroup.controls['classes']['controls']; let y = index;"
                                               [checked]="checkpoint.classes.indexOf(item.value) >= 0"
                                               (change)="onClassCheckboxChange($event, i)"
                                               [value]="item.value"
@@ -230,7 +230,7 @@
                         </a>
                         <button mat-button matStepperPrevious type="button">Назад</button>
                         <button mat-button matStepperNext type="button">Далее</button>
-                    </div>controls
+                    </div>
                 </form>
             </mat-step>
             <mat-step [stepControl]="fiveFromGroup">

@@ -5,6 +5,7 @@ import {TextField} from "tns-core-modules/ui/text-field"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
 import {BarcodeScanner} from "nativescript-barcodescanner"
 import * as firebase from 'nativescript-plugin-firebase'
+import {Competition} from "@src/app/shared/interfaces/competition"
 
 const barcodescanner = new BarcodeScanner()
 
@@ -38,16 +39,20 @@ export class EnterSecretComponent implements OnInit, OnDestroy {
     }
 
     onCodeLogin(): void {
-        this._competition.getByCode(this.code).then((docs: Array<firebase.firestore.QueryDocumentSnapshot>) => {
-            if (docs.length) {
-                console.log('onCodeLogin')
-                // выполняется не всегда!
-                // const competition = {...docs[0].data()} as Competition
-                // competition.id = docs[0].id
-                if (!this.auth.user) {
-                    this.auth.anonymousLogin().then(() => {
-                        this._competition.selected_competition_id$.next(docs[0].id)
-                    })
+        this._competition.getByCode(this.code).then((docs: {[key: string]: Array<firebase.firestore.QueryDocumentSnapshot>}) => {
+            for (const key in docs) {
+                if (docs[key].length) {
+                    const id = docs[key][0].id
+                    const competition = {id,...docs[key][0].data()} as Competition
+
+                    if (!this.auth.user) {
+                        this.auth.anonymousLogin().then(() => {
+
+                            this._competition.selected_competition_id$.next(competition)
+                        })
+                    } else {
+                        this._competition.selected_competition_id$.next(competition)
+                    }
                 }
             }
         })

@@ -26,13 +26,13 @@ export class CompetitionService implements OnDestroy {
         console.log('>>> CompetitionService constructor')
 
         this.selected_competition_id$ = (new Subject).pipe(
-            switchMap((id: string | null) => {
-                if (id) {
-                    return this.firestoreCollectionObservable(id).pipe(
+            switchMap((value: string | null | Competition) => {
+                if (typeof value === 'string') {
+                    return this.firestoreCollectionObservable(value).pipe(
                         takeUntil(this.destroy)
                     )
                 } else {
-                    return of(null)
+                    return of(value)
                 }
             }),
             shareReplay(1),
@@ -79,14 +79,13 @@ export class CompetitionService implements OnDestroy {
     async getByCode(code: number) {
         const marshals = await firebase.firestore().collection('competitions').where('secret.marshal', '==', code).get()
         const admins = await firebase.firestore().collection('competitions').where('secret.admin', '==', code).get()
-        return admins.docs || marshals.docs
+        return {
+            admins: admins.docs,
+            marshals: marshals.docs
+        }
     }
 
     private setCp(silent=true) {
-        console.log(
-            1, this.selected_competition.mobile_devices,
-            this.selected_competition.mobile_devices.filter((item: MobileDevice) => item.uuid == device.uuid).length
-        )
         if (!this.selected_competition.mobile_devices.filter((item: MobileDevice) => item.uuid == device.uuid).length) {
             const isAdmin = this.selected_competition.user == this.auth.user.uid
             this.selected_competition.mobile_devices.push({

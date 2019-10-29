@@ -4,3 +4,21 @@
 a[matSuffix] {
   cursor: pointer
 }
+
+.matero-sidemenu-link {
+  .menu-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    box-sizing: border-box
+  }
+}
+
+//.mat-checkbox-layout {
+//  white-space: normal !important;
+//}
+//
+//.mat-radio-label {
+//  white-space: normal !important;
+//}

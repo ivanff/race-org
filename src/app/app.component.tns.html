@@ -1,4 +1,4 @@
-<RadSideDrawer [allowEdgeSwipe]="_activatedUrl != '/'">
+<RadSideDrawer #sideDrawerId [allowEdgeSwipe]="_activatedUrl != '/'">
     <GridLayout tkDrawerContent rows="auto, *">
         <StackLayout row="0" class="sidedrawer-header">
             <GridLayout [ngSwitch]="auth.user?.isAnonymous" columns="auto, *">
@@ -7,9 +7,6 @@
                 <Label [text]="auth.displayName()" col="1" verticalAlignment="center" textWrap="true"></Label>
             </GridLayout>
         </StackLayout>
-        <!--        <StackLayout *ngIf="_competition.selected_competition" class="side-title" row="0">-->
-        <!--            <Label [text]="'<' + (_competition?.selected_competition_id$|async)?.title + '>'" class="h2"></Label>-->
-        <!--        </StackLayout>-->
         <ScrollView row="1">
             <StackLayout>
                 <GridLayout [class.active]="_activatedUrl == '/home'"
@@ -20,7 +17,7 @@
                     <Label [text]="'Home'|L" col="1"></Label>
                 </GridLayout>
 
-                <GridLayout [class.active]="_activatedUrl == '/home/competitions'"
+                <GridLayout [class.active]="_activatedUrl.indexOf('/home/competitions') == 0"
                             (tap)="navigateTo('/home/competitions')"
                             columns="auto, *"
                             class="side-label">
@@ -38,7 +35,7 @@
                 </GridLayout>
 
                 <GridLayout *ngIf="_competition.selected_competition"
-                            [class.active]="_activatedUrl == '/athlets'"
+                            [class.active]="_activatedUrl.indexOf('/athlets') == 0"
                             (tap)="navigateTo('/athlets')"
                             columns="auto, *"
                             class="side-label">
@@ -72,7 +69,7 @@
                     <Label col="0" text="&#xf2f5;" class="fas"></Label>
                     <Label [text]="'Logout'|L" col="1"></Label>
                 </GridLayout>
-                <GridLayout (tap)="onCloseDrawerTap()"
+                <GridLayout (tap)="closeDrawer()"
                             columns="auto, *"
                             class="side-label">
                     <Label col="0" text="&#xf137;" class="fas"></Label>

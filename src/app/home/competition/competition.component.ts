@@ -54,9 +54,15 @@ export class CompetitionComponent extends BaseComponent implements OnInit, OnDes
     }
 
     ngOnInit() {
-        this.collection.where('user', '==', this.auth.user.uid).get().then((docs) => {
+        this.collection.where('user', '==', this.auth.user.uid).get().then((docs: firestore.QuerySnapshot) => {
             docs.forEach((doc) => {
                 const id = doc.id
+                if (this.selected_competition) {
+                    if (this.selected_competition.id == id) {
+                        return
+                    }
+                }
+
                 this.competitions.push(
                     {id, ...doc.data()} as Competition
                 )

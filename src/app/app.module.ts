@@ -37,6 +37,7 @@ import {AngularFireAuth} from "@angular/fire/auth"
 import {MAT_DATE_LOCALE} from "@angular/material"
 import {CompetitionResolve} from "@src/app/shared/resolvers/competition.resolver"
 import {AthletResolve} from "@src/app/shared/resolvers/athlet.resolver"
+import {ToastrModule} from 'ngx-toastr'
 
 registerLocaleData(localeRu)
 
@@ -45,8 +46,7 @@ export function StartupServiceFactory(startupService: StartupService) {
 }
 
 @NgModule({
-    entryComponents: [
-    ],
+    entryComponents: [],
     declarations: [
         AppComponent,
         HelpComponent,
@@ -69,6 +69,7 @@ export function StartupServiceFactory(startupService: StartupService) {
         DemoMaterialModule,
         HttpClientModule,
         NgxMaterialTimepickerModule.setLocale('RU'),
+        ToastrModule.forRoot(),
         LocalStorageModule.forRoot({
             prefix: 'race-org',
             storageType: 'localStorage'

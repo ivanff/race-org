@@ -14,7 +14,9 @@ export class BaseComponent {
     }
 
     goBack(): void {
-        this.routerExtensions.back()
+        if (this.routerExtensions.canGoBack()) {
+            this.routerExtensions.back()
+        }
     }
 
     onDrawerButtonTap(): void {

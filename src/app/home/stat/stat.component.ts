@@ -56,11 +56,17 @@ export class StatComponent implements OnInit, OnDestroy {
             return colRef.onSnapshot((snapshot: firestore.QuerySnapshot) => {
                 this.zone.run(() => {
                     this.athlets_count = snapshot.docs.length
-                    this.competition.classes.forEach((_class) => {
-                        this.by_class_count[_class] = snapshot.docs.filter((doc: firestore.QueryDocumentSnapshot) => {
-                            return doc.data().class === _class
-                        }).length
-                    })
+                    if (this.competition) {
+
+                        if (this.competition.id == id) {
+                            this.competition.classes.forEach((_class) => {
+                                this.by_class_count[_class] = snapshot.docs.filter((doc: firestore.QueryDocumentSnapshot) => {
+                                    return doc.data().class === _class
+                                }).length
+                            })
+                        }
+
+                    }
                 })
             })
         })
