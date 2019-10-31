@@ -20,6 +20,7 @@ import {FilterPipe} from "@src/app/shared/pipes/filter.pipe"
 import {CsvComponent} from "@src/app/web/shared/components/csv/csv.component"
 import {AthletChangeComponent} from "@src/app/web/shared/components/athlet/athlet-change.component"
 import {AthletRegisterComponent} from "@src/app/web/shared/components/athlet/athlet-register.component"
+import {QRCodeModule} from 'angular2-qrcode'
 import {
     RECAPTCHA_LANGUAGE,
     RECAPTCHA_SETTINGS,
@@ -37,6 +38,7 @@ const THIRD_MODULES = [
     NgxMatSelectSearchModule,
     RecaptchaModule,
     RecaptchaFormsModule,
+    QRCodeModule,
 ];
 const COMPONENTS = [
     BreadcrumbComponent,

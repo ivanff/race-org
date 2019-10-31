@@ -12,19 +12,8 @@ import {AppComponent} from "@src/app/app.component.web"
 import {FormsModule, ReactiveFormsModule} from "@angular/forms"
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http"
 import {HelpComponent} from "@src/app/web/routes/help/help.component"
-import {FlexLayoutModule} from '@angular/flex-layout';
-import {
-    RECAPTCHA_LANGUAGE,
-    RECAPTCHA_SETTINGS,
-    RecaptchaFormsModule,
-    RecaptchaModule,
-    RecaptchaSettings
-} from 'ng-recaptcha'
+import {FlexLayoutModule} from '@angular/flex-layout'
 import {LocalStorageModule} from "angular-2-local-storage"
-import {ResultSetTimeComponent} from "@src/app/web/routes/results/results-admin/result-detail/result-set-time/result-set-time.component"
-import {ResultAddMarkComponent} from "@src/app/web/routes/results/results-admin/result-detail/result-add-mark/result-add-mark.component"
-
-
 import localeRu from '@angular/common/locales/ru'
 import {registerLocaleData} from "@angular/common"
 import {StartupService} from "@src/app/web/core/services/startup.service"

@@ -11,7 +11,7 @@ export class AthletResolve implements Resolve<Athlet> {
     constructor(private _competition: CompetitionService) {}
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-        return firebase.firestore().collection(`athlets_${this._competition.selected_competition.id}`)
+        return firebase.firestore().collection(this._competition.getAthletsCollectionPath())
             .doc(route.params.id).get()
             .then((doc: firestore.DocumentSnapshot) => {
                 const id: string = doc.id

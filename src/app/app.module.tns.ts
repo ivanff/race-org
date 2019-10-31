@@ -35,6 +35,7 @@ import {JoinPipe} from "@src/app/shared/pipes/join.pipe"
 import {LocalLogComponent} from "@src/app/scan/local-log/local-log.component"
 import {CheckpointResolver} from "@src/app/shared/resolvers/checkpoint.resolver"
 import {EnterSecretComponent} from "@src/app/enter/enter-secret/enter-secret.component"
+import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
 
 
 // Uncomment and add to NgModule imports if you need to use two-way binding
@@ -90,6 +91,7 @@ import {EnterSecretComponent} from "@src/app/enter/enter-secret/enter-secret.com
 
         AuthGuard,
 
+        SnackbarService,
         CompetitionService,
         SqliteService,
         AuthService,

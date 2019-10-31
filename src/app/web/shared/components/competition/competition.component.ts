@@ -408,7 +408,12 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
             if (this.firstCompetition) {
                 if (this.competition.id != this.firstCompetition.id) {
                     collection = collection.doc(this.firstCompetition.id).collection('stages')
+                    competition.is_stage = true
                 }
+            }
+
+            if (!competition.mobile_devices) {
+                competition.mobile_devices = []
             }
 
             collection.doc(this.competition.id).set(competition, {merge: true}).then(() => {
@@ -416,6 +421,7 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
             })
         } else if (this.firstCompetition && !this.competition) {
             competition.secret = this.firstCompetition.secret
+            competition.mobile_devices = this.firstCompetition.mobile_devices
             competition.is_stage = true
             collection.doc(this.firstCompetition.id).collection('stages').add(competition).then(() => {
                 this.setActiveTabEvent.emit(0)
@@ -423,6 +429,7 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
         } else {
             competition.secret = Object.assign({}, new Secret()) as Secret
             competition.user = this.auth.user.uid
+            competition.mobile_devices = []
             collection.doc(this.firestore.createId()).set(competition).then(() => {
                 this.router.navigate(['/dashboard'])
             })

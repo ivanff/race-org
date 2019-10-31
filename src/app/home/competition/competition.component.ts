@@ -43,12 +43,28 @@ export class CompetitionComponent extends BaseComponent implements OnInit, OnDes
         this._competition.selected_competition_id$.pipe(
             takeUntil(this.destroy)
         ).subscribe((competition: Competition) => {
-            console.log('>> CompetitionComponent constructor')
+            console.log('>> CompetitionComponent constructor', competition ? competition.title: null)
             this.selected_competition = competition
-            if (competition) {
-                if (!this.competitions.filter((item: Competition) => item.id == competition.id).length) {
-                    this.competitions.unshift({...competition})
+
+            const ids: Array<string> = this.competitions.map((item: Competition) => item.id)
+
+            if (this.selected_competition) {
+                let stages_insert_index = ids.indexOf(this.selected_competition.id)
+
+                if (stages_insert_index == -1) {
+                    this.competitions.unshift({...this.selected_competition})
+                    stages_insert_index = 0
                 }
+                if (this.selected_competition.stages && !this.selected_competition.is_stage) {
+                    this.selected_competition.stages.forEach((item: Competition, index: number) => {
+                        if (ids.indexOf(item.id) == -1) {
+                            this.competitions.splice(stages_insert_index + index + 1, 0, {...item})
+                        }
+                    })
+                }
+
+
+                // this.competitions = inserted.concat(this.competitions)
             }
         })
     }
@@ -57,14 +73,22 @@ export class CompetitionComponent extends BaseComponent implements OnInit, OnDes
         this.collection.where('user', '==', this.auth.user.uid).get().then((docs: firestore.QuerySnapshot) => {
             docs.forEach((doc) => {
                 const id = doc.id
+                const competition = {id, ...doc.data()} as Competition
                 if (this.selected_competition) {
                     if (this.selected_competition.id == id) {
                         return
                     }
+                    if (this.selected_competition.parent_id == id) {
+                        const selected_index = _.findIndex(this.competitions, {id: this.selected_competition.id})
+                        if (selected_index != -1) {
+                            this.competitions.splice(selected_index, 0, competition)
+                            return
+                        }
+                    }
                 }
 
                 this.competitions.push(
-                    {id, ...doc.data()} as Competition
+                    competition
                 )
             })
             if (this.selected_competition) {
@@ -88,9 +112,17 @@ export class CompetitionComponent extends BaseComponent implements OnInit, OnDes
         if (this.selected_competition && competition.id == this.selected_competition.id) {
             competition.mobile_devices = competition.mobile_devices.filter((item: MobileDevice) => item.uuid !== this.mobile_device.uuid)
             this._competition.selected_competition_id$.next(null)
-            this.collection.doc(competition.id).set(competition, {merge: true})
+            if (competition.parent_id) {
+                this.collection.doc(competition.parent_id).collection('stages').doc(competition.id).set(competition, {merge: true})
+            } else {
+                this.collection.doc(competition.id).set(competition, {merge: true})
+            }
         } else {
-            this._competition.selected_competition_id$.next(competition.id)
+            if (competition.parent_id) {
+                this._competition.selected_competition_id$.next([competition.parent_id, competition.id])
+            } else {
+                this._competition.selected_competition_id$.next(competition.id)
+            }
         }
     }
 

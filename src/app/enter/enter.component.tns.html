@@ -1,8 +1,19 @@
-<GridLayout rows="*,*" columns="*">
-    <StackLayout row="0" col="1">
-        <Button text="Google" (tap)="auth.googleLogin()" class="-primary"></Button>
-        <Button text="Facebook" (tap)="auth.facebookLogin()" class="-primary"></Button>
-        <Button text="Home" [nsRouterLink]="['home']" [isEnabled]="!!auth.user" class="-primary"></Button>
+<GridLayout rows="*,*,*" columns="*" [class.inactive]="pending">
+    <StackLayout *ngIf="pending"
+                 (touch)="onOverlayDummyTouch()"
+                 row="0" rowSpan="3" col="0" colSpan="2" class="loading" verticalAlignment="center" horizontalAlignment="center">
+        <ActivityIndicator height="200" width="200" [busy]="true" color="#4285F4"></ActivityIndicator>
+    </StackLayout>
+    <StackLayout row="0" col="0" class="p-t-30">
+        <Label [text]="'Enter with Social account'|L" class="h2" horizontalAlignment="center"></Label>
+        <GridLayout columns="*, *" rows="auto">
+            <Button col="0" text="Google" (tap)="googleLogin()" class="google-primary -rounded"></Button>
+            <Button col="1" text="Facebook" (tap)="facebookLogin()" class="facebook-primary -rounded"></Button>
+        </GridLayout>
+    </StackLayout>
+    <StackLayout row="1" col="0" colSpan="2">
+<!--        <Button text="Home" [nsRouterLink]="['home']" [isEnabled]="!!auth.user" class="-primary"></Button>-->
+        <Label [text]="'Via sms on this phone'|L" class="h2" horizontalAlignment="center"></Label>
         <GridLayout columns="*, 150" rows="auto">
             <TextField col="0" row="0"
                        text="{{getPhone()}}"
@@ -12,10 +23,11 @@
                        maxLength="10"
                        autocorrect="false"
                        keyboardType="number"></TextField>
-            <Button (tap)="onPhoneNumberLogin()" col="1" row="0" text="Send sms"></Button>
+            <Button (tap)="onPhoneNumberLogin()" col="1" row="0" text="Send sms" class="-primary"></Button>
         </GridLayout>
     </StackLayout>
-    <StackLayout row="1" col="2">
-        <app-enter-secret></app-enter-secret>
+    <StackLayout row="2" col="0" colSpan="2">
+        <Label [text]="'Use secret code'|L" class="h2" horizontalAlignment="center"></Label>
+        <app-enter-secret [pending]="pending" (setPending)="setPending($event)"></app-enter-secret>
     </StackLayout>
 </GridLayout>

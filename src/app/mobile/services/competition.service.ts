@@ -1,5 +1,5 @@
 import {Injectable, NgZone, OnDestroy} from '@angular/core'
-import {Observable, of, ReplaySubject, Subject} from "rxjs"
+import {defer, Observable, of, ReplaySubject, Subject} from "rxjs"
 import {Competition} from "@src/app/shared/interfaces/competition"
 import {AuthService} from "@src/app/mobile/services/auth.service"
 import {shareReplay, switchMap, takeUntil} from "rxjs/operators"
@@ -9,6 +9,7 @@ import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 import {device} from "tns-core-modules/platform"
 import * as moment from 'moment-timezone'
 import {MobileDevice} from "@src/app/shared/interfaces/mobile-device"
+
 const firebase = require('nativescript-plugin-firebase/app')
 
 @Injectable({
@@ -26,9 +27,15 @@ export class CompetitionService implements OnDestroy {
         console.log('>>> CompetitionService constructor')
 
         this.selected_competition_id$ = (new Subject).pipe(
-            switchMap((value: string | null | Competition) => {
+            switchMap((value: string | null | Competition | Array<string>) => {
                 if (typeof value === 'string') {
                     return this.firestoreCollectionObservable(value).pipe(
+                        takeUntil(this.destroy)
+                    )
+                } else if (Array.isArray(value)) {
+                    const parent_id = value[0]
+                    const id = value[1]
+                    return this.firestoreCollectionObservable(parent_id, id).pipe(
                         takeUntil(this.destroy)
                     )
                 } else {
@@ -42,7 +49,7 @@ export class CompetitionService implements OnDestroy {
             console.log('selected_competition_id$')
             this.selected_competition = competition
             if (competition) {
-                setString('selected_competition_id', competition.id)
+                setString('selected_competition_id', `${competition.parent_id ? competition.parent_id + '_' : ''}${competition.id}`)
                 this.setCp()
                 this.setIsAdmin()
                 this.setStartTime()
@@ -59,15 +66,54 @@ export class CompetitionService implements OnDestroy {
         this.destroy.complete()
     }
 
-    private firestoreCollectionObservable(id) {
+    getByCode(code: number): Promise<any> {
+        return Promise.all([
+            firebase.firestore().collection('competitions').where('secret.marshal', '==', code).get(),
+            firebase.firestore().collection('competitions').where('secret.admin', '==', code).get()
+        ]).then((results) => {
+            return {
+                marshals: results[0].docs,
+                admins: results[1].docs
+            }
+        })
+    }
+
+
+    getAthletsCollectionPath(): string {
+        return `athlets_${this.selected_competition.parent_id || this.selected_competition.id}`
+    }
+
+    private firestoreCollectionObservable(parent_id, id?) {
         return new Observable(subscriber => {
-            const colRef: firestore.DocumentReference = firebase.firestore().collection("competitions").doc(id)
+            let colRef: firestore.DocumentReference = firebase.firestore().collection("competitions").doc(parent_id)
+
+            if (id) {
+                colRef = colRef.collection('stages').doc(id)
+            }
+
             return colRef.onSnapshot((doc: firestore.DocumentSnapshot) => {
+                console.log(
+                    'colRef.onSnapshot', parent_id, id
+                )
                 if (doc.exists) {
                     this.zone.run(() => {
-                        const id = doc.id
-                        this.selected_competition = {id, ...doc.data()} as Competition
-                        subscriber.next(this.selected_competition)
+                        if (!id) {
+                            console.log(1)
+                            firebase.firestore().collection("competitions").doc(parent_id).collection('stages').get().then((docs: firestore.QuerySnapshot) => {
+                                const stages: Array<Competition> = []
+                                console.log(2)
+                                docs.forEach((doc: firestore.QueryDocumentSnapshot) => {
+                                    const id = doc.id
+                                    stages.push({id, ...doc.data(), parent_id} as Competition)
+                                })
+                                const id = parent_id
+                                this.selected_competition = {id, ...doc.data(), stages} as Competition
+                                subscriber.next(this.selected_competition)
+                            })
+                        } else {
+                            this.selected_competition = {id, ...doc.data(), parent_id} as Competition
+                            subscriber.next(this.selected_competition)
+                        }
                     })
                 } else {
                     subscriber.next(null)
@@ -76,17 +122,10 @@ export class CompetitionService implements OnDestroy {
         })
     }
 
-    async getByCode(code: number) {
-        const marshals = await firebase.firestore().collection('competitions').where('secret.marshal', '==', code).get()
-        const admins = await firebase.firestore().collection('competitions').where('secret.admin', '==', code).get()
-        return {
-            admins: admins.docs,
-            marshals: marshals.docs
-        }
-    }
-
-    private setCp(silent=true) {
+    private setCp(silent = true) {
+        this.selected_competition.mobile_devices = this.selected_competition.mobile_devices || []
         if (!this.selected_competition.mobile_devices.filter((item: MobileDevice) => item.uuid == device.uuid).length) {
+            // недоработка связанная с этапами проведения
             const isAdmin = this.selected_competition.user == this.auth.user.uid
             this.selected_competition.mobile_devices.push({
                 uuid: device.uuid,
@@ -95,11 +134,24 @@ export class CompetitionService implements OnDestroy {
                 model: device.model,
                 isAdmin: isAdmin
             } as MobileDevice)
-            console.log(
-                2, this.selected_competition.mobile_devices
-            )
-            firebase.firestore().collection('competitions').doc(this.selected_competition.id).set(this.selected_competition)
+
+            let collection: firestore.DocumentReference
+
+            if (this.selected_competition.parent_id) {
+                collection = firebase.firestore().collection("competitions")
+                    .doc(this.selected_competition.parent_id)
+                    .collection('stages')
+                    .doc(this.selected_competition.id)
+            } else {
+                collection = firebase.firestore().collection("competitions")
+                    .doc(this.selected_competition.id)
+            }
+
+            collection.update({
+                'mobile_devices': this.selected_competition.mobile_devices
+            })
         }
+
         const checkpoints = this.selected_competition.checkpoints.filter((item: Checkpoint) => item.devices.indexOf(device.uuid) > -1)
         if (!silent) {
             if (checkpoints.length <= 0) {
@@ -108,7 +160,8 @@ export class CompetitionService implements OnDestroy {
                 alert('This device is\'t MULTIPLE READER in current competition!')
             }
         }
-        this.current_checkpoint = checkpoints[0]
+
+        this.current_checkpoint = checkpoints.length == 1 ? checkpoints[0] : null
     }
 
     private setIsAdmin() {
@@ -116,7 +169,6 @@ export class CompetitionService implements OnDestroy {
             this.isAdmin = true
         }
     }
-
 
     private setStartTime() {
         this.finish_time = moment(this.selected_competition.start_date).add(this.selected_competition.start_time, 's').add(this.selected_competition.duration, 's')

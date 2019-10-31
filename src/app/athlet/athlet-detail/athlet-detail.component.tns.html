@@ -51,7 +51,7 @@
         </StackLayout>
     </StackLayout>
     <ScrollView row="2" col="0">
-        <ListView height="100%" [items]="athlet.checkpoints|orderBy:'created':true">
+        <ListView height="100%" [items]="getCheckpoints()|orderBy:'created':true">
             <ng-template let-mark="item" let-i="index" let-odd="odd" let-even="even">
                 <GridLayout columns="*, auto" rows="*, *" class="p-l-5 p-r-5">
                     <Label col="0" row="0" [text]="checkpoints[mark.order].title" style="font-weight: bold; font-size: 15em"></Label>

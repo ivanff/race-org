@@ -2,17 +2,18 @@ import {Injectable, NgZone, OnDestroy} from '@angular/core'
 import {AuthStateChangeListener, FirebasePhoneLoginOptions, LoginOptions, User} from "nativescript-plugin-firebase"
 import {RouterExtensions} from "nativescript-angular"
 import {BehaviorSubject} from "rxjs"
-import {VerificationObservableModel} from "@src/app/mobile/observable/verification-custom-observable"
+// import {VerificationObservableModel} from "@src/app/mobile/observable/verification-custom-observable"
 import {EventData} from "tns-core-modules/data/observable"
+import {VerificationObservableModel} from "@src/app/mobile/observable/verification-custom-observable"
 
 const firebase = require("nativescript-plugin-firebase")
-
+export const verificationObservable: VerificationObservableModel = new VerificationObservableModel()
 
 @Injectable({
     providedIn: 'root',
 })
 export class AuthService implements OnDestroy {
-    verificationObservable: VerificationObservableModel = new VerificationObservableModel()
+    verificationObservable: VerificationObservableModel = verificationObservable
     user: User | null
     user$ = new BehaviorSubject(null)
     private vcRef: any
@@ -81,14 +82,14 @@ export class AuthService implements OnDestroy {
         })
     }
 
-    googleLogin() {
-        firebase.login({
+    googleLogin(): Promise<any> {
+        return firebase.login({
             type: firebase.LoginType.GOOGLE
         } as LoginOptions)
     }
 
-    facebookLogin() {
-        firebase.login({
+    facebookLogin(): Promise<any> {
+        return firebase.login({
             type: firebase.LoginType.FACEBOOK
         } as LoginOptions)
     }
@@ -97,9 +98,7 @@ export class AuthService implements OnDestroy {
         firebase.login({
             type: firebase.LoginType.PHONE,
             phoneOptions: {phoneNumber, verificationPrompt: 'verificationPrompt'} as FirebasePhoneLoginOptions
-        } as LoginOptions).then((resp) => {
-
-        }).then((response) => {
+        } as LoginOptions).then((response) => {
             this.verificationObservable.set("verificationResponse", response);
             let eventData: EventData = {
                 eventName: "onverificationsuccess",

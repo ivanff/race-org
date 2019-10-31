@@ -8,6 +8,7 @@ import {debounceTime, distinctUntilChanged, map, shareReplay, takeUntil, tap} fr
 import {Observable, ReplaySubject, Subscription} from "rxjs"
 import {Athlet} from "@src/app/shared/interfaces/athlet"
 import {LocalStorageService} from "angular-2-local-storage"
+import {environment} from "@src/environments/environment.prod"
 
 @Component({
     selector: 'app-dashboard-detail',
@@ -97,5 +98,8 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
                 })
             })
         }
+    }
+    getFullRegisterUrl() {
+        return `${environment.SERVER_URL}/public/athlet/register/${this.competition.id}`
     }
 }

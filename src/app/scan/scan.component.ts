@@ -25,6 +25,8 @@ import {Athlet} from "@src/app/shared/interfaces/athlet"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 import {SqliteService} from "@src/app/mobile/services/sqlite.service"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
+import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
+import {Msg} from "@src/app/shared/interfaces/msg"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
@@ -37,22 +39,23 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
     last_athlet: Athlet
     current_checkpoint: Checkpoint = null
     number$ = new BehaviorSubject(null)
-    private collection: any
+    private collection: firestore.CollectionReference
     private destroy = new ReplaySubject<any>(1)
 
     @ViewChild('activityIndicator', {static: false}) activityIndicatorRef: ElementRef
     @ViewChild('textField', {static: false}) textFieldRef: ElementRef
 
     constructor(public routerExtensions: RouterExtensions,
-                private zone: NgZone,
                 public nfc: NfcService,
+                private zone: NgZone,
+                private snackbar: SnackbarService,
                 private modalService: ModalDialogService,
                 private viewContainerRef: ViewContainerRef,
                 private activeRoute: ActivatedRoute,
                 private _competition: CompetitionService,
                 private options: SqliteService) {
         super(routerExtensions)
-        this.collection = firebase.firestore().collection(`athlets_${_competition.selected_competition.id}`)
+        this.collection = firebase.firestore().collection(this._competition.getAthletsCollectionPath())
         this.current_checkpoint = activeRoute.snapshot.data['current_checkpoint']
     }
 
@@ -64,10 +67,9 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
 
     ngOnInit() {
         this.number$.pipe(
-            debounceTime(1000),
+            debounceTime(2000),
             switchMap((value) => {
                 const number: number = parseInt(value)
-                console.log(number)
                 if (number) {
                     return defer(() => {
                         return this.collection.where('number', '==', number).get()
@@ -107,35 +109,42 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
     }
 
     onFound(athlet: Athlet, msg: string, error?: boolean): void {
-        const options: ModalDialogOptions = {
-            context: {
-                athlet: athlet,
-                msg: msg,
-                error: error
-            },
-            viewContainerRef: this.viewContainerRef,
-            fullscreen: false
-        };
 
-        this.modalService.showModal(FoundDialogComponent, options).then((path: Array<string> | null) => {
-            if (path) {
-                setTimeout(() =>
-                        this.routerExtensions.navigate(path, {relativeTo: this.activeRoute})
-                    , 100)
-            }
-            return
-        })
+        this.snackbar.snackbar$.next({
+            level: error ? 'alert': 'success',
+            msg: `${athlet.number}\n${msg}`,
+            timeout: 3000
+        } as Msg)
+
+        // const options: ModalDialogOptions = {
+        //     context: {
+        //         athlet: athlet,
+        //         msg: msg,
+        //         error: error
+        //     },
+        //     viewContainerRef: this.viewContainerRef,
+        //     fullscreen: false
+        // };
+        //
+        // this.modalService.showModal(FoundDialogComponent, options).then((path: Array<string> | null) => {
+        //     if (path) {
+        //         setTimeout(() =>
+        //                 this.routerExtensions.navigate(path, {relativeTo: this.activeRoute})
+        //             , 100)
+        //     }
+        //     return
+        // })
     }
 
     private setMark(mark: Mark) {
         const checkpoints: Array<Mark> = this.last_athlet.checkpoints
-        this.activityIndicatorRef.nativeElement.busy = false
+        // this.activityIndicatorRef.nativeElement.busy = false
 
         if (checkpoints.length) {
             const last_checkpoint = checkpoints[checkpoints.length - 1]
 
             if ((moment().diff(last_checkpoint.created, 'minutes') <= 5) && (last_checkpoint.order == this.current_checkpoint.order)) {
-                alert('Текущая метка отмечена менее 5 минут назад!\nПовторная отметка прохождения!')
+                this.snackbar.alert('Текущая метка отмечена менее 5 минут назад!')
                 return
             }
 
@@ -154,13 +163,14 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
             this.onFound(this.last_athlet, 'Соревнование окончено, время вышло!', true)
         }
 
-        this.onFound(this.last_athlet, 'УДАЧНО')
+        this.onFound(this.last_athlet, 'ПРОХОЖДЕНИЕ ТОЧКИ ЗАПИСАНО')
 
         checkpoints.push(mark)
         this.collection.doc(this.last_athlet.id).update({checkpoints: checkpoints}).then(() => {
-        }, (err) => {
+            this.last_athlet = null
         }).catch((err) => {
-            console.log(`Transaction error: ${err}!`)
+            this.snackbar.alert(`Transaction error: ${err}!`)
+            this.last_athlet = null
         })
     }
 
@@ -169,6 +179,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
             const mark: Mark = {
                 order: this.current_checkpoint.order,
                 created: new Date(),
+                competition_id: this._competition.selected_competition.id
             }
             this.options.insert(data.id, '', mark).then((sqlite_id: number) => {
                 this.collection.where('nfc_id', '==', data.id).get().then((snapshot: firestore.QuerySnapshot) => {
@@ -198,6 +209,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
             const mark: Mark = {
                 order: this.current_checkpoint.order,
                 created: new Date(),
+                competition_id: this._competition.selected_competition.id
             }
             let sqlite_id: number = null
             this.options.insert([], `number[${this.last_athlet.number}]`, mark).then(id => sqlite_id = id)

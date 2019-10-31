@@ -1,6 +1,5 @@
 // Place any CSS rules you want to apply on both iOS and Android here.
 // This is where the vast majority of your CSS code goes.
-
 /*
     File name: fa-regular-400.ttf
     Font name: Font Awesome 5 Free
@@ -43,14 +42,22 @@
   margin: 0;
 }
 
-.-warning{
+.-warning {
   color: orangered;
+}
+
+.loading {
+  width: 100%;
+  height: 100%;
+  background-color: transparentize(gray, 0.5);
+  z-index: 1;
 }
 
 .sidedrawer-header {
   padding: 10;
   border-bottom-width: 1px;
   border-bottom-color: gray;
+
   .logo {
     margin-right: 10;
     border-radius: 50;
@@ -62,11 +69,13 @@
 .side-label {
   padding: 10;
   font-size: 16;
+
   .fas {
     text-align: center;
     width: 100px;
     margin-right: 10;
   }
+
   &.active {
     background-color: $focus
   }
@@ -86,3 +95,42 @@
   text-align: center;
 }
 
+.facebook-primary {
+  font-weight: bold;
+  background-color: $facebook;
+  border-color: $facebook;
+  alternate-color: $facebook;
+
+  &:active, &.-active {
+    color: white;
+    at-root {
+      @keyframes -hightlight-light {
+        0%   { background-color: $facebook; }
+        100% { background-color: darken($facebook, 5%); }
+      }
+    }
+    animation: -hightlight-light .3s ease-out forwards;
+    background-color: darken($facebook, 5%);
+  }
+  color: white;
+}
+
+.google-primary {
+  font-weight: bold;
+  background-color: white;
+  border-color: white;
+  alternate-color: white;
+
+  &:active, &.-active {
+    color: #5f6368;
+    at-root {
+      @keyframes -hightlight-light {
+        0%   { background-color: white; }
+        100% { background-color: darken(white, 5%); }
+      }
+    }
+    animation: -hightlight-light .3s ease-out forwards;
+    background-color: darken(white, 5%);
+  }
+  color: #5f6368;
+}

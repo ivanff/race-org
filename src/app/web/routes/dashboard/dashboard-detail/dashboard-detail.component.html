@@ -2,29 +2,86 @@
 
 <mat-tab-group [selectedIndex]="active_tab" (selectedIndexChange)="setActiveTab($event)">
     <mat-tab label="Статистика">
-        <mat-card>
-            <mat-card-content>
-                <a mat-raised-button [routerLink]="['/public/athlet/register', competition.id]" target="_blank">
-                    Открыть регистрацию
-                </a>
-                <ul>
-                    <li>
-                        Этапов: {{ competition.stages.length + 1}}
-                    </li>
-                    <li>
-                        Классы: {{ competition.classes.length }}
-                        <ul>
-                            <li *ngFor="let _class of competition.classes">
-                                {{_class}}: {{ (athlets$|async|filter:[]:{class: _class}).length }}
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
+        <div fxLayout="row wrap" fxLayoutAlign="start start" class="p-t-8">
 
-                {{ competition.stages|json }}
+            <mat-card class="m-r-8">
+                <mat-card-header>
+                    <mat-card-title>
+                        <h4>
+                            Код маршала
+                        </h4>
+                    </mat-card-title>
+                    <mat-card-subtitle>
+                        {{competition.secret.marshal}}
+                    </mat-card-subtitle>
+                </mat-card-header>
 
-            </mat-card-content>
-        </mat-card>
+                <mat-card-content class="text-center">
+                    <qr-code [value]="competition.secret.marshal + ''" [size]="150"></qr-code>
+                </mat-card-content>
+            </mat-card>
+            <mat-card class="m-r-8">
+                <mat-card-header>
+                    <mat-card-title>
+                        <h4>
+                            Код Администратора
+                        </h4>
+                    </mat-card-title>
+                    <mat-card-subtitle>
+                        {{competition.secret.admin}}
+                    </mat-card-subtitle>
+                </mat-card-header>
+
+                <mat-card-content class="text-center">
+                    <qr-code [value]="competition.secret.admin + ''" [size]="150"></qr-code>
+                </mat-card-content>
+            </mat-card>
+
+            <mat-card class="m-r-8">
+                <mat-card-header>
+                    <mat-card-title>
+                        <a mat-raised-button [routerLink]="['/public/athlet/register', competition.id]" target="_blank">
+                            Открыть регистрацию
+                        </a>
+                    </mat-card-title>
+                </mat-card-header>
+
+                <mat-card-content class="text-center">
+                    <qr-code [value]="getFullRegisterUrl()" [size]="150"></qr-code>
+                </mat-card-content>
+            </mat-card>
+
+            <mat-card>
+                <mat-card-header>
+                    <mat-card-title>
+                        <h2>
+                            Статистика по регистрациям
+                        </h2>
+                    </mat-card-title>
+                </mat-card-header>
+
+                <mat-card-content class="text-center">
+
+                    <ul>
+                        <li>
+                            Этапов: {{ competition.stages.length + 1}}
+                        </li>
+                        <li>
+                            Классы: {{ competition.classes.length }}
+                            <ul>
+                                <li *ngFor="let _class of competition.classes">
+                                    {{_class}}: {{ (athlets$|async|filter:[]:{class: _class}).length }}
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+
+
+                    <!--                {{ competition.stages|json }}-->
+
+                </mat-card-content>
+            </mat-card>
+        </div>
     </mat-tab>
     <mat-tab label="Редактировать">
         <div fxLayout="row wrap" fxLayoutAlign="space-between stretch" class="p-t-8">

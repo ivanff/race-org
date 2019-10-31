@@ -1,14 +1,14 @@
 <GridLayout columns="*, *" rows="auto, *">
     <StackLayout col="0" row="0" class="p-t-10 p-b-10">
-        <Label text="Admin devices" class="font-weight-bold" horizontalAlignment="center"></Label>
+        <Label [text]="'Connected devices'|L" class="font-weight-bold" horizontalAlignment="center"></Label>
     </StackLayout>
     <ListView col="0"
               row="1"
               height="100%"
               [items]="competition?.mobile_devices">
-        <ng-template let-test="item" let-i="index">
+        <ng-template let-device="item" let-i="index">
             <StackLayout>
-                <Label [text]="test|deviceName"></Label>
+                <Label [text]="device|deviceName" [class.-warning]="device.isAdmin"></Label>
             </StackLayout>
         </ng-template>
     </ListView>

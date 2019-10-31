@@ -32,7 +32,7 @@ export class StatComponent implements OnInit, OnDestroy {
             }),
             filter((competition: Competition | null) => !!competition),
             switchMap((competition: Competition) => {
-                return this.firestoreCollectionObservable(competition.id).pipe(
+                return this.firestoreCollectionObservable(competition).pipe(
                     takeUntil(this.destroy),
                     take(1)
                 )
@@ -50,15 +50,15 @@ export class StatComponent implements OnInit, OnDestroy {
         console.log('>> StatComponent ngOnDestroy')
     }
 
-    private firestoreCollectionObservable(id) {
+    private firestoreCollectionObservable(competition: Competition) {
         return new Observable(subscriber => {
-            const colRef: firestore.CollectionReference = firebase.firestore().collection(`athlets_${id}`)
+            const colRef: firestore.CollectionReference = firebase.firestore().collection(`athlets_${competition.parent_id || competition.id}`)
             return colRef.onSnapshot((snapshot: firestore.QuerySnapshot) => {
                 this.zone.run(() => {
                     this.athlets_count = snapshot.docs.length
                     if (this.competition) {
 
-                        if (this.competition.id == id) {
+                        if (this.competition.id == competition.id) {
                             this.competition.classes.forEach((_class) => {
                                 this.by_class_count[_class] = snapshot.docs.filter((doc: firestore.QueryDocumentSnapshot) => {
                                     return doc.data().class === _class

@@ -5,6 +5,7 @@ import {MobileDevice} from "@src/app/shared/interfaces/mobile-device"
 
 export interface Competition {
     id?: string,
+    parent_id?: string,
     user: string,
     secret?: Secret
     title: string,

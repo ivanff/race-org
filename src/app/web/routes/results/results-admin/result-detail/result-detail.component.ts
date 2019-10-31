@@ -67,6 +67,7 @@ export class ResultDetailComponent implements OnInit {
                         created: null,
                         key: `CP_${(index % cp_in_circle) + 1}`,
                         order: checkpoint.order,
+                        competition_id: this.competition.id
                     })
                 }
             }

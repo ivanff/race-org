@@ -9,7 +9,8 @@ import {NfcService} from "@src/app/mobile/services/nfc.service"
 import {ActivatedRoute} from "@angular/router"
 import {Athlet} from "@src/app/shared/interfaces/athlet"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
-import {ListViewEventData, RadListView} from "nativescript-ui-listview"
+import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
+
 
 const firebase = require('nativescript-plugin-firebase/app')
 
@@ -27,6 +28,7 @@ export class AthletComponent extends BaseComponent implements OnInit, OnDestroy 
     private unsubscribe: () => void
 
     constructor(public routerExtensions: RouterExtensions,
+                private snackbar: SnackbarService,
                 private zone: NgZone,
                 private nfc: NfcService,
                 private activeRoute: ActivatedRoute,
@@ -37,7 +39,7 @@ export class AthletComponent extends BaseComponent implements OnInit, OnDestroy 
 
     ngOnInit() {
         console.log('>>> AthletComponent ngOnInit')
-        const collectionRef: firestore.CollectionReference = firebase.firestore().collection(`athlets_${this._competition.selected_competition.id}`)
+        const collectionRef: firestore.CollectionReference = firebase.firestore().collection(this._competition.getAthletsCollectionPath())
         this.unsubscribe = collectionRef.onSnapshot((snapshot: firestore.QuerySnapshot) => {
             this.zone.run(() => {
                 this.athlets = []
@@ -106,7 +108,9 @@ export class AthletComponent extends BaseComponent implements OnInit, OnDestroy 
                     this.routerExtensions.navigate([athlet.phone], {relativeTo: this.activeRoute})
                 })
             } else {
-                alert('Nfc tag not found in DB')
+                this.snackbar.alert(
+                    'Nfc tag not found in DB'
+                )
             }
         })
     }

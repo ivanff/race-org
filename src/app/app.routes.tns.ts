@@ -49,6 +49,13 @@ export const routes: Routes = [
                     competition: CompetitionResolve
                 }
             },
+            {
+                path: "competitions/:parent_competition_id/:competition_id",
+                component: CompetitionDetailComponent,
+                resolve: {
+                    competition: CompetitionResolve
+                }
+            },
         ]
     },
     {

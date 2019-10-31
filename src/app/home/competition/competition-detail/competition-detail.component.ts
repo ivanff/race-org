@@ -7,6 +7,9 @@ import {ActivatedRoute} from "@angular/router"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 import * as _ from "lodash"
 import {confirm} from "tns-core-modules/ui/dialogs"
+import {firestore} from "nativescript-plugin-firebase"
+import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
+import {Msg} from "@src/app/shared/interfaces/msg"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
@@ -18,7 +21,8 @@ export class CompetitionDetailComponent extends BaseComponent implements OnInit,
     competition: Competition
 
     constructor(public routerExtensions: RouterExtensions,
-                private router: ActivatedRoute) {
+                private router: ActivatedRoute,
+                private snackbar: SnackbarService) {
         super(routerExtensions)
         this.competition = this.router.snapshot.data['competition']
     }
@@ -33,7 +37,7 @@ export class CompetitionDetailComponent extends BaseComponent implements OnInit,
         const checkpoint = this.competition.checkpoints[$event.index]
         const options = {
             title: '',
-            message: `Назначить это устройство считывателем для контрольной точки "${checkpoint.title}"`,
+            message: checkpoint.devices.indexOf(device.uuid) == -1 ? `Назначить это устройство считывателем для контрольной точки "${checkpoint.title}"` : 'Убрать назначение' ,
             okButtonText: 'Да',
             cancelButtonText: 'Нет',
         }
@@ -50,8 +54,26 @@ export class CompetitionDetailComponent extends BaseComponent implements OnInit,
                         item.devices = _.without(item.devices, device.uuid)
                     }
                 })
-                firebase.firestore().collection('competitions').doc(this.competition.id).set(this.competition).then(() => {
-                    alert(this.competition.checkpoints[$event.index].devices.indexOf(device.uuid) > -1 ? 'Устройство установлено как считыватель' : 'Устройство удалено из считывателей точки')
+
+                let collection: firestore.DocumentReference
+
+                if (this.competition.parent_id) {
+                    collection =  firebase.firestore().collection("competitions")
+                        .doc(this.competition.parent_id)
+                        .collection('stages')
+                        .doc(this.competition.id)
+                } else {
+                    collection =  firebase.firestore().collection("competitions")
+                        .doc(this.competition.id)
+                }
+
+                collection.set(this.competition).then(() => {
+                    this.snackbar.snackbar$.next(
+                        {
+                            level: "success",
+                            msg: this.competition.checkpoints[$event.index].devices.indexOf(device.uuid) > -1 ? 'Устройство установлено как считыватель' : 'Устройство удалено из считывателей точки'
+                        } as Msg
+                    )
                 })
             }
         })

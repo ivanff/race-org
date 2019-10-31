@@ -1,5 +1,5 @@
 <!--<pre>-->
-<!--    {{data.athlet_extra_fields|json}}-->
+<!--    {{competition|json}}-->
 <!--</pre>-->
 <!--<pre>-->
 <!--    {{data.classes|json}}-->
@@ -18,7 +18,7 @@
                 <form [formGroup]="firstFormGroup" fxLayout="column" fxLayoutAlign="left">
                     <ng-template matStepLabel>Описание</ng-template>
                     <p>
-                        <mat-form-field>
+                        <mat-form-field fxFlex="0 1 396px">
                             <input matInput
                                    [(ngModel)]="data.title"
                                    placeholder="Название события"
@@ -77,18 +77,20 @@
                         </mat-form-field>
                     </p>
                     <p>
-                    <mat-form-field fxFlex="0 1 396px">
-                        <mat-label>Часовой пояс</mat-label>
+                        <mat-form-field fxFlex="0 1 396px">
+                            <mat-label>Часовой пояс</mat-label>
 
-                        <mat-select [(ngModel)]="data.timezone" [disableOptionCentering]="true" formControlName="timezone">
-                            <mat-option>
-                                <ngx-mat-select-search [formControl]="timezoneFilterControl"></ngx-mat-select-search>
-                            </mat-option>
-                            <mat-option value="">--</mat-option>
-                            <mat-option *ngFor="let item of filteredTimezones|async" [value]="item.key">
-                                {{item.value}}
-                            </mat-option>
-                        </mat-select>
+                            <mat-select [(ngModel)]="data.timezone" [disableOptionCentering]="true"
+                                        formControlName="timezone">
+                                <mat-option>
+                                    <ngx-mat-select-search
+                                            [formControl]="timezoneFilterControl"></ngx-mat-select-search>
+                                </mat-option>
+                                <mat-option value="">--</mat-option>
+                                <mat-option *ngFor="let item of filteredTimezones|async" [value]="item.key">
+                                    {{item.value}}
+                                </mat-option>
+                            </mat-select>
                             <mat-hint>
                                 Начало и окончание соревнования исчисляется в выбранном часовом поясе.
                                 Если не установлено применяется текущий часовой пояс компьютера или телефона.
@@ -121,7 +123,8 @@
                     </p>
 
                     <div>
-                        <button [disabled]="firstFormGroup.invalid" mat-button matStepperNext type="button">Далее</button>
+                        <button [disabled]="firstFormGroup.invalid" mat-button matStepperNext type="button">Далее
+                        </button>
                     </div>
                 </form>
             </mat-step>
@@ -169,7 +172,8 @@
                         <div *ngFor="let item of thirdFormGroup.controls['classes']['controls']; let i = index;">
                             <p>
                                 <mat-form-field>
-                                    <a matSuffix (click)="onRemoveClass(i)" *ngIf="thirdFormGroup.controls['classes']['controls'].length > 1">
+                                    <a matSuffix (click)="onRemoveClass(i)"
+                                       *ngIf="thirdFormGroup.controls['classes']['controls'].length > 1">
                                         <mat-icon>remove</mat-icon>
                                     </a>
                                     <input matInput
@@ -208,15 +212,17 @@
                             </p>
                             <section formArrayName="classes" class="m-t-24 m-b-24">
                                 <h4>Классы участников</h4>
-                                <mat-checkbox *ngFor="let item of thirdFormGroup.controls['classes']['controls']; let y = index;"
-                                              [checked]="checkpoint.classes.indexOf(item.value) >= 0"
-                                              (change)="onClassCheckboxChange($event, i)"
-                                              [value]="item.value"
-                                              formControlName="{{ y }}"
-                                              class="m-r-16">{{ item.value}}
+                                <mat-checkbox
+                                        *ngFor="let item of thirdFormGroup.controls['classes']['controls']; let y = index;"
+                                        [checked]="checkpoint.classes.indexOf(item.value) >= 0"
+                                        (change)="onClassCheckboxChange($event, i)"
+                                        [value]="item.value"
+                                        formControlName="{{ y }}"
+                                        class="m-r-16">{{ item.value}}
                                 </mat-checkbox>
                                 <p>
-                                    <mat-error *ngIf="fourFromGroup.controls['checkpoints']['controls'][i]['controls']['classes'].errors?.groupRequired">
+                                    <mat-error
+                                            *ngIf="fourFromGroup.controls['checkpoints']['controls'][i]['controls']['classes'].errors?.groupRequired">
                                         Установите хотябы одно значение
                                     </mat-error>
                                 </p>

@@ -1,6 +1,9 @@
-<GridLayout columns="*" rows="auto, *">
-    <app-enter-secret col="0" row="0"></app-enter-secret>
-    <ScrollView col="0" row="1">
+<GridLayout columns="*" rows="auto, auto, *">
+    <Label [text]="'Use secret code'|L" col="0" row="0" horizontalAlignment="center"></Label>
+    <StackLayout col="0" row="1">
+        <app-enter-secret></app-enter-secret>
+    </StackLayout>
+    <ScrollView col="0" row="2">
         <ListView height="100%"
                   [items]="competitions"
                   (itemTap)="onItemTap($event)">
@@ -9,12 +12,14 @@
                             class="p-0 m-0">
                     <Label col="0" [text]="competition.title" horizontalAlignment="left"></Label>
                     <Label col="1" text="&#xf3cd;" *ngIf="isReader(competition.checkpoints)" class="fas"></Label>
-                    <Label col="2" [nsRouterLink]="[competition.id]" class="label-detail">
+                    <Label col="2" [nsRouterLink]="competition.parent_id ? [competition.parent_id, competition.id] : [competition.id]" class="label-detail">
                         <FormattedString>
                             <Span [text]="'Detail'|L"></Span>
                             <Span text="&nbsp;&nbsp;&#xf101;" class="fas"></Span>
                         </FormattedString>
                     </Label>
+<!--                    <Label [text]="competition.id" col="0" colSpan="3" row="1"></Label>-->
+<!--                    <Label *ngIf="competition.parent_id" [text]="competition.parent_id" col="0" colSpan="3" row="2"></Label>-->
                 </GridLayout>
             </ng-template>
         </ListView>

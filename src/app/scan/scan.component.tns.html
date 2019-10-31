@@ -21,7 +21,6 @@
         <GridLayout columns="*, *" rows="auto">
             <TextField [hint]="'Номер участника'|L"
                        (textChange)="onTextChange($event)"
-                       (focus)="activityIndicator.busy = false"
                        #textField
                        keyboardType="number"
                        maxLength="3"

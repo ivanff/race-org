@@ -11,6 +11,8 @@ import {Athlet} from "@src/app/shared/interfaces/athlet"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 import {SqliteService} from "@src/app/mobile/services/sqlite.service"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
+import {Competition} from "@src/app/shared/interfaces/competition"
+import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
 
 const firebase = require('nativescript-plugin-firebase/app')
 const phone = require("nativescript-phone")
@@ -31,6 +33,7 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
     @ViewChild('activityIndicator', {static: false}) activityIndicatorRef: ElementRef
 
     constructor(public routerExtensions: RouterExtensions,
+                private snackbar: SnackbarService,
                 private zone: NgZone,
                 private activeRoute: ActivatedRoute,
                 private nfc: NfcService,
@@ -38,7 +41,7 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
                 private _competition: CompetitionService
     ) {
         super(routerExtensions)
-        this.collection = firebase.firestore().collection(`athlets_${this._competition.selected_competition.id}`)
+        this.collection = firebase.firestore().collection(this._competition.getAthletsCollectionPath())
         this.current_checkpoint = {...this._competition.current_checkpoint}
         this._competition.selected_competition.checkpoints.forEach((item: Checkpoint) => {
             this.checkpoints[item.order] = item
@@ -62,6 +65,10 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
         }
     }
 
+    getCheckpoints(): Array<Mark> {
+        return this.athlet.checkpoints.filter((item: Mark) => item.competition_id == this._competition.selected_competition.id)
+    }
+
     setNfcId(data: NfcTagData) {
         let batch = firebase.firestore().batch()
         const athlets = this.collection.where('nfc_id', '==', data.id).get()
@@ -76,10 +83,14 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
 
             this.activityIndicatorRef.nativeElement.busy = false
             batch.commit().then(() => {
-                alert('Nfc метка назначена')
+                this.snackbar.success(
+                    'Nfc метка назначена'
+                )
                 this.athlet.nfc_id = data.id
             }).then(res => this.activityIndicatorRef.nativeElement.busy = false).catch(error => {
-                console.log('Batch error: ' + error)
+                this.snackbar.alert(
+                    'Batch error: ' + error
+                )
             })
         })
     }
@@ -131,7 +142,7 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
                     }
                 })
             } else {
-                alert(`This device is't manage checkpoint ${mark.key}`)
+                this.snackbar.alert(`This device is't manage checkpoint ${mark.key}`)
             }
         }
     }
