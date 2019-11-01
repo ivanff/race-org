@@ -8,17 +8,24 @@
                 (tap)="onUpload()"
                 ios.position="right"
                 android.position="popup"></ActionItem>
+    <ActionItem [text]="'Drop Local log'|L"
+                (tap)="onDropTable()"
+                ios.position="right"
+                android.position="popup"></ActionItem>
 </ActionBar>
-<GridLayout rows="*" columns="*">
-    <ScrollView row="2" col="0">
+<GridLayout rows="auto, *" columns="*">
+    <ScrollView row="0" col="0">
+        <Label [text]="competition?.title" verticalAlignment="center" class="h2 p-10" textWrap="true"></Label>
+    </ScrollView>
+    <ScrollView row="1" col="0">
         <ListView height="100%"
                   [items]="items" style="line-height: 20px">
-            <ng-template let-item="item" let-i="index" let-odd="odd" let-even="even">
-                <GridLayout columns="*" rows="*, *, *, *">
+            <ng-template let-item="item" let-i="index" let-odd="odd">
+                <GridLayout columns="*, *" rows="*, *" [class.odd]="odd">
                     <Label [text]="'nfc_id: ' + item.nfc_id" col="0" row="0" class="option"></Label>
                     <Label [text]="'athlet_id: ' + item.athlet_id" col="0" row="1" class="option"></Label>
-                    <Label [text]="'order: ' + item.checkpoint_order" col="0" row="2" class="option"></Label>
-                    <Label [text]="'created: ' + (item.created|date:'HH:mm:ss')" col="0" row="3" class="option"></Label>
+                    <Label [text]="'order: ' + item.checkpoint_order" col="1" row="0" class="option text-right"></Label>
+                    <Label [text]="'created: ' + (item.created|date:'HH:mm:ss')" col="1" row="1" class="option text-right"></Label>
                 </GridLayout>
             </ng-template>
         </ListView>

@@ -1,4 +1,4 @@
-import {Injectable, OnDestroy} from '@angular/core'
+import {Injectable, NgZone, OnDestroy, OnInit} from '@angular/core'
 import {ReplaySubject} from "rxjs"
 import {Folder, File} from "tns-core-modules/file-system"
 import {Request} from "nativescript-background-http"
@@ -9,6 +9,8 @@ import {Mark} from "@src/app/shared/interfaces/mark"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
 import {SqlRow} from "@src/app/shared/interfaces/sql-row"
 import {AuthService} from "@src/app/mobile/services/auth.service"
+import * as _ from "lodash"
+import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
 
 const bghttp = require("nativescript-background-http")
 const Sqlite = require("nativescript-sqlite")
@@ -16,7 +18,7 @@ const Sqlite = require("nativescript-sqlite")
 @Injectable({
     providedIn: 'root'
 })
-export class SqliteService implements OnDestroy {
+export class SqliteService implements OnInit, OnDestroy {
     destroy = new ReplaySubject<any>(1)
     private sqlite_db_name: string
     private upload_params: Request = {
@@ -36,21 +38,82 @@ export class SqliteService implements OnDestroy {
 
     }
     private database: any
+    private tableName = 'scan_events'
+    private dbFields = {
+        id: {
+            type: 'number',
+            create_string: 'INTEGER PRIMARY KEY AUTOINCREMENT',
+            primary: true
+        },
+        competition_id: {
+            type: 'string',
+            create_string: 'TEXT',
+            index: true,
+        },
+        competition_parent_id: {
+            type: 'string',
+            create_string: 'TEXT',
+            index: true,
+        },
+        nfc_id: {
+            type: 'string',
+            create_string: 'TEXT',
+            index: true,
+        },
+        athlet_id: {
+            type: 'string',
+            create_string: 'TEXT',
+            index: true,
+        },
+        checkpoint_order: {
+            type: 'number',
+            create_string: 'INTEGER NOT NULL'
+        },
+        created: {
+            type: 'string',
+            create_string: 'DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL'
+        },
+    }
 
     constructor(private _competition: CompetitionService,
-                private auth: AuthService) {
-        this.sqlite_db_name = `race_org_local_${this._competition.selected_competition.id}.db`
-
+                private snackbar: SnackbarService,
+                private auth: AuthService,
+                private zone: NgZone) {
+        this.sqlite_db_name = `race_org_local_${this._competition.selected_competition.parent_id || this._competition.selected_competition.id}.db`
         new Sqlite(this.sqlite_db_name).then(db => {
-            // db.execSQL("DROP TABLE nfc_scan_events")
-            db.execSQL("CREATE TABLE IF NOT EXISTS nfc_scan_events (id INTEGER PRIMARY KEY AUTOINCREMENT, nfc_id TEXT, athlet_id TEXT, checkpoint_order INTEGER NOT NULL, created DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL)").then(id => {
+            db.execSQL(`CREATE TABLE IF NOT EXISTS ${this.tableName} (${_.map(this.dbFields, (value: any, key: string) => key + ' ' + value.create_string).join(', ')})`).then(id => {
                 this.database = db;
-            }, error => {
-                console.log("CREATE TABLE ERROR", error);
-            });
-        }, error => {
-            console.log("OPEN DB ERROR", error);
+                _.map(this.dbFields, (value: any, key: string) => {
+                    if (value.index) {
+                        return `CREATE INDEX IF NOT EXISTS ${key} ON ${this.tableName}(${key})`
+                    }
+                    return ''
+                }).filter((item) => item.length).map((create_string) => {
+                    db.execSQL(create_string).then(() => {
+                    }).catch((err) => {
+                        this.snackbar.snackbar$.next({
+                            level: 'alert',
+                            msg: `CREATE INDEX ERROR ${_.truncate(err.message, {length: 150})}`
+                        })
+                    })
+                })
+
+            }).catch((err: Error) => {
+                this.snackbar.snackbar$.next({
+                    level: 'alert',
+                    msg: `CREATE TABLE ERROR ${_.truncate(err.message, {length: 150})}`
+                })
+            })
+        }, (err: Error) => {
+            this.snackbar.snackbar$.next({
+                level: 'alert',
+                msg: `OPEN DB ERROR ${_.truncate(err.message, {length: 150})}`
+            })
         });
+    }
+
+    ngOnInit(): void {
+        console.log('>> SqliteService ngOnInit')
     }
 
     ngOnDestroy(): void {
@@ -62,9 +125,9 @@ export class SqliteService implements OnDestroy {
         let check_sql: [string, Array<any>]
 
         if (athlet_id) {
-            check_sql = ["SELECT id, created FROM nfc_scan_events WHERE athlet_id = ? AND checkpoint_order = ? ORDER BY id DESC LIMIT 1", [athlet_id, mark.order]]
+            check_sql = [`SELECT id, created FROM ${this.tableName} WHERE athlet_id = ? AND checkpoint_order = ? ORDER BY id DESC LIMIT 1`, [athlet_id, mark.order]]
         } else if (nfc_id.length) {
-            check_sql = ["SELECT id, created FROM nfc_scan_events WHERE nfc_id = ? AND checkpoint_order = ? ORDER BY id DESC LIMIT 1", [nfc_id.join(','), mark.order]]
+            check_sql = [`SELECT id, created FROM${this.tableName} WHERE nfc_id = ? AND checkpoint_order = ? ORDER BY id DESC LIMIT 1`, [nfc_id.join(','), mark.order]]
         }
 
         return await this.database.all(check_sql[0], check_sql[1])
@@ -88,7 +151,9 @@ export class SqliteService implements OnDestroy {
             }
         }
 
-        return await this.database.execSQL("INSERT INTO nfc_scan_events (nfc_id, athlet_id, checkpoint_order, created) VALUES (?, ?, ?, ?)", [
+        return await this.database.execSQL(`INSERT INTO ${this.tableName} (competition_id, competition_parent_id, nfc_id, athlet_id, checkpoint_order, created) VALUES (?, ?, ?, ?, ?, ?)`, [
+            this._competition.selected_competition.id,
+            this._competition.selected_competition.parent_id,
             nfc_id.join(','),
             athlet_id,
             mark.order,
@@ -101,7 +166,9 @@ export class SqliteService implements OnDestroy {
     }
 
     update(id: number, nfc_id: Array<number>, athlet_id: string, mark: Mark) {
-        this.database.execSQL("UPDATE nfc_scan_events SET (nfc_id, athlet_id, checkpoint_order, created) VALUES (?, ?, ?, ?) WHERE id = ?", [
+        this.database.execSQL("UPDATE nfc_scan_events SET (competition_id, competition_parent_id, nfc_id, athlet_id, checkpoint_order, created) VALUES (?, ?, ?, ?, ?, ?) WHERE id = ?", [
+            this._competition.selected_competition.id,
+            this._competition.selected_competition.parent_id,
             nfc_id.join(','),
             athlet_id,
             mark.order,
@@ -115,16 +182,26 @@ export class SqliteService implements OnDestroy {
     }
 
     fetch() {
-        return this.database.all("SELECT * FROM nfc_scan_events ORDER BY id DESC LIMIT 1000").then((rows: Array<Array<any>>) => {
+        return this.database.all(`SELECT * FROM ${this.tableName} ORDER BY id DESC LIMIT 1000`).then((rows: Array<Array<any>>) => {
             return rows.map((row: Array<any>): SqlRow => {
-                return {
-                    id: row[0],
-                    nfc_id: row[1],
-                    athlet_id: row[2],
-                    checkpoint_order: row[3],
-                    created: moment(row[4]).toDate()
-                } as SqlRow
+                const keys = _.keys(this.dbFields)
+                return _.reduce(this.dbFields, (result, value, key) => {
+                    result[key] = row[keys.indexOf(key)]
+                    return result
+                }, {}) as SqlRow
             })
+        })
+    }
+
+    dropTable() {
+        this.database.execSQL(`DROP TABLE ${this.tableName}`).then((f) => {
+            this.snackbar.success(
+                `Table ${this.tableName} dropped!`
+            )
+        }).catch((err: Error) => {
+            this.snackbar.alert(
+                _.truncate(err.message, {length: 150})
+            )
         })
     }
 

@@ -63,7 +63,9 @@ export class EnterSecretComponent implements OnInit, OnDestroy {
                             model: device.model,
                             isAdmin: key == 'admins'
                         } as MobileDevice)
-                        firebase.firestore().collection('competitions').doc(competition.id).set(competition).then(() => {
+                        this._competition.update(competition, {
+                            'mobile_devices': competition.mobile_devices
+                        }).then(() => {
                             this.selectCompetition(competition)
                         }).catch(() => {
                             this.setPending.emit(false)

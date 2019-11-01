@@ -112,11 +112,10 @@ export class CompetitionComponent extends BaseComponent implements OnInit, OnDes
         if (this.selected_competition && competition.id == this.selected_competition.id) {
             competition.mobile_devices = competition.mobile_devices.filter((item: MobileDevice) => item.uuid !== this.mobile_device.uuid)
             this._competition.selected_competition_id$.next(null)
-            if (competition.parent_id) {
-                this.collection.doc(competition.parent_id).collection('stages').doc(competition.id).set(competition, {merge: true})
-            } else {
-                this.collection.doc(competition.id).set(competition, {merge: true})
-            }
+
+            this._competition.update(
+                competition, {'mobile_devices': competition.mobile_devices}
+            )
         } else {
             if (competition.parent_id) {
                 this._competition.selected_competition_id$.next([competition.parent_id, competition.id])

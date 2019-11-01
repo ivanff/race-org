@@ -7,11 +7,9 @@ import {ActivatedRoute} from "@angular/router"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 import * as _ from "lodash"
 import {confirm} from "tns-core-modules/ui/dialogs"
-import {firestore} from "nativescript-plugin-firebase"
 import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
-import {Msg} from "@src/app/shared/interfaces/msg"
+import {CompetitionService} from "@src/app/mobile/services/competition.service"
 
-const firebase = require('nativescript-plugin-firebase/app')
 
 @Component({
     selector: 'app-competition-detail',
@@ -22,6 +20,7 @@ export class CompetitionDetailComponent extends BaseComponent implements OnInit,
 
     constructor(public routerExtensions: RouterExtensions,
                 private router: ActivatedRoute,
+                private _competition: CompetitionService,
                 private snackbar: SnackbarService) {
         super(routerExtensions)
         this.competition = this.router.snapshot.data['competition']
@@ -55,24 +54,15 @@ export class CompetitionDetailComponent extends BaseComponent implements OnInit,
                     }
                 })
 
-                let collection: firestore.DocumentReference
-
-                if (this.competition.parent_id) {
-                    collection =  firebase.firestore().collection("competitions")
-                        .doc(this.competition.parent_id)
-                        .collection('stages')
-                        .doc(this.competition.id)
-                } else {
-                    collection =  firebase.firestore().collection("competitions")
-                        .doc(this.competition.id)
-                }
-
-                collection.set(this.competition).then(() => {
-                    this.snackbar.snackbar$.next(
-                        {
-                            level: "success",
-                            msg: this.competition.checkpoints[$event.index].devices.indexOf(device.uuid) > -1 ? 'Устройство установлено как считыватель' : 'Устройство удалено из считывателей точки'
-                        } as Msg
+                this._competition.update(this.competition, {
+                    'checkpoints': this.competition.checkpoints
+                }).then(() => {
+                    this.snackbar.success(
+                        this.competition.checkpoints[$event.index].devices.indexOf(device.uuid) > -1 ? 'Устройство установлено как считыватель' : 'Устройство удалено из считывателей точки'
+                    )
+                }).catch(() => {
+                    this.snackbar.alert(
+                        "Ошибка устновки считывателя для контрольной точки"
                     )
                 })
             }

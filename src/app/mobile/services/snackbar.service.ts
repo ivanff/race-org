@@ -20,6 +20,8 @@ export class SnackbarService implements OnDestroy {
                             return this.alert(value.msg, value.timeout || null)
                         } else if (value.level == 'success') {
                             return this.success(value.msg, value.timeout || null)
+                        } else if (value.level == 'warning') {
+                            return this.warning(value.msg, value.timeout || null)
                         }
                     })
                 }
@@ -35,7 +37,7 @@ export class SnackbarService implements OnDestroy {
         if (msg) {
             return this.snackbar.action({
                 snackText: msg,
-                hideDelay: timeout || 2000,
+                hideDelay: timeout || 3000,
                 textColor: '#fff',
                 backgroundColor: '#d50000',
                 maxLines: 3,
@@ -51,6 +53,19 @@ export class SnackbarService implements OnDestroy {
                 hideDelay: timeout || 2000,
                 textColor: '#fff',
                 backgroundColor: '#00caab',
+                maxLines: 3,
+            } as SnackBarOptions)
+        }
+        return null
+    }
+
+    warning(msg: string, timeout?: number): Promise<any> | null {
+        if (msg) {
+            return this.snackbar.action({
+                snackText: msg,
+                hideDelay: timeout || 2000,
+                textColor: '#fff',
+                backgroundColor: '#f57c00',
                 maxLines: 3,
             } as SnackBarOptions)
         }

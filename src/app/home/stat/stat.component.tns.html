@@ -4,6 +4,7 @@
         <Label [text]="'Всего зарегестрированно участников: ' + athlets_count"></Label>
         <Label *ngFor="let _class of competition.classes" [text]="'Класс ' + _class + ': ' + (by_class_count[_class] || 'wait')"></Label>
         <Button class="btn -primary scan" [text]="'Сканировать'|L" [nsRouterLink]="['/scan']"></Button>
+        <Button class="btn -primary scan" [text]="'Locallog'|L" [nsRouterLink]="['/scan/local_log']"></Button>
     </StackLayout>
     <StackLayout *ngSwitchCase="null">
         <Button class="btn -primary scan" [text]="'Назначить\nсоревнование'|L" [nsRouterLink]="['competitions']"></Button>

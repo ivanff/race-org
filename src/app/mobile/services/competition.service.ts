@@ -1,5 +1,5 @@
 import {Injectable, NgZone, OnDestroy} from '@angular/core'
-import {defer, Observable, of, ReplaySubject, Subject} from "rxjs"
+import {Observable, of, ReplaySubject, Subject} from "rxjs"
 import {Competition} from "@src/app/shared/interfaces/competition"
 import {AuthService} from "@src/app/mobile/services/auth.service"
 import {shareReplay, switchMap, takeUntil} from "rxjs/operators"
@@ -78,9 +78,28 @@ export class CompetitionService implements OnDestroy {
         })
     }
 
-
     getAthletsCollectionPath(): string {
         return `athlets_${this.selected_competition.parent_id || this.selected_competition.id}`
+    }
+
+    set(competition: Competition, options?: firestore.SetOptions): Promise<Competition> {
+        return this.getCollection(competition).set(competition, options).then(() => {
+            return competition
+        })
+    }
+    update(competition, document: any): Promise<Competition> {
+        return this.getCollection(competition).update(document).then(() => {
+            return competition
+        })
+    }
+
+    private getCollection(competition: Competition): firestore.DocumentReference {
+        let collection: firestore.DocumentReference = firebase.firestore().collection('competitions').doc(competition.parent_id || competition.id)
+
+        if (competition.parent_id) {
+            collection = collection.collection('stages').doc(competition.id)
+        }
+        return collection
     }
 
     private firestoreCollectionObservable(parent_id, id?) {
@@ -106,8 +125,8 @@ export class CompetitionService implements OnDestroy {
                                     const id = doc.id
                                     stages.push({id, ...doc.data(), parent_id} as Competition)
                                 })
-                                const id = parent_id
-                                this.selected_competition = {id, ...doc.data(), stages} as Competition
+                                this.selected_competition = {...doc.data(), stages} as Competition
+                                this.selected_competition.id = parent_id
                                 subscriber.next(this.selected_competition)
                             })
                         } else {
@@ -135,21 +154,7 @@ export class CompetitionService implements OnDestroy {
                 isAdmin: isAdmin
             } as MobileDevice)
 
-            let collection: firestore.DocumentReference
-
-            if (this.selected_competition.parent_id) {
-                collection = firebase.firestore().collection("competitions")
-                    .doc(this.selected_competition.parent_id)
-                    .collection('stages')
-                    .doc(this.selected_competition.id)
-            } else {
-                collection = firebase.firestore().collection("competitions")
-                    .doc(this.selected_competition.id)
-            }
-
-            collection.update({
-                'mobile_devices': this.selected_competition.mobile_devices
-            })
+            this.update(this.selected_competition, {'mobile_devices': this.selected_competition.mobile_devices})
         }
 
         const checkpoints = this.selected_competition.checkpoints.filter((item: Checkpoint) => item.devices.indexOf(device.uuid) > -1)
