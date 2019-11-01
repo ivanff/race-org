@@ -36,6 +36,7 @@ import {LocalLogComponent} from "@src/app/scan/local-log/local-log.component"
 import {CheckpointResolver} from "@src/app/shared/resolvers/checkpoint.resolver"
 import {EnterSecretComponent} from "@src/app/enter/enter-secret/enter-secret.component"
 import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
+import {TzDatePipe} from "@src/app/shared/pipes/tzdate.pipe"
 
 
 // Uncomment and add to NgModule imports if you need to use two-way binding
@@ -71,6 +72,7 @@ import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
         DeviceNamePipe,
         GetDevicePipe,
         JoinPipe,
+        TzDatePipe,
         FoundDialogComponent
     ],
     imports: [

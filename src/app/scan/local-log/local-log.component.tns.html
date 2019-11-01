@@ -21,11 +21,11 @@
         <ListView height="100%"
                   [items]="items" style="line-height: 20px">
             <ng-template let-item="item" let-i="index" let-odd="odd">
-                <GridLayout columns="*, *" rows="*, *" [class.odd]="odd">
+                <GridLayout columns="*, *" rows="*, *" [class.odd]="odd" style="font-size: small">
                     <Label [text]="'nfc_id: ' + item.nfc_id" col="0" row="0" class="option"></Label>
                     <Label [text]="'athlet_id: ' + item.athlet_id" col="0" row="1" class="option"></Label>
                     <Label [text]="'order: ' + item.checkpoint_order" col="1" row="0" class="option text-right"></Label>
-                    <Label [text]="'created: ' + (item.created|date:'HH:mm:ss')" col="1" row="1" class="option text-right"></Label>
+                    <Label [text]="item.created|tzdate:'dd/MM HH:mm:ss':competition.timezone" col="1" row="1" class="option text-right"></Label>
                 </GridLayout>
             </ng-template>
         </ListView>

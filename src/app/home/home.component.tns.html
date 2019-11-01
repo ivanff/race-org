@@ -1,11 +1,13 @@
 <ActionBar [title]="'Race org: ' + version">
     <NavigationButton icon="res://round_menu_black_24"
                       (tap)="onDrawerButtonTap()"></NavigationButton>
+    <ActionItem [text]="'Local log'|L"
+                [nsRouterLink]="['/scan/local_log']"
+                ios.position="right"
+                android.position="popup"></ActionItem>
     <ActionItem [text]="'About'|L"
                 [nsRouterLink]="['/home/about']"
                 ios.position="right"
                 android.position="popup"></ActionItem>
 </ActionBar>
-<GridLayout columns="*" rows="*">
-    <router-outlet col="0" row="0"></router-outlet>
-</GridLayout>
+<router-outlet></router-outlet>

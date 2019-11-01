@@ -27,6 +27,7 @@ import {SqliteService} from "@src/app/mobile/services/sqlite.service"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
 import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
 import {Msg} from "@src/app/shared/interfaces/msg"
+import {keepAwake, allowSleepAgain} from "nativescript-insomnia";
 
 const firebase = require('nativescript-plugin-firebase/app')
 
@@ -66,6 +67,9 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
     }
 
     ngOnInit() {
+        keepAwake().then(() => {
+            this.snackbar.warning("Disable device sleeping")
+        })
         this.number$.pipe(
             debounceTime(2000),
             switchMap((value) => {
@@ -103,6 +107,10 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
     }
 
     ngOnDestroy(): void {
+        console.log('>> ScanCompenent ngOnDestroy')
+        allowSleepAgain().then(() => {
+            this.snackbar.warning("Enable device sleeping")
+        })
         this.nfc.doStopTagListener()
         this.destroy.next(null)
         this.destroy.complete()
@@ -111,7 +119,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
     onFound(athlet: Athlet, msg: string, error?: boolean): void {
 
         this.snackbar.snackbar$.next({
-            level: error ? 'alert': 'success',
+            level: error ? 'alert' : 'success',
             msg: `${athlet.number}\n${msg}`,
             timeout: 3000
         } as Msg)

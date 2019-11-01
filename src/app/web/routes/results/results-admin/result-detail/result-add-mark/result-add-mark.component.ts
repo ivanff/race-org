@@ -38,7 +38,7 @@ export class ResultAddMarkComponent implements OnInit {
         created: firebase.firestore.Timestamp.fromMillis(
             this.data.start_time.clone().set('hour', result[0]).set('minutes', result[1]).set('seconds', result[2]).format('x')
         )
-      } as Mark)
+      })
     }
   }
 }

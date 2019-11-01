@@ -21,7 +21,7 @@ export class SidemenuComponent {
             let menu_competitions: Array<ChildrenItem> = []
             let menu_results: Array<ChildrenItem> = []
             values.forEach((value) => {
-                if (value.start_date.toDate() < moment.utc().startOf('day').toDate()) {
+                if (value.start_date.toDate() < moment.utc().startOf('day').toDate() || true) {
                     menu_results.push({
                         "state": ['/results/' + value.id],
                         "name": value.title,
