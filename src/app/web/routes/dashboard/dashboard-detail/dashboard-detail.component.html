@@ -93,13 +93,12 @@
                     </mat-card-header>
                     <mat-card-content>
                         <form [formGroup]="selectCompetition">
-                            <mat-radio-group [(ngModel)]="edit_competition" formControlName="competition"
-                                             aria-label="Select an option">
+                            <mat-radio-group formControlName="competition_id" aria-label="Select an option">
 
                                 <mat-list>
                                     <mat-list-item>
                                         <h4 mat-line class="p-16">
-                                            <mat-radio-button [value]="competition">
+                                            <mat-radio-button [value]="competition.id">
                                                 <b>{{competition.title}}</b>
                                             </mat-radio-button>
                                         </h4>
@@ -117,16 +116,14 @@
                                     <div *ngFor="let item of competition.stages; let i = index; let l = last;">
                                         <mat-list-item>
                                             <h4 mat-line class="p-16">
-                                                <mat-radio-button [value]="item">{{item.title}}</mat-radio-button>
+                                                <mat-radio-button [value]="item.id">{{item.title}}</mat-radio-button>
                                             </h4>
                                             <p mat-line>
                                                 {{ item.start_date.toDate()|date:"yyyy-dd-MM (z)":getTzOffset(competition.timezone) }}
                                             </p>
-                                            <button (click)="onDelete(item, 'stages')" mat-icon-button type="button"
-                                                    color="warn">
-                                                <mat-icon>
-                                                    delete
-                                                </mat-icon>
+                                            <button (click)="onDelete(item, 'stages')"
+                                                    mat-icon-button type="button" color="warn">
+                                                <mat-icon>delete</mat-icon>
                                             </button>
                                         </mat-list-item>
                                         <mat-divider *ngIf="!l"></mat-divider>
@@ -139,7 +136,7 @@
                 </mat-card>
             </div>
             <div fxFlex="60" fxFlex.lt-sm="100" class="p-l-4">
-                <app-competition [competition]="edit_competition" [firstCompetition]="competition"></app-competition>
+                <app-competition [competition]="edit_competition"></app-competition>
             </div>
         </div>
     </mat-tab>
@@ -151,7 +148,9 @@
             первого (основного) этапа
             будут перенесены на все последующие этапы, БЕЗ перерегистрации.
         </p>
-        <app-competition [firstCompetition]="competition" (setActiveTabEvent)="setActiveTab($event)"></app-competition>
+        <app-competition [competition]="competition"
+                         [clone]="true"
+                         (setActiveTabEvent)="setActiveTab($event)"></app-competition>
     </mat-tab>
     <mat-tab label="Атлеты">
         <ng-template matTabContent>

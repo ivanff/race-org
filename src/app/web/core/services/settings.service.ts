@@ -27,7 +27,7 @@ export class SettingsService implements OnDestroy {
             .orderBy('created', 'desc'))
             .valueChanges({idField: 'id'})
             .pipe(
-                map((values: Array<Competition>) => values.filter((item) => ['4O12e8JOUoR96idKit6d'].indexOf(item.id) == -1)),
+                // map((values: Array<Competition>) => values.filter((item) => ['4O12e8JOUoR96idKit6d'].indexOf(item.id) == -1)),
                 switchMap((values: Array<any>) => {
                     const sub_query = values.map((doc) => {
                         return this.afs.collection('competitions').doc(doc.id).collection('stages').valueChanges(first()).pipe(map((stages) => {

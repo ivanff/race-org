@@ -16,7 +16,7 @@ import {
     MatVerticalStepper
 } from "@angular/material"
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidatorFn, Validators} from "@angular/forms"
-import {AngularFirestore} from "@angular/fire/firestore"
+import {AngularFirestore, DocumentReference} from "@angular/fire/firestore"
 import {Router} from "@angular/router"
 import * as firebase from "firebase/app"
 import * as moment from "moment-timezone"
@@ -39,7 +39,7 @@ export const timeValidator: ValidatorFn = Validators.pattern('^[0-9]{1,2}\:[0-9]
 
 @Component({
     selector: 'app-competition',
-    templateUrl: './competition.component.html'
+    templateUrl: './competition.component.html',
 })
 export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
     // isLinear = true
@@ -99,12 +99,35 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
 
     protected _onDestroy = new ReplaySubject<any>(1)
 
-    @Input('competition') competition: Competition = null
-    @Input('competition$') competition$: Observable<Competition> = null
-    @Input('firstCompetition') firstCompetition: Competition = null
+    @Input('clone') clone = false
+    @Input('competition') competition = {
+        checking: ['manual', 'nfc'],
+        classes: ['hobby'],
+        checkpoints: [
+            {
+                title: '',
+                marshal: '',
+                order: 0,
+                classes: [
+                    'hobby'
+                ],
+                devices: []
+            } as Checkpoint
+        ],
+        athlet_extra_fields: [
+            'city'
+        ],
+        mobile_devices: [],
+        group_start: false,
+        marshal_has_device: true,
+        result_by_full_circle: true,
+        created: firebase.firestore.Timestamp.now()
+    } as Competition
+    // @Input('competition$') competition$: Observable<Competition> = null
+    // @Input('firstCompetition') firstCompetition: Competition = null
     @Output() setActiveTabEvent = new EventEmitter<number>()
 
-    @ViewChild('stepper', { static: true }) stepper: MatVerticalStepper
+    @ViewChild('stepper', {static: true}) stepper: MatVerticalStepper
 
     constructor(private fb: FormBuilder,
                 private firestore: AngularFirestore,
@@ -113,76 +136,56 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
                 private auth: AuthService) {
     }
 
-    ngOnInit() {
-        if (this.competition$) {
-            this.competition$.pipe(takeUntil(this._onDestroy)).subscribe((next:Competition) => {
-                this.competition = next
-            })
+    ngOnInit(): void {
+        if (this.clone) {
+            this.competition = this.getStageInitial()
         }
-
-        if (this.competition) {
-            this.isLinear = false
-            this.data.title = this.competition.title
-            this.data.start_date = moment(this.competition.start_date.toMillis()).tz(this.competition.timezone)
-            this.data.start_time = this.secondsToTime(this.competition.start_time)
-            this.data.end_date = moment(this.competition.end_date.toMillis()).tz(this.competition.timezone)
-            this.data.duration = this.secondsToTime(this.competition.duration)
-            this.data.timezone = this.competition.timezone
-            this.data.group_start = this.competition.group_start
-            this.data.marshal_has_device = this.competition.marshal_has_device
-            this.data.result_by_full_circle = this.competition.result_by_full_circle
-            this.data.checking = this.competition.checking
-            this.data.checkpoints = this.competition.checkpoints
-            this.data.classes = this.competition.classes
-            this.data.athlet_extra_fields = this.competition.athlet_extra_fields
-        }
-
-        if (this.firstCompetition && !this.competition) {
-            this.data.title = this.firstCompetition.title
-            this.data.start_date = moment(this.firstCompetition.start_date.toMillis()).tz(this.firstCompetition.timezone).add(1, 'day')
-            this.data.start_time = this.secondsToTime(this.firstCompetition.start_time)
-            this.data.end_date = moment(this.firstCompetition.end_date.toMillis()).tz(this.firstCompetition.timezone).add(1, 'day')
-            this.data.duration = this.secondsToTime(this.firstCompetition.duration)
-            this.data.timezone = this.firstCompetition.timezone
-            this.data.group_start = this.firstCompetition.group_start
-            this.data.marshal_has_device = this.firstCompetition.marshal_has_device
-            this.data.result_by_full_circle = this.firstCompetition.result_by_full_circle
-            this.data.checking = this.firstCompetition.checking
-            this.data.checkpoints = this.firstCompetition.checkpoints
-            this.data.classes = this.firstCompetition.classes
-            this.data.athlet_extra_fields = this.firstCompetition.athlet_extra_fields
-        }
-
 
         this.firstFormGroup = this.fb.group({
-            title: [this.data.title, [Validators.required]],
-            start_date: [this.data.start_date, [Validators.required]],
-            start_time: [this.data.start_time, [Validators.required, timeValidator]],
-            end_date: [this.data.end_date, [Validators.required]],
-            duration: [this.data.duration, [Validators.required, timeValidator]],
-            timezone: [this.data.timezone],
+            title: [this.competition.title || '', [Validators.required]],
+            start_date: [this.competition.start_date ? moment(this.competition.start_date.toMillis()).tz(this.competition.timezone) : null, [Validators.required]],
+            start_time: [this.competition.start_time ? this.secondsToTime(this.competition.start_time) : '12:00', [Validators.required, timeValidator]],
+            end_date: [this.competition.end_date ? moment(this.competition.end_date.toMillis()).tz(this.competition.timezone) : null, [Validators.required]],
+            duration: [this.competition.duration ? this.secondsToTime(this.competition.duration) : '3:00', [Validators.required, timeValidator]],
+            timezone: [this.competition.timezone ? this.competition.timezone : moment.tz.guess()],
             checking: this.formArrayChecking()
         })
+        this.firstFormGroup.valueChanges.pipe(
+            takeUntil(this._onDestroy)
+        ).subscribe((next: any) => {
+            Object.assign(this.competition, {
+                title: next.title,
+                start_date: next.start_date ? firebase.firestore.Timestamp.fromDate(next.start_date.toDate()) : null,
+                start_time: next.start_time ? this.getTime(next.start_time) : null,
+                end_date: next.end_date ? firebase.firestore.Timestamp.fromDate(next.end_date.toDate()) : null,
+                duration: next.duration ? this.getTime(next.duration) : null,
+                timezone: next.timezone,
+                checking: this.checking.filter((item, index) => next.checking[index])
+            })
+        })
 
-        this.secondFormGroup = this.fb.group({})
+        this.secondFormGroup = this.fb.group({
+            group_start: [this.competition.group_start],
+            marshal_has_device: [this.competition.marshal_has_device],
+            result_by_full_circle: [this.competition.result_by_full_circle],
+        })
+        this.secondFormGroup.valueChanges.pipe(
+            takeUntil(this._onDestroy)
+        ).subscribe((next: any) => {Object.assign(this.competition, next)})
 
-        this.thirdFormGroup = new FormGroup({
-            'classes': this.formArrayClasses() as FormArray
-        })
-        this.thirdFormGroup.valueChanges.subscribe((values) => {
-            this.data.classes = values.classes
+        this.thirdFormGroup = new FormGroup({'classes': this.formArrayClasses() as FormArray})
+        this.thirdFormGroup.valueChanges.subscribe((next) => {Object.assign(this.competition, next)})
+
+        this.fourFromGroup = new FormGroup({'checkpoints': this.formArrayCheckpoints() as FormArray})
+        this.fourFromGroup.valueChanges.subscribe((next) => {
+            this.competition.checkpoints = next.checkpoints.map((item) => {
+                const classes = this.competition.classes.filter((_class, index) => item.classes[index])
+                return {...item, classes} as Checkpoint
+            })
         })
 
-        this.fourFromGroup = new FormGroup({
-            'checkpoints': this.formArrayCheckpoints() as FormArray
-        })
-
-        this.fiveFromGroup = new FormGroup({
-            'athlet_extra_fields': this.formArrayExtraFields()
-        })
-        this.fiveFromGroup.valueChanges.subscribe((values) => {
-            this.data.athlet_extra_fields = values.athlet_extra_fields
-        })
+        this.fiveFromGroup = new FormGroup({'athlet_extra_fields': this.formArrayExtraFields()})
+        this.fiveFromGroup.valueChanges.subscribe((next) => {Object.assign(this.competition, next)})
 
         this.filteredTimezones.next(this.settings.timezones_array)
         this.timezoneFilterControl.valueChanges.pipe(takeUntil(this._onDestroy)).subscribe(() => {
@@ -192,16 +195,16 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.hasOwnProperty('competition')) {
-
             if (!changes['competition'].firstChange) {
-                this.competition = changes['competition'].currentValue
+                const competition = {...changes['competition'].currentValue}
                 this.stepper.reset()
-                this.ngOnInit()
+                setTimeout(() => {
+                    this.competition = competition
+                    this.ngOnInit()
+                }, 100)
             }
-
         }
     }
-
 
     ngOnDestroy() {
         this._onDestroy.next(null);
@@ -225,45 +228,42 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     private formArrayCheckpoints(): FormArray {
-        const checkpoints = new FormArray([])
-        this.data.checkpoints.forEach((checkpoint) => {
-            checkpoints.push(this.fb.group({
-                title: ['', [Validators.required]],
-                classes: this.formArrayCheckboxes(checkpoint.classes)
-            }))
-        })
-        return checkpoints
+        return new FormArray(
+            (this.competition.checkpoints ? this.competition.checkpoints : []).map((checkpoint: Checkpoint) => {
+                return this.fb.group({
+                    title: [checkpoint.title, [Validators.required]],
+                    marshal: [checkpoint.marshal, []],
+                    classes: this.formArrayCheckboxes(checkpoint.classes)
+                })
+            })
+        )
     }
 
     private formArrayClasses(): FormArray {
-        const classes = new FormArray([])
-        this.data.classes.forEach((_class) => {
-            classes.push(new FormControl(_class, [Validators.required]))
-        })
-        return classes
+        return new FormArray((this.competition.classes ? this.competition.classes : []).map((_class) => {
+                return new FormControl(_class, [Validators.required])
+            })
+        )
     }
+
     private formArrayExtraFields(): FormArray {
-        const extra_fields = new FormArray([])
-        this.data.athlet_extra_fields.forEach((field) => {
-            extra_fields.push(new FormControl(field, []))
-        })
-        return extra_fields
+        return new FormArray((this.competition.athlet_extra_fields ? this.competition.athlet_extra_fields : []).map((field) => {
+            return new FormControl(field, [])
+        }))
     }
 
     private formArrayChecking(): FormArray {
         const checking = new FormArray([], [groupRequiredValidator(1)])
         this.checking.forEach((value: string) => {
-            checking.push(new FormControl(this.data.checking.indexOf(value) > -1, []))
+            checking.push(new FormControl(this.competition.checking ? this.competition.checking.indexOf(value) > -1 : false, []))
         })
         return checking
     }
 
-    private formArrayCheckboxes(classes?:Array<string>): FormArray {
-        const checkboxes = new FormArray([], [groupRequiredValidator(1)])
-        this.data.classes.forEach((_class) => {
-            checkboxes.push(new FormControl(classes.indexOf(_class) > -1, []))
-        })
-        return checkboxes
+    private formArrayCheckboxes(classes?: Array<string>): FormArray {
+        return new FormArray((this.competition.classes ? this.competition.classes : []).map((item) => {
+            return new FormControl(classes.indexOf(item) > -1, [])
+        }), [groupRequiredValidator(1)])
     }
 
     private getTime(time: string): number {
@@ -271,47 +271,25 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
         if (parts.length == 2) {
             const h = parseInt(parts[0]) * 60 * 60
             const m = parseInt(parts[1]) * 60
-            return h+m
+            return h + m
         }
         return null
     }
 
-    onCheckboxChange($event: MatCheckboxChange, list: Array<string>) {
-        if ($event.checked) {
-            if (list.indexOf($event.source.value) == -1) {
-                list.push(
-                    $event.source.value
-                )
-            }
-        } else {
-            const index = list.indexOf($event.source.value)
-            if (index > -1) {
-                list.splice(index, 1)
-            }
-        }
-    }
-    onClassCheckboxChange($event: MatCheckboxChange, index: number) {
-        if ($event.checked) {
-            this.data.checkpoints[index].classes.push($event.source.value)
-        } else {
-            this.data.checkpoints[index].classes = this.data.checkpoints[index].classes.filter((_class) => _class != $event.source.value)
-        }
+    private getStageInitial(): Competition {
+        let competition = {...this.competition}
+        competition.parent_id = competition.id
+        competition.title = `Этап № ${competition.title}`
+        competition.is_stage = true
+        delete competition.stages
 
-        const checkpoint = (this.fourFromGroup.controls['checkpoints'] as FormArray).controls[index] as FormGroup
-        (checkpoint.controls['classes'] as FormArray).reset(
-            this.data.classes.map((_class) => this.data.checkpoints[index].classes.indexOf(_class) >= 0)
+        competition.start_date = firebase.firestore.Timestamp.fromMillis(
+            competition.start_date.toMillis() + this.getTime('24:00') * 1000
         )
+        competition.end_date = competition.start_date
 
-    }
-
-    onDateChange(type: string, $event: MatDatepickerInputEvent<moment>, formControlName) {
-        if ($event.value) {
-            this.data[formControlName] = $event.value
-        }
-    }
-
-    onSlideChange($event: MatSlideToggleChange) {
-        this.data[$event.source.name] = $event.checked
+        delete competition.id
+        return competition
     }
 
     onAddExtraField() {
@@ -324,30 +302,23 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
         (this.fiveFromGroup.controls['athlet_extra_fields'] as FormArray).removeAt(index)
     }
 
-    onAddClass() {
+    onAddClass(): void {
         (this.thirdFormGroup.controls['classes'] as FormArray).push(
             new FormControl('', [Validators.required])
-        )
-        this.data.checkpoints.forEach((item: any, index: number) => {
-            (this.fourFromGroup.controls['checkpoints'] as FormArray).controls.forEach((checkpoint: FormGroup) => {
-                (checkpoint.controls['classes'] as FormArray).push(
-                    new FormControl(false, [])
-                )
-            })
-        })
+        );
+
+        (this.fourFromGroup.controls['checkpoints'] as FormArray).controls.map((fb: FormGroup) => {
+            (fb.controls['classes'] as FormArray).push(
+                new FormControl(false, [])
+            )
+        });
     }
 
     onRemoveClass(index: number) {
-        (this.thirdFormGroup.controls['classes'] as FormArray).removeAt(index)
+        (this.thirdFormGroup.controls['classes'] as FormArray).removeAt(index);
 
-        this.data.checkpoints.forEach((item: any, y: number) => {
-            item.classes = item.classes.filter((item) => this.data.classes.indexOf(item) > -1)
-
-            (this.fourFromGroup.controls['checkpoints'] as FormArray).controls.forEach((checkpoint: FormGroup) => {
-                (checkpoint.controls['classes'] as FormArray).reset(
-                    this.data.classes.map((_class) => this.data.checkpoints[index].classes.indexOf(_class) > -1)
-                )
-            })
+        (this.fourFromGroup.controls['checkpoints'] as FormArray).controls.forEach((fb: FormGroup) => {
+            (fb.controls['classes'] as FormArray).removeAt(index)
         })
     }
 
@@ -355,19 +326,13 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
         (this.fourFromGroup.controls['checkpoints'] as FormArray).push(
             this.fb.group({
                 title: ['', [Validators.required]],
-                classes: this.formArrayCheckboxes(this.data.classes)
+                marshal: ['', []],
+                classes: this.formArrayCheckboxes(this.competition.classes)
             })
         )
-        this.data.checkpoints.push({
-            title: '',
-            order: 0,
-            classes: [...this.data.classes],
-            devices: []
-        } as Checkpoint)
     }
 
     onRemoveCp(index: number) {
-        this.data.checkpoints.splice(index, 1);
         (this.fourFromGroup.controls['checkpoints'] as FormArray).removeAt(index)
     }
 
@@ -375,64 +340,32 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
         return index
     }
 
-    onSave() {
-
-        let competition = <Competition>{}
-
-        competition.created = this.data.created
-        competition.title = this.data.title
-        competition.timezone = this.data.timezone
-        competition.start_date = firebase.firestore.Timestamp.fromDate(
-            moment.tz(`${this.data.start_date.format('YYYY-MM-DD')} 00:00:00`, this.data.timezone).startOf('day').toDate()
-        )
-        competition.start_time = this.getTime(this.data.start_time)
-        competition.end_date = firebase.firestore.Timestamp.fromDate(
-            moment.tz(`${this.data.end_date.format('YYYY-MM-DD')} 00:00:00`, this.data.timezone).startOf('day').toDate()
-        )
-        competition.duration = this.getTime(this.data.duration)
-        competition.checking = this.data.checking
-        competition.group_start = this.data.group_start
-        competition.marshal_has_device = this.data.marshal_has_device
-        competition.classes = this.data.classes
-        competition.checkpoints = this.data.checkpoints.map((item, index: number) => {
-            item.classes = item.classes.filter((_class) => competition.classes.indexOf(_class) >= 0)
-            item.order = index
-            return item
-        })
-        competition.athlet_extra_fields = this.data.athlet_extra_fields
-
+    onSave(): void {
         let collection = this.firestore.collection('competitions')
 
-        if (this.competition) {
-            competition.secret = this.competition.secret
-            if (this.firstCompetition) {
-                if (this.competition.id != this.firstCompetition.id) {
-                    collection = collection.doc(this.firstCompetition.id).collection('stages')
-                    competition.is_stage = true
-                }
-            }
-
-            if (!competition.mobile_devices) {
-                competition.mobile_devices = []
-            }
-
-            collection.doc(this.competition.id).set(competition, {merge: true}).then(() => {
-                this.router.navigate(['/dashboard'])
-            })
-        } else if (this.firstCompetition && !this.competition) {
-            competition.secret = this.firstCompetition.secret
-            competition.mobile_devices = this.firstCompetition.mobile_devices
-            competition.is_stage = true
-            collection.doc(this.firstCompetition.id).collection('stages').add(competition).then(() => {
-                this.setActiveTabEvent.emit(0)
-            })
+        if (this.competition.parent_id) {
+            collection = this.firestore.collection('competitions').doc(this.competition.parent_id).collection('stages')
         } else {
-            competition.secret = Object.assign({}, new Secret()) as Secret
-            competition.user = this.auth.user.uid
-            competition.mobile_devices = []
-            collection.doc(this.firestore.createId()).set(competition).then(() => {
-                this.router.navigate(['/dashboard'])
-            })
+            if (!this.competition.id) {
+                this.competition.secret = Object.assign({}, new Secret()) as Secret
+            }
         }
+
+        let p: Promise<any>;
+
+        if (this.competition.id) {
+            p = collection.doc(this.competition.id).set(this.competition)
+        } else {
+            this.competition.user = this.auth.user.uid
+            this.competition.secret = Object.assign({}, new Secret()) as Secret
+            p = collection.add(this.competition)
+        }
+
+        p.then((doc?: DocumentReference) => {
+            if (doc) {
+                this.competition.id = doc.id
+            }
+            this.router.navigate(['/dashboard'])
+        })
     }
 }

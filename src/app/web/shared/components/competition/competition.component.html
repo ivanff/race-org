@@ -20,7 +20,6 @@
                     <p>
                         <mat-form-field fxFlex="0 1 396px">
                             <input matInput
-                                   [(ngModel)]="data.title"
                                    placeholder="Название события"
                                    formControlName="title"
                                    required>
@@ -29,10 +28,8 @@
                     <p>
                         <mat-form-field class="m-r-16">
                             <input matInput
-                                   (dateChange)="onDateChange('change', $event, 'start_date')"
                                    [matDatepicker]="start_date_picker"
                                    [min]="minDate"
-                                   [value]="data.start_date"
                                    formControlName="start_date"
                                    placeholder="Дата проведения"
                                    required>
@@ -41,7 +38,6 @@
                         </mat-form-field>
                         <mat-form-field>
                             <input matInput
-                                   [(ngModel)]="data.start_time"
                                    formControlName="start_time"
                                    placeholder="Время начала"
                                    required>
@@ -56,7 +52,6 @@
                     <p>
                         <mat-form-field class="m-r-16">
                             <input matInput
-                                   (dateChange)="onDateChange('change', $event, 'end_date')"
                                    [matDatepicker]="end_date_picker"
                                    [min]="minDate"
                                    formControlName="end_date"
@@ -67,7 +62,6 @@
                         </mat-form-field>
                         <mat-form-field>
                             <input matInput
-                                   [(ngModel)]="data.duration"
                                    formControlName="duration"
                                    placeholder="Контрольное время"
                                    required>
@@ -80,7 +74,7 @@
                         <mat-form-field fxFlex="0 1 396px">
                             <mat-label>Часовой пояс</mat-label>
 
-                            <mat-select [(ngModel)]="data.timezone" [disableOptionCentering]="true"
+                            <mat-select [disableOptionCentering]="true"
                                         formControlName="timezone">
                                 <mat-option>
                                     <ngx-mat-select-search
@@ -100,19 +94,13 @@
 
                     <section class="m-t-24 m-b-24" formArrayName="checking">
                         <h3>Способы отметки атлета на точке</h3>
-                        <mat-checkbox [checked]="data.checking.indexOf('manual') >= 0"
-                                      (change)="onCheckboxChange($event, data.checking)"
-                                      formControlName="0"
+                        <mat-checkbox formControlName="0"
                                       value="manual" class="m-r-16">Ручная отметка
                         </mat-checkbox>
-                        <mat-checkbox [checked]="data.checking.indexOf('nfc') >= 0"
-                                      (change)="onCheckboxChange($event, data.checking)"
-                                      formControlName="1"
+                        <mat-checkbox formControlName="1"
                                       value="nfc" class="m-r-16">NFC
                         </mat-checkbox>
-                        <mat-checkbox [checked]="data.checking.indexOf('barcode') >= 0"
-                                      (change)="onCheckboxChange($event, data.checking)"
-                                      formControlName="2"
+                        <mat-checkbox formControlName="2"
                                       value="barcode">Штрихкод
                         </mat-checkbox>
                     </section>
@@ -128,14 +116,13 @@
                     </div>
                 </form>
             </mat-step>
+
             <mat-step [stepControl]="secondFormGroup">
                 <form [formGroup]="secondFormGroup">
                     <ng-template matStepLabel>Опции проведения</ng-template>
 
                     <p>
-                        <mat-slide-toggle [checked]="data.group_start"
-                                          (change)="onSlideChange($event)"
-                                          name="group_start"
+                        <mat-slide-toggle formControlName="group_start"
                                           color="primary"
                                           class="m-r-16">
                             Старт по группам
@@ -143,17 +130,14 @@
                     </p>
 
                     <p>
-                        <mat-slide-toggle [checked]="data.marshal_has_device"
-                                          (change)="onSlideChange($event)"
-                                          name="marshal_has_device"
+                        <mat-slide-toggle formControlName="marshal_has_device"
                                           color="primary"
                                           class="m-r-16">
                             Маршалы имеют устройства
                         </mat-slide-toggle>
                     </p>
                     <p>
-                        <mat-slide-toggle [checked]="data.result_by_full_circle" (change)="onSlideChange($event)"
-                                          name="result_by_full_circle"
+                        <mat-slide-toggle formControlName="result_by_full_circle"
                                           color="primary"
                                           class="m-r-16">
                             Результат по последнему полному кругу
@@ -165,6 +149,7 @@
                     </div>
                 </form>
             </mat-step>
+
             <mat-step [stepControl]="thirdFormGroup">
                 <form [formGroup]="thirdFormGroup">
                     <ng-template matStepLabel>Классы участников</ng-template>
@@ -192,31 +177,35 @@
                     </div>
                 </form>
             </mat-step>
+
             <mat-step [stepControl]="fourFromGroup">
                 <form [formGroup]="fourFromGroup">
                     <ng-template matStepLabel>Чекпоинты</ng-template>
                     <div formArrayName="checkpoints">
-                        <div *ngFor="let checkpoint of data.checkpoints; let i = index;"
+                        <div *ngFor="let checkpoint of fourFromGroup.controls['checkpoints']['controls']; let i = index; let l = last;"
                              [formGroupName]="i">
                             <p>
-                                <mat-form-field>
-                                    <a matSuffix (click)="onRemoveCp(i)" *ngIf="data.checkpoints.length > 1">
+                                <mat-form-field class="m-r-16">
+                                    <a matPrefix
+                                       (click)="onRemoveCp(i)"
+                                       *ngIf="fourFromGroup.controls['checkpoints']['controls'].length > 1">
                                         <mat-icon>remove</mat-icon>
                                     </a>
                                     <input matInput
-                                           [(ngModel)]="checkpoint.title"
                                            [placeholder]="'Название точки ' + (i + 1)"
                                            formControlName="title"
                                            required>
+                                </mat-form-field>
+                                <mat-form-field>
+                                    <input matInput
+                                           [placeholder]="'Маршал точки ' + (i + 1)"
+                                           formControlName="marshal">
                                 </mat-form-field>
                             </p>
                             <section formArrayName="classes" class="m-t-24 m-b-24">
                                 <h4>Классы участников</h4>
                                 <mat-checkbox
                                         *ngFor="let item of thirdFormGroup.controls['classes']['controls']; let y = index;"
-                                        [checked]="checkpoint.classes.indexOf(item.value) >= 0"
-                                        (change)="onClassCheckboxChange($event, i)"
-                                        [value]="item.value"
                                         formControlName="{{ y }}"
                                         class="m-r-16">{{ item.value}}
                                 </mat-checkbox>
@@ -227,6 +216,7 @@
                                     </mat-error>
                                 </p>
                             </section>
+                            <mat-divider *ngIf="!l" [inset]="true" class="m-b-8"></mat-divider>
                         </div>
                     </div>
 
@@ -239,6 +229,7 @@
                     </div>
                 </form>
             </mat-step>
+
             <mat-step [stepControl]="fiveFromGroup">
                 <form [formGroup]="fiveFromGroup">
                     <ng-template matStepLabel>Дополнительные данные атлетов</ng-template>
@@ -251,7 +242,8 @@
                                     </a>
                                     <input matInput
                                            [placeholder]="'Опция ' + (i + 1)"
-                                           [formControlName]="i" required>
+                                           [formControlName]="i"
+                                           required>
                                 </mat-form-field>
                             </p>
                         </div>
@@ -265,6 +257,7 @@
                     </div>
                 </form>
             </mat-step>
+
             <mat-step>
                 <ng-template matStepLabel>Готово</ng-template>
                 Завершить регистрацию соревнования

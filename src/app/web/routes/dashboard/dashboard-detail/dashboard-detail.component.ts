@@ -17,10 +17,9 @@ import {environment} from "@src/environments/environment.prod"
 export class DashboardDetailComponent implements OnInit, OnDestroy {
     athlets$: Observable<Array<Athlet>>
     protected _onDestroy = new ReplaySubject<any>(1)
-    protected _subscribers: Array<Subscription> = []
     competition: Competition
     edit_competition: Competition
-    active_tab:number = 0
+    active_tab: number = 0
     selectCompetition: FormGroup
     filterAthlets: FormGroup
     search = ''
@@ -36,17 +35,15 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
             takeUntil(this._onDestroy)
         ).subscribe(params => {
             this.competition = this.route.snapshot.data.competition
-            this.edit_competition = this.route.snapshot.data.competition
+            this.edit_competition = {...this.route.snapshot.data.competition}
 
-            this._subscribers.push(
-                this.afs.collection('competitions').doc(this.competition.id).collection('stages')
-                    .valueChanges({idField: 'id'}).pipe(map((stages: Array<any>) => {
-                    Object.assign(this.competition, {stages})
-                    Object.assign(this.edit_competition, {stages})
-                })).pipe(
-                    takeUntil(this._onDestroy)
-                ).subscribe()
-            )
+            this.afs.collection('competitions').doc(this.competition.id).collection('stages')
+                .valueChanges({idField: 'id'}).pipe(map((stages: Array<any>) => {
+                Object.assign(this.competition, {stages})
+                Object.assign(this.edit_competition, {stages})
+            })).pipe(
+                takeUntil(this._onDestroy)
+            ).subscribe()
 
             this.athlets$ = this.afs.collection<Athlet>(`athlets_${this.competition.id}`)
                 .valueChanges({idField: 'id'})
@@ -58,9 +55,21 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+
         this.selectCompetition = new FormGroup({
-            'competition': new FormControl(this.edit_competition, [])
+            'competition_id': new FormControl(this.edit_competition.id, [])
         })
+        this.selectCompetition.controls['competition_id'].valueChanges.subscribe((next) => {
+            if (this.competition.id == next) {
+                this.edit_competition = {...this.competition}
+            } else {
+                const competitions = this.competition.stages.filter((item: Competition) => item.id == next)
+                if (competitions.length) {
+                    this.edit_competition = {...competitions[0]}
+                }
+            }
+        })
+
         this.filterAthlets = new FormGroup({
             'search': new FormControl('', []),
             'class': new FormControl('', [])
@@ -69,7 +78,7 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
         this.filterAthlets.controls['search'].valueChanges
             .pipe(debounceTime(500))
             .pipe(distinctUntilChanged())
-            .subscribe((value => this.search = value))
+            .subscribe((next => this.search = next))
     }
 
     ngOnDestroy(): void {
@@ -99,6 +108,7 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
             })
         }
     }
+
     getFullRegisterUrl() {
         return `${environment.SERVER_URL}/public/athlet/register/${this.competition.id}`
     }
