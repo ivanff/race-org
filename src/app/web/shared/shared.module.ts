@@ -28,6 +28,7 @@ import {
     RecaptchaModule,
     RecaptchaSettings
 } from "ng-recaptcha"
+import {ChartsModule} from "ng2-charts"
 
 const THIRD_MODULES = [
     DemoMaterialModule,
@@ -39,6 +40,7 @@ const THIRD_MODULES = [
     RecaptchaModule,
     RecaptchaFormsModule,
     QRCodeModule,
+    ChartsModule,
 ];
 const COMPONENTS = [
     BreadcrumbComponent,

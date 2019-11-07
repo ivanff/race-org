@@ -8,7 +8,7 @@ import {ActivatedRoute} from "@angular/router"
 import * as _ from "lodash"
 import {Competition} from "@src/app/shared/interfaces/competition"
 import {Athlet} from "@src/app/shared/interfaces/athlet"
-import {takeUntil} from "rxjs/operators"
+import {filter, map, takeUntil} from "rxjs/operators"
 import {ReplaySubject} from "rxjs"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 
@@ -127,13 +127,19 @@ export class ResultsComponent implements OnInit, AfterViewInit {
 
         this.firestore.collection<Athlet>(`athlets_${this.competition.id}`).valueChanges({idField: 'id'})
             .pipe(
+                map((athlets: Array<Athlet>) => {
+                    athlets = athlets.filter((athlet) => this.classes.indexOf(athlet.class) >= 0)
+                    athlets.map((athlet: Athlet) => {
+                        athlet.marks = athlet.marks.filter((mark: Mark) => mark.competition_id == this.competition.id)
+                    })
+                    return athlets
+                }),
                 takeUntil(this._onDestroy)
             )
-            .subscribe((doc: Array<any>) => {
-                this.athlets = doc.filter((athlet: Athlet) => this.classes.indexOf(athlet.class) >= 0)
-
+            .subscribe((athlets: Array<Athlet>) => {
+                this.athlets = athlets
                 this.circles = Math.ceil(
-                    _.max(this.athlets.map((athlet: Athlet) => athlet.checkpoints.length)) / this.competition.checkpoints.length
+                    _.max(this.athlets.map((athlet: Athlet) => athlet.marks.length)) / this.competition.checkpoints.length
                 )
                 this.buildHeader()
                 this.buildRows()
@@ -171,7 +177,7 @@ export class ResultsComponent implements OnInit, AfterViewInit {
             // if (athlet.number != 888) {
             //     return
             // }
-            const clean_marks: Array<ResultMark | null> = [...athlet.checkpoints.sort((a, b) => a.created < b.created ? -1 : a.created > b.created ? 1 : 0)]
+            const clean_marks: Array<ResultMark | null> = [...athlet.marks.sort((a, b) => a.created < b.created ? -1 : a.created > b.created ? 1 : 0)]
 
             let last_cp = -1
 

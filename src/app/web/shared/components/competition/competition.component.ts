@@ -23,7 +23,7 @@ import * as moment from "moment-timezone"
 import {Secret} from "@src/app/shared/interfaces/secret"
 import {Competition} from "@src/app/shared/interfaces/competition"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
-import {Observable, ReplaySubject, Subject} from "rxjs"
+import {ReplaySubject} from "rxjs"
 import {takeUntil} from "rxjs/operators"
 import {SettingsService} from "@src/app/web/core/services/settings.service"
 import {AuthService} from "@src/app/web/core/services/auth.service"
@@ -42,8 +42,6 @@ export const timeValidator: ValidatorFn = Validators.pattern('^[0-9]{1,2}\:[0-9]
     templateUrl: './competition.component.html',
 })
 export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
-    // isLinear = true
-    isLinear = false
     timezoneFilterControl = new FormControl()
     filteredTimezones: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
 
@@ -52,43 +50,6 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
         'nfc',
         'barcode'
     ]
-
-    data = {
-        user: null,
-        created: firebase.firestore.Timestamp.now(),
-        title: '',
-        timezone: moment.tz.guess(),
-
-        start_date: null,
-        start_time: '12:00',
-
-        end_date: null,
-        duration: '3:00',
-
-        checking: [
-            'manual',
-            'nfc',
-        ],
-        group_start: false,
-        marshal_has_device: true,
-        result_by_full_circle: true,
-        classes: [
-            'hobby'
-        ],
-        checkpoints: [
-            {
-                title: '',
-                order: 0,
-                classes: [
-                    'hobby'
-                ],
-                devices: []
-            } as Checkpoint
-        ],
-        athlet_extra_fields: [
-            'city'
-        ]
-    }
 
     minDate = new Date()
     firstFormGroup: FormGroup
@@ -99,6 +60,7 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
 
     protected _onDestroy = new ReplaySubject<any>(1)
 
+    @Input('isLinear') isLinear = true
     @Input('clone') clone = false
     @Input('competition') competition = {
         checking: ['manual', 'nfc'],
@@ -121,10 +83,10 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
         group_start: false,
         marshal_has_device: true,
         result_by_full_circle: true,
+        stop_registration: false,
         created: firebase.firestore.Timestamp.now()
     } as Competition
-    // @Input('competition$') competition$: Observable<Competition> = null
-    // @Input('firstCompetition') firstCompetition: Competition = null
+
     @Output() setActiveTabEvent = new EventEmitter<number>()
 
     @ViewChild('stepper', {static: true}) stepper: MatVerticalStepper
@@ -168,6 +130,7 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
             group_start: [this.competition.group_start],
             marshal_has_device: [this.competition.marshal_has_device],
             result_by_full_circle: [this.competition.result_by_full_circle],
+            stop_registration: [this.competition.stop_registration],
         })
         this.secondFormGroup.valueChanges.pipe(
             takeUntil(this._onDestroy)
@@ -178,9 +141,9 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
 
         this.fourFromGroup = new FormGroup({'checkpoints': this.formArrayCheckpoints() as FormArray})
         this.fourFromGroup.valueChanges.subscribe((next) => {
-            this.competition.checkpoints = next.checkpoints.map((item) => {
+            this.competition.checkpoints = next.checkpoints.map((item, order:number) => {
                 const classes = this.competition.classes.filter((_class, index) => item.classes[index])
-                return {...item, classes} as Checkpoint
+                return {...item, classes, order} as Checkpoint
             })
         })
 
@@ -233,7 +196,8 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
                 return this.fb.group({
                     title: [checkpoint.title, [Validators.required]],
                     marshal: [checkpoint.marshal, []],
-                    classes: this.formArrayCheckboxes(checkpoint.classes)
+                    classes: this.formArrayCheckboxes(checkpoint.classes),
+                    devices: this.formArrayDevices(checkpoint.devices)
                 })
             })
         )
@@ -264,6 +228,12 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
         return new FormArray((this.competition.classes ? this.competition.classes : []).map((item) => {
             return new FormControl(classes.indexOf(item) > -1, [])
         }), [groupRequiredValidator(1)])
+    }
+
+    private formArrayDevices(devices?: Array<string>): FormArray {
+        return new FormArray((devices || []).map((device: string) => {
+            return new FormControl(device, [])
+        }))
     }
 
     private getTime(time: string): number {

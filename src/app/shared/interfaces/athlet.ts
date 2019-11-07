@@ -7,7 +7,7 @@ export interface Athlet {
     class: string
     fio: string
     number: number
-    checkpoints?: Array<Mark>
+    marks?: Array<Mark>
     [key: string]: any
     created: Date
 }

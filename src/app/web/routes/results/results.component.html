@@ -62,7 +62,7 @@
     <ng-container [matColumnDef]="'CP_' + y"
                   *ngFor="let def of checkpoints; trackBy: trackByIndex; let y = index;">
         <th mat-header-cell *matHeaderCellDef class="v-top p-t-2 cp-header">
-            <div>
+            <div [matTooltip]="def.marshal" [matTooltipDisabled]="!def.marshal">
                 <small>
                     {{ def.title || 'CP_' + ((y % this.checkpoints.length) + 1)  }}
                 </small>

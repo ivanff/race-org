@@ -5,7 +5,6 @@ import {AdminLayoutComponent} from "@src/app/web/theme/admin-layout/admin-layout
 import {DashboardComponent} from "@src/app/web/routes/dashboard/dashboard.component"
 import {AuthLayoutComponent} from "@src/app/web/theme/auth-layout/auth-layout.component"
 import {LoginComponent} from "@src/app/web/routes/sessions/login/login.component"
-// import {RegisterComponent} from "@src/app/web/routes/sessions/register/register.component"
 import {AuthGuard} from "@src/app/web/core/guard/auth.guard"
 import {DashboardAddComponent} from "@src/app/web/routes/dashboard/dashboard-add/dashboard-add.component"
 import {DashboardDetailComponent} from "@src/app/web/routes/dashboard/dashboard-detail/dashboard-detail.component"
@@ -13,7 +12,6 @@ import {CompetitionResolve} from "@src/app/shared/resolvers/competition.resolver
 import {ResultsAdminComponent} from "@src/app/web/routes/results/results-admin/results-admin.component"
 import {ResultDetailComponent} from "@src/app/web/routes/results/results-admin/result-detail/result-detail.component"
 import {AthletResolve} from "@src/app/shared/resolvers/athlet.resolver"
-// import {AppAthletRegisterComponent} from "@src/app/web/routes/app-athlet-register/app-athlet-register.component"
 import {DashboardEditComponent} from "@src/app/web/routes/dashboard/dashboard-edit/dashboard-edit.component"
 
 const routes: Routes = [

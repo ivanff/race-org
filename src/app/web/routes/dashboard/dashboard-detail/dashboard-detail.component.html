@@ -2,9 +2,9 @@
 
 <mat-tab-group [selectedIndex]="active_tab" (selectedIndexChange)="setActiveTab($event)">
     <mat-tab label="Статистика">
-        <div fxLayout="row wrap" fxLayoutAlign="start start" class="p-t-8">
-
-            <mat-card class="m-r-8">
+        <div fxLayout="row wrap"
+             fxLayoutAlign="start stretch" class="p-t-8">
+            <mat-card fxFlex="0 0 300px" fxFlex.lt-sm="100%" class="m-r-8">
                 <mat-card-header>
                     <mat-card-title>
                         <h4>
@@ -20,7 +20,24 @@
                     <qr-code [value]="competition.secret.marshal + ''" [size]="150"></qr-code>
                 </mat-card-content>
             </mat-card>
-            <mat-card class="m-r-8">
+            <mat-card fxFlex="0 0 300px" fxFlex.lt-sm="100%" class="m-r-8">
+                <mat-card-header>
+                    <mat-card-title>
+                        <h4>
+                            Код маршала
+                        </h4>
+                    </mat-card-title>
+                    <mat-card-subtitle>
+                        {{competition.secret.marshal}}
+                    </mat-card-subtitle>
+                </mat-card-header>
+
+                <mat-card-content class="text-center">
+                    <qr-code [value]="competition.secret.marshal + ''" [size]="150"></qr-code>
+                </mat-card-content>
+            </mat-card>
+
+            <mat-card fxFlex="0 0 300px" fxFlex.lt-sm="100%" class="m-r-8">
                 <mat-card-header>
                     <mat-card-title>
                         <h4>
@@ -37,13 +54,18 @@
                 </mat-card-content>
             </mat-card>
 
-            <mat-card class="m-r-8">
+            <mat-card fxFlex="0 0 300px" fxFlex.lt-sm="100%" class="m-r-8">
                 <mat-card-header>
                     <mat-card-title>
-                        <a mat-raised-button [routerLink]="['/public/athlet/register', competition.id]" target="_blank">
-                            Открыть регистрацию
-                        </a>
+                        <h4>
+                            <mat-slide-toggle [checked]="!competition.stop_registration" (change)="onStopRegChange($event)">Открыть регистрацию</mat-slide-toggle>
+                        </h4>
                     </mat-card-title>
+                    <mat-card-subtitle>
+                        <a [routerLink]="['/public/athlet/register', competition.id]"
+                           *ngIf="!competition.stop_registration"
+                           target="_blank">Публичная страница</a>
+                    </mat-card-subtitle>
                 </mat-card-header>
 
                 <mat-card-content class="text-center">
@@ -51,7 +73,7 @@
                 </mat-card-content>
             </mat-card>
 
-            <mat-card>
+            <mat-card fxFlex="50" class="m-r-8">
                 <mat-card-header>
                     <mat-card-title>
                         <h2>
@@ -60,27 +82,24 @@
                     </mat-card-title>
                 </mat-card-header>
 
-                <mat-card-content class="text-center">
-
-                    <ul>
-                        <li>
-                            Этапов: {{ competition.stages.length + 1}}
-                        </li>
-                        <li>
-                            Классы: {{ competition.classes.length }}
-                            <ul>
-                                <li *ngFor="let _class of competition.classes">
-                                    {{_class}}: {{ (athlets$|async|filter:[]:{class: _class}).length }}
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-
-
-                    <!--                {{ competition.stages|json }}-->
-
+                <mat-card-content class="text-center" class="m-r-8">
+                    <canvas baseChart
+                            [data]="pieChartData"
+                            [labels]="pieChartLabels"
+                            [chartType]="'pie'"
+                            [options]="pieChartOptions"
+                            [colors]="pieChartColors"
+                            [legend]="true">
+                    </canvas>
                 </mat-card-content>
             </mat-card>
+            <mat-card fxFlex="0 0 200px">
+                <mat-card-content>
+                    <a mat-flat-button (click)="onAdmin('add_athlets')">Заполнить атлетов</a>
+                    <a mat-flat-button (click)="onAdmin('remove_athlets')">Очистить</a>
+                </mat-card-content>
+            </mat-card>
+
         </div>
     </mat-tab>
     <mat-tab label="Редактировать">
@@ -136,7 +155,7 @@
                 </mat-card>
             </div>
             <div fxFlex="60" fxFlex.lt-sm="100" class="p-l-4">
-                <app-competition [competition]="edit_competition"></app-competition>
+                <app-competition [competition]="edit_competition" [isLinear]="false"></app-competition>
             </div>
         </div>
     </mat-tab>
@@ -150,72 +169,68 @@
         </p>
         <app-competition [competition]="competition"
                          [clone]="true"
+                         [isLinear]="false"
                          (setActiveTabEvent)="setActiveTab($event)"></app-competition>
     </mat-tab>
     <mat-tab label="Атлеты">
-        <ng-template matTabContent>
+        <mat-card style="overflow: hidden">
+            <mat-card-header>
+                <mat-card-title>Зарегистрированные спортсмены</mat-card-title>
+                <mat-card-subtitle></mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+                <form [formGroup]="filterAthlets">
+                    <mat-card class="m-20">
+                        <mat-card-content fxLayout="row wrap">
+                            <mat-form-field fxFlex="100" class="p-16">
+                                <input matInput formControlName="search" placeholder="Фильтр">
+                                <mat-hint>По фамилии или номеру участника</mat-hint>
+                            </mat-form-field>
+                            <div fxFlex="100" class="mat-form-field p-16">
+                                <label id="competition_classes" class="p-r-16">
+                                    Классы участников
+                                </label>
+                                <mat-radio-group formControlName="class" aria-labelledby="competition_classes">
+                                    <mat-radio-button [value]="''"
+                                                      class="p-r-8">Все
+                                    </mat-radio-button>
+                                    <mat-radio-button *ngFor="let _class of competition.classes"
+                                                      [value]="_class"
+                                                      class="p-r-8">{{_class}}</mat-radio-button>
+                                </mat-radio-group>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                </form>
 
-            <mat-card style="overflow: hidden">
-                <mat-card-header>
-                    <mat-card-title>Зарегистрированные спортсмены</mat-card-title>
-                    <mat-card-subtitle></mat-card-subtitle>
-                </mat-card-header>
-                <mat-card-content>
-                    <form [formGroup]="filterAthlets">
-                        <mat-card class="m-20">
-                            <mat-card-content fxLayout="row wrap">
-                                <mat-form-field fxFlex="100" class="p-16">
-                                    <input matInput formControlName="search" placeholder="Фильтр">
-                                    <mat-hint>По фамилии или номеру участника</mat-hint>
-                                </mat-form-field>
-                                <div fxFlex="100" class="mat-form-field p-16">
-                                    <label id="competition_classes" class="p-r-16">
-                                        Классы участников
-                                    </label>
-                                    <mat-radio-group formControlName="class" aria-labelledby="competition_classes">
-                                        <mat-radio-button [value]="''"
-                                                          class="p-r-8">Все
-                                        </mat-radio-button>
-                                        <mat-radio-button *ngFor="let _class of competition.classes"
-                                                          [value]="_class"
-                                                          class="p-r-8">{{_class}}</mat-radio-button>
-                                    </mat-radio-group>
-                                </div>
-                            </mat-card-content>
-                        </mat-card>
-                    </form>
+                <mat-accordion>
+                    <mat-expansion-panel
+                            *ngFor="let athlet of athlets$|async|filter:['fio', 'number']:{'search': search, 'class': filterAthlets.controls['class'].value}">
+                        <mat-expansion-panel-header fxLayout="row" fxLayoutAlign="start center">
+                            <mat-panel-title fxFlex="70" fxLayoutAlign="start center">
+                                <mat-icon mat-list-icon>person</mat-icon>
+                                <a [routerLink]="['detail', athlet.id]" mat-icon-button color="warn">
+                                    <mat-icon>edit</mat-icon>
+                                </a>
+                                <b class="p-r-8">&nbsp;{{athlet.number}}&nbsp;</b>
+                                {{athlet.fio}}
+                            </mat-panel-title>
+                            <mat-panel-description fxFlex="30" fxLayoutAlign="start center">
+                                {{ athlet.class }}
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
 
-                    <mat-accordion>
-                        <mat-expansion-panel
-                                *ngFor="let athlet of athlets$|async|filter:['fio', 'number']:{'search': search, 'class': filterAthlets.controls['class'].value}">
-                            <mat-expansion-panel-header fxLayout="row" fxLayoutAlign="start center">
-                                <mat-panel-title fxFlex="70" fxLayoutAlign="start center">
-                                    <mat-icon mat-list-icon>person</mat-icon>
-                                    <a [routerLink]="['detail', athlet.id]" mat-icon-button color="warn">
-                                        <mat-icon>edit</mat-icon>
-                                    </a>
-                                    <b class="p-r-8">&nbsp;{{athlet.number}}&nbsp;</b>
-                                    {{athlet.fio}}
-                                </mat-panel-title>
-                                <mat-panel-description fxFlex="30" fxLayoutAlign="start center">
-                                    {{ athlet.class }}
-                                </mat-panel-description>
-                            </mat-expansion-panel-header>
+                        <mat-list>
+                            <mat-list-item *ngFor="let item of athlet|keyvalue">
+                                <h4 mat-line>{{item.key}}</h4>
+                                <p mat-line> {{item.value}} </p>
+                            </mat-list-item>
+                            <mat-divider></mat-divider>
+                        </mat-list>
 
-                            <mat-list>
-                                <mat-list-item *ngFor="let item of athlet|keyvalue">
-                                    <h4 mat-line>{{item.key}}</h4>
-                                    <p mat-line> {{item.value}} </p>
-                                </mat-list-item>
-                                <mat-divider></mat-divider>
-                            </mat-list>
-
-                        </mat-expansion-panel>
-                    </mat-accordion>
-                </mat-card-content>
-            </mat-card>
-
-
-        </ng-template>
+                    </mat-expansion-panel>
+                </mat-accordion>
+            </mat-card-content>
+        </mat-card>
     </mat-tab>
 </mat-tab-group>

@@ -21,6 +21,7 @@ export interface Competition {
     group_start: boolean,
     marshal_has_device: boolean,
     result_by_full_circle: boolean,
+    stop_registration: boolean,
     classes: Array<string>,
     checkpoints: Array<Checkpoint>,
     is_stage: boolean,

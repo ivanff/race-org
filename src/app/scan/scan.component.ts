@@ -145,19 +145,19 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
     }
 
     private setMark(mark: Mark) {
-        const checkpoints: Array<Mark> = this.last_athlet.checkpoints
+        const marks: Array<Mark> = this.last_athlet.marks.filter((mark: Mark) => mark.competition_id == this._competition.selected_competition.id)
         // this.activityIndicatorRef.nativeElement.busy = false
 
-        if (checkpoints.length) {
-            const last_checkpoint = checkpoints[checkpoints.length - 1]
+        if (marks.length) {
+            const last_mark = marks[marks.length - 1]
 
-            if ((moment().diff(last_checkpoint.created, 'minutes') <= 5) && (last_checkpoint.order == this.current_checkpoint.order)) {
+            if ((moment().diff(last_mark.created, 'minutes') <= 5) && (last_mark.order == this.current_checkpoint.order)) {
                 this.snackbar.alert('Текущая метка отмечена менее 5 минут назад!')
                 return
             }
 
             if (this.current_checkpoint.order > 0) {
-                if ((this.current_checkpoint.order - 1) != last_checkpoint.order) {
+                if ((this.current_checkpoint.order - 1) != last_mark.order) {
                     this.onFound(this.last_athlet, 'Возможно пропущена предыдущая отметка маршала', true)
                 }
             }
@@ -173,12 +173,9 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
 
         this.onFound(this.last_athlet, 'ПРОХОЖДЕНИЕ ТОЧКИ ЗАПИСАНО')
 
-        checkpoints.push(mark)
-        this.collection.doc(this.last_athlet.id).update({checkpoints: checkpoints}).then(() => {
-            this.last_athlet = null
+        this.collection.doc(this.last_athlet.id).update({marks: [...this.last_athlet.marks, mark]}).then(() => {
         }).catch((err) => {
             this.snackbar.alert(`Transaction error: ${err}!`)
-            this.last_athlet = null
         })
     }
 
@@ -199,6 +196,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
                                 this.options.update(sqlite_id, data.id, `id[${this.last_athlet.id}]`, mark)
                             }
                             this.setMark(mark)
+                            this.last_athlet = null
                         })
                     } else {
                         alert(`Athlet is\'t found which has NFC tag ${data.id}!`)
