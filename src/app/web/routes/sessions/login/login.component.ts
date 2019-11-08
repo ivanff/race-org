@@ -13,7 +13,7 @@ import UserCredential = firebase.auth.UserCredential
 })
 export class LoginComponent implements OnInit, AfterViewInit {
     reactiveForm: FormGroup
-    phone: string = '9999999999'
+    phone: string = ''
     code: string
     windowRef: any
 

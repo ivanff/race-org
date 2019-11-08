@@ -1,4 +1,5 @@
 import {Mark} from "./mark"
+import * as firebase from "firebase/app"
 
 export interface Athlet {
     id?: string
@@ -9,7 +10,7 @@ export interface Athlet {
     number: number
     marks?: Array<Mark>
     [key: string]: any
-    created: Date
+    created: firebase.firestore.Timestamp
 }
 
 export const athletBuiltInKeys: string[] = [

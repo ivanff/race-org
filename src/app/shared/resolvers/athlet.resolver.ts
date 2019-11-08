@@ -22,7 +22,7 @@ export class AthletResolve implements Resolve<Athlet> {
                 first(),
                 map((doc: Athlet) => {
                     doc.id = route.params.athlet_id
-                    return doc
+                    return doc as Athlet
                 }))
     }
 }

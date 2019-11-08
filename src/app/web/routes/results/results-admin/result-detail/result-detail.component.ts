@@ -33,16 +33,21 @@ export class ResultDetailComponent implements OnInit {
     constructor(private route: ActivatedRoute,
                 private firestore: AngularFirestore,
                 private dialog: MatDialog) {
+
         this.athlet = route.snapshot.data['athlet']
+        console.log(
+            this.athlet
+        )
         this.competition = route.snapshot.data['competition']
+
         this.checkpoints = this.competition.checkpoints.filter((checkpoint: Checkpoint) => checkpoint.classes.indexOf(this.athlet.class) > -1)
-        this.circles = Math.ceil(this.athlet.checkpoints.length / this.checkpoints.length)
+        this.circles = Math.ceil(this.athlet.marks.length / this.checkpoints.length)
         this.start_time = moment(this.competition.start_date.toMillis()).add(this.competition.start_time, 's')
         this.end_time = moment(this.competition.end_date.toMillis()).add(this.competition.start_time + this.competition.duration, 's')
     }
 
     ngOnInit() {
-        this.marks = [...this.athlet.checkpoints.sort((a, b) => a.created < b.created ? -1 : a.created > b.created ? 1 : 0)]
+        this.marks = [...this.athlet.marks.sort((a, b) => a.created < b.created ? -1 : a.created > b.created ? 1 : 0)]
         this.buildRows()
     }
 

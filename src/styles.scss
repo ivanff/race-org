@@ -5,6 +5,17 @@ a[matSuffix] {
   cursor: pointer
 }
 
+a.disabled {
+  color: darkgray;
+  pointer-events: none;
+  cursor: default;
+}
+
+.matero-auth-container.large-content {
+  height: auto;
+  min-height: 100%;
+}
+
 .matero-sidemenu-link {
   .menu-name {
     white-space: nowrap;

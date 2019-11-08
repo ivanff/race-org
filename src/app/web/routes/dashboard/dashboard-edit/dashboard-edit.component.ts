@@ -20,7 +20,7 @@ export class DashboardEditComponent implements OnInit {
   ngOnInit() {
   }
 
-  onCreated(athlet: Athlet) {
+  onCreated($event) {
     this.route.navigate(['edit', this.competition.id])
   }
 

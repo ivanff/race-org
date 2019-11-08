@@ -1,13 +1,78 @@
-<div class="matero-auth-container">
-    <div class="w-full h-full" fxLayout="row wrap" fxLayoutAlign="center center">
-        <mat-card class="mat-elevation-z4 m-b-0" fxFlex="400px" fxFlex.xs="90%">
+<div fxLayout="row" fxLayoutAlign="center center" class="matero-auth-container large-content" style="">
+    <div class="w-full" fxLayout="row wrap" fxLayoutAlign="center center">
+        <mat-card class="mat-elevation-z4 m-b-8 m-t-8" fxFlex="400px" fxFlex.xs="90%">
             <mat-card-title class="text-center m-b-24">{{competition.title}}</mat-card-title>
-            <mat-card-subtitle class="text-center m-b-24">Регистрация участника</mat-card-subtitle>
-            <mat-card-content ngSwitch="competition.stop_registration">
-                <athlet-register *ngSwitchCase="false"
-                                 [competition]="competition"
-                                 (onCreated)="onCreated($event)"></athlet-register>
-                <h3 *ngSwitchDefault class="text-center text-red-400">
+            <mat-card-subtitle class="text-center m-b-24" fxLayout="row" fxLayoutAlign="space-between center">
+                <a (click)="change = false" [routerLink]="" [class.disabled]="!change">Регистрация участника</a>
+                <a (click)="change = true" [routerLink]="" [class.disabled]="change">Сменить номер или класс</a>
+            </mat-card-subtitle>
+            <mat-card-content [ngSwitch]="competition.stop_registration">
+
+                <div *ngSwitchDefault>
+                    <div [ngSwitch]="change">
+                        <athlet-register *ngSwitchCase="false"
+                                         [competition]="competition"
+                                         (onCreated)="onCreated($event)"></athlet-register>
+
+                        <div *ngSwitchCase="true">
+
+                            <form [formGroup]="getAthletForm"
+                                  #formDirective="ngForm" class="my-form">
+
+                                <mat-form-field class="full-width">
+                                    <mat-label>Телефонный номер</mat-label>
+
+                                    <span matPrefix>+7 &nbsp;</span>
+                                    <input (input)="onPhoneInput()" type="tel" matInput placeholder="Телефон"
+                                           formControlName="phone"
+                                           required>
+                                    <mat-hint>Убедитесь, что вводите номер телефона без пробелов, только 10 цифр
+                                    </mat-hint>
+                                    <div matSuffix>
+                                        <mat-spinner *ngIf="getAthletForm.controls['phone'].pending"
+                                                     diameter="24"></mat-spinner>
+                                    </div>
+                                    <mat-error
+                                            *ngIf="getAthletForm.controls['phone'].hasError('used_value') && !getAthletForm.controls['phone'].hasError('required')">
+                                        Указанный телефонный номер не зарегистрирован
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <div *ngIf="getAthletForm.controls['captcha']" class="mat-form-field full-width">
+                                    <re-captcha formControlName="captcha" required></re-captcha>
+                                </div>
+
+                                <mat-form-field class="full-width">
+                                    <mat-label>Код подтверждения</mat-label>
+                                    <input disabled matInput formControlName="code" required>
+                                    <mat-hint>Код состоит из 6-ти цифр</mat-hint>
+                                    <div matSuffix>
+                                        <mat-spinner *ngIf="getAthletForm.controls['code'].pending"
+                                                     diameter="24"></mat-spinner>
+                                    </div>
+                                </mat-form-field>
+
+                                <div *ngIf="!getAthletForm.controls['code'].valid"
+                                     class="mat-form-field full-width">
+                                    <button mat-raised-button color="warn"
+                                            [disabled]="getAthletForm.controls['phone'].invalid || getAthletForm.controls['captcha'].invalid"
+                                            (click)="onSendSms()" type="button">Выслать код подтверждения номера
+                                    </button>
+                                </div>
+
+                                <athlet-change
+                                        *ngIf="athlet"
+                                        [athlet]="athlet"
+                                        [competition]="competition"
+                                        (onCreated)="onChange($event)"></athlet-change>
+
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+
+                <h3 *ngSwitchCase="true" class="text-center text-red-400">
                     Регистрация приостановлена
                 </h3>
             </mat-card-content>

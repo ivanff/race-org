@@ -48,6 +48,11 @@
             Указанный телефонный номер уже зарегистрирован
         </mat-error>
     </mat-form-field>
+
+    <div *ngIf="registerForm.controls['captcha']" class="mat-form-field full-width">
+        <re-captcha formControlName="captcha" required></re-captcha>
+    </div>
+
     <div *ngIf="registerForm.controls.hasOwnProperty('code')">
         <mat-form-field class="full-width">
             <mat-label>Код подтверждения</mat-label>
@@ -64,12 +69,11 @@
             </button>
         </div>
     </div>
-    <div *ngIf="registerForm.controls['captcha']" class="mat-form-field full-width">
-        <re-captcha formControlName="captcha" required></re-captcha>
-    </div>
 
     <div class="mat-form-field full-width">
-        <button mat-raised-button color="primary" [disabled]="registerForm.invalid" type="submit">
+        <button mat-raised-button color="primary"
+                [disabled]="!formIsValid()"
+                type="submit">
             {{ athlet?.id ? 'Сохранить' : 'Зарегистрироваться' }}
         </button>
     </div>

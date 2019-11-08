@@ -11,8 +11,8 @@ const routes: Routes = [
     resolve: {
       competition: CompetitionResolve
     }
-  }
-];
+  },
+]
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],

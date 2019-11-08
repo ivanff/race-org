@@ -15,6 +15,7 @@ import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http"
 import {environment} from "@src/environments/environment"
 import {Athlet} from "@src/app/shared/interfaces/athlet"
 import {Competition} from "@src/app/shared/interfaces/competition"
+import * as firebase from "firebase"
 
 export interface Check {
     success: boolean,
@@ -28,10 +29,12 @@ export interface Check {
 })
 export class AthletRegisterComponent implements OnInit {
     registerForm: FormGroup
-    code_is_send: boolean
     athlet: Athlet
+    formIsValid = () => false
+
     @Input() competition: Competition
-    @Output() onCreated = new EventEmitter<Athlet>()
+    @Output() onCreated = new EventEmitter<{athlet: Athlet, form: FormGroupDirective}>()
+    @Output() onValid = new EventEmitter<Athlet>()
 
     athlet_collection: AngularFirestoreCollection
 
@@ -43,7 +46,6 @@ export class AthletRegisterComponent implements OnInit {
 
     ngOnInit() {
         this.athlet_collection = this.afs.collection<Athlet>(`athlets_${this.competition.id}`)
-        this.code_is_send = false
         this.registerForm = this.fb.group({
             fio: ['', [<any>Validators.required]],
             number: ['', [<any>Validators.required, <any>Validators.min(1), <any>Validators.max(999)], [AthletRegisterComponent.usedValue(this.athlet_collection, 'number')]],
@@ -52,31 +54,38 @@ export class AthletRegisterComponent implements OnInit {
             code: ['', [<any>Validators.minLength(6), <any>Validators.required], [this.checkSmsCode()]],
         })
         this.competition.athlet_extra_fields.forEach((item) => this.registerForm.addControl(item, new FormControl('', [])))
+
         if (!this.athlet) {
             this.registerForm.addControl('captcha', new FormControl('', [<any>Validators.required]))
         }
+        setTimeout(() => this.formIsValid = () => this.registerForm.valid, 0);
+
+        this.registerForm.valueChanges.subscribe((next) => {
+        }, (error => {
+            console.log('error', error)
+        }))
     }
 
-    onSave(model, is_valid: boolean, formDirective?: FormGroupDirective): void {
+    onSave(model, is_valid: boolean, formDirective?: FormGroupDirective): Promise<Athlet> | null {
         if (is_valid) {
             let athlet = {...model}
             delete athlet.code
             delete athlet.captcha
             athlet.phone = parseInt(athlet.phone)
-            athlet.checkpoints = []
+            athlet.marks = []
+            athlet.created = firebase.firestore.Timestamp.fromDate(new Date())
 
-            this.athlet_collection.doc(athlet.phone + '').set(athlet).then(() => {
-                if (formDirective) {
-                    formDirective.resetForm()
-                }
-                this.registerForm.reset()
-                this.onCreated.emit(athlet)
+            return this.athlet_collection.doc(athlet.phone + '').set(athlet).then(() => {
+                 this.onCreated.emit({
+                    athlet: athlet,
+                    form: formDirective
+                })
+                return athlet
             })
         }
     }
 
     onSendSms(): void {
-
         if (this.registerForm.controls['phone'].valid) {
             this.http.post(environment.backend_gateway + '/sms',
                 JSON.stringify({phone: this.registerForm.controls['phone'].value, competition_id: this.competition.id}),
@@ -94,7 +103,6 @@ export class AthletRegisterComponent implements OnInit {
                     res
                 })
             ).subscribe(() => {
-                this.code_is_send = true
                 this._snackBar.open("Код выслан", "проверьте телефон", {
                     duration: 5000,
                     verticalPosition: "top"
@@ -141,7 +149,7 @@ export class AthletRegisterComponent implements OnInit {
                 debounceTime(300),
                 take(1),
                 map((res: Check) => {
-                    if (control.value === '123456') {
+                    if (control.value === '123456' && !environment.production) {
                         return null
                     }
                     return !res.success ? {"code": {value: control.value, msg: res.error}} : null

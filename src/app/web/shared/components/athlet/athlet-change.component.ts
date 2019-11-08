@@ -43,8 +43,8 @@ export class AthletChangeComponent extends AthletRegisterComponent implements On
     onPhoneInput(): void {
     }
 
-    onSave(model, is_valid: boolean, formDirective?: FormGroupDirective): void {
+    onSave(model, is_valid: boolean, formDirective?: FormGroupDirective): Promise<any> {
         model.phone = this.athlet.id
-        super.onSave(model, is_valid, formDirective)
+        return super.onSave(model, is_valid)
     }
 }

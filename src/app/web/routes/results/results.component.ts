@@ -132,6 +132,7 @@ export class ResultsComponent implements OnInit, AfterViewInit {
                     athlets.map((athlet: Athlet) => {
                         athlet.marks = athlet.marks.filter((mark: Mark) => mark.competition_id == this.competition.id)
                     })
+                    // return athlets.filter((athlet: Athlet) => athlet.number == 444)
                     return athlets
                 }),
                 takeUntil(this._onDestroy)
@@ -211,6 +212,14 @@ export class ResultsComponent implements OnInit, AfterViewInit {
                 }
             }
 
+            // if (athlet.number == 444) {
+            //     console.log(
+            //         clean_marks,
+            //         clean_marks[last_cp],
+            //         clean_marks[last_cp].created.toDate()
+            //     )
+            // }
+
             rows.push({
                 number: athlet.number,
                 athlet: athlet,
@@ -224,10 +233,10 @@ export class ResultsComponent implements OnInit, AfterViewInit {
 
         if (this.competition.result_by_full_circle) {
             for (let row of rows) {
-                const [last_circle, last_first_cp] = this.getLastCircle(row.marks)
-                if (last_circle) {
-                    row.last_created = last_circle.pop().created
-                    row.last_cp = last_first_cp
+                const [credit_circle, credit_cp] = this.getCreditCircle(row.marks)
+                if (credit_circle.length) {
+                    row.last_created = credit_circle.pop().created
+                    row.last_cp = credit_cp
                 }
             }
         }
@@ -260,50 +269,23 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         this.dataSource.filter = JSON.stringify(this.filter)
     }
 
-    diffTime(_created: any) {
+    diffTime(_created: any): string {
         const created = moment(_created.toDate())
 
         if (created > this.start_time) {
             created.diff(this.start_time, 'ms')
         }
 
-
         const zero_time = new Date(Date.UTC(this.start_time.year(), this.start_time.month(), this.start_time.day(), 0, 0, 0, 0))
 
         if (created > this.start_time) {
             zero_time.setMilliseconds(created.diff(this.start_time, 'ms') + zero_time.getTimezoneOffset() * 60000)
-            // return created$.diff(this.start_time, 'seconds')
-            // console.log(
-            //     moment({h:0, m:0, s:0, ms:0})
-            // )
             return [zero_time.getHours(), zero_time.getMinutes(), zero_time.getSeconds()].join(':')
-
-
-            // const duration = moment.duration(created$.diff(this.start_time))
-            //
-            // return [duration.hours(), duration.minutes(), duration.seconds()].join(":")
-
-            // return created$.diff(this.start_time, 'milliseconds')
-            // return moment({seconds: created$.diff(this.start_time, 'seconds')}).format('HH:mm:ss')
-
-            // return moment(
-            // ).utc(true).format('HH:mm:ss')
-            // return moment.duration(
-            //
-            // ).as('asMinutes')
-
-            // return moment.utc(
-            //
-            // ).format('HH:mm:ss')
         }
+        return ''
     }
 
     getCsvData(data: Array<any>) {
-        // let row = {}
-        // for (let header of this.displayedColumns) {
-        //     row[header] = header
-        // }
-
         let rows: Array<any> = []
 
         data.map((item) => {
@@ -352,18 +334,33 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         return (index % cp_in_circle) == (cp_in_circle - 1)
     }
 
-    getLastCircle(marks: Array<ResultMark>): [Array<ResultMark>, number] {
+    getCreditCircle(marks: Array<ResultMark>): [Array<ResultMark>, number] {
         const cp_in_circle = this.checkpoints.length / this.circles
         let circles_marks: Array<Array<ResultMark>> = _.chunk(marks, cp_in_circle)
-        circles_marks = circles_marks.filter((circle: Array<ResultMark | null>) => circle.filter((mark) => {
-            if (mark) {
-                if (!mark.elapsed) {
-                    return true
+        let last_circle = circles_marks[0]
+        let circle_index: number = 1
+
+        for (let i = 0; i < circles_marks.length ; i++) {
+            const circle = circles_marks[i]
+            circle_index = i + 1
+
+            if (circle.filter((mark) => {
+                if (mark) {
+                    if (!mark.elapsed) {
+                        return true
+                    }
                 }
+                return false
+            }).length == cp_in_circle) {
+                last_circle = circle
+            } else {
+                break
             }
-            return false
-        }).length == cp_in_circle)
-        return [circles_marks.pop(), circles_marks.length * cp_in_circle]
+        }
+
+        const credit_circle = (last_circle || []).filter((item) => !!item)
+
+        return [credit_circle, (credit_circle.length - 1) * circle_index]
     }
 
     getTzOffset(timezone: string) {
