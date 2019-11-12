@@ -1,9 +1,8 @@
 /* Add mobile styles for the component here.  */
-.even {
-  background-color: lightgray;
-}
-
 .items {
-  line-height: 20;
-  height: 100%
+  font-size: small;
+  height: 100%;
+  .even, .odd {
+    padding: 10px 0;
+  }
 }

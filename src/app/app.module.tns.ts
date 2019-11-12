@@ -37,6 +37,8 @@ import {CheckpointResolver} from "@src/app/shared/resolvers/checkpoint.resolver"
 import {EnterSecretComponent} from "@src/app/enter/enter-secret/enter-secret.component"
 import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
 import {TzDatePipe} from "@src/app/shared/pipes/tzdate.pipe"
+import {NfcService} from "@src/app/mobile/services/nfc.service"
+import {BarcodeService} from "@src/app/mobile/services/barcode.service"
 
 
 // Uncomment and add to NgModule imports if you need to use two-way binding
@@ -96,6 +98,8 @@ import {TzDatePipe} from "@src/app/shared/pipes/tzdate.pipe"
         SnackbarService,
         CompetitionService,
         SqliteService,
+        NfcService,
+        BarcodeService,
         AuthService,
     ],
     bootstrap: [AppComponent],

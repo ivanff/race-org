@@ -6,7 +6,7 @@
                 ios.position="right"
                 android.position="popup"></ActionItem>
 </ActionBar>
-<GridLayout rows="auto, auto, auto, *" columns="*">
+<GridLayout rows="auto, auto, auto, auto, *" columns="*">
     <StackLayout [ngSwitch]="current_checkpoint" row="0" col="0" class="p-t-10">
         <Label *ngSwitchCase="null" text="Это устройство не назначено считывателем" class="text-center warning"></Label>
         <Label *ngSwitchDefault class="text-center" textWrap="true">
@@ -18,8 +18,9 @@
         </Label>
     </StackLayout>
     <StackLayout row="1" col="0" class="p-t-10">
-        <GridLayout columns="*, *" rows="auto">
+        <GridLayout columns="2*, *" rows="auto">
             <TextField [hint]="'Номер участника'|L"
+                       [text]="input_number"
                        (textChange)="onTextChange($event)"
                        #textField
                        keyboardType="number"
@@ -34,10 +35,16 @@
     <Button [text]="activityIndicator.busy ? 'Прекратить сканирование NFC': 'Сканировать метку NFC'|L"
             (tap)="(activityIndicator.busy = !activityIndicator.busy)"
             row="2"
+            [rowSpan]="_competition.selected_competition.checking.indexOf('barcode') > -1 ? 1 : 2"
             col="0"
             [class.-primary]="!activityIndicator.busy"
             class="btn"></Button>
-    <ActivityIndicator row="3"
+    <Button [text]="'Сканировать QR код'|L"
+            (tap)="onScan()"
+            row="3"
+            col="0"
+            class="btn -primary"></Button>
+    <ActivityIndicator row="4"
                        col="0"
                        height="200"
                        width="200"

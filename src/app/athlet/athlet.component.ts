@@ -10,7 +10,8 @@ import {ActivatedRoute} from "@angular/router"
 import {Athlet} from "@src/app/shared/interfaces/athlet"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
 import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
-
+import {BarcodeService} from "@src/app/mobile/services/barcode.service"
+import {Qr} from "@src/app/shared/interfaces/qr"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
@@ -23,16 +24,18 @@ const firebase = require('nativescript-plugin-firebase/app')
 export class AthletComponent extends BaseComponent implements OnInit, OnDestroy {
     athlets: Array<Athlet> = []
     searchPhrase = ''
+    searchPhrase2 = ''
     @ViewChild('activityIndicator', {static: false}) activityIndicatorRef: ElementRef
     @ViewChild('searchBar', {static: false}) searchBarRef: ElementRef
     private unsubscribe: () => void
 
     constructor(public routerExtensions: RouterExtensions,
                 private snackbar: SnackbarService,
+                private barcode: BarcodeService,
                 private zone: NgZone,
                 private nfc: NfcService,
                 private activeRoute: ActivatedRoute,
-                private _competition: CompetitionService) {
+                public _competition: CompetitionService) {
         super(routerExtensions)
         console.log('>>> AthletComponent constructor')
     }
@@ -59,6 +62,25 @@ export class AthletComponent extends BaseComponent implements OnInit, OnDestroy 
         console.log('>>> AthletComponent ngOnDestroy')
     }
 
+    onScan(): void {
+        if (this.activityIndicatorRef.nativeElement.busy) {
+            this.activityIndicatorRef.nativeElement.busy = false
+        }
+
+        this.barcode.scan().then((result) => {
+            try {
+                const data: Qr = JSON.parse(result.text)
+                setTimeout(() => {
+                    this.searchPhrase = data.number.toString()
+                }, 100)
+            } catch (e) {
+                this.snackbar.warning(`Athlet number not found: ${e}`)
+            }
+        }, (errorMessage) => {
+            this.snackbar.alert("No scan: " + errorMessage)
+        })
+    }
+
     onItemTap(athlet: Athlet): void {
         this.searchBarRef.nativeElement.dismissSoftInput()
         if (isAndroid) {
@@ -67,7 +89,9 @@ export class AthletComponent extends BaseComponent implements OnInit, OnDestroy 
         if (this.activityIndicatorRef.nativeElement.busy) {
             this.activityIndicatorRef.nativeElement.busy = false
         }
-        this.routerExtensions.navigate([athlet.phone], {relativeTo: this.activeRoute})
+        setTimeout(() => {
+            this.routerExtensions.navigate([athlet.phone], {relativeTo: this.activeRoute})
+        }, 100)
         return
     }
 
@@ -82,6 +106,10 @@ export class AthletComponent extends BaseComponent implements OnInit, OnDestroy 
     }
 
     onTextChanged(args) {
+        if (this.activityIndicatorRef.nativeElement.busy) {
+            this.activityIndicatorRef.nativeElement.busy = false
+        }
+
         const searchBar = <SearchBar>args.object
         if (searchBar.text.length) {
             this.searchPhrase = searchBar.text
@@ -97,22 +125,30 @@ export class AthletComponent extends BaseComponent implements OnInit, OnDestroy 
         }
     }
 
-    searchAthlet(data: NfcTagData) {
-        const athlets = firebase.firestore().collection(`athlets_${this._competition.selected_competition.id}`)
-            .where('nfc_id', '==', data.id).get()
+    searchAthlet(nfc_id?: NfcTagData, qr_data?: Qr) {
+        const collection = firebase.firestore().collection(`athlets_${this._competition.selected_competition.id}`)
+        let athlets: Promise<firestore.QuerySnapshot> | null
 
-        athlets.then((snapshot: firestore.QuerySnapshot) => {
-            if (snapshot.docs.length) {
-                snapshot.forEach((doc: firestore.DocumentSnapshot) => {
-                    const athlet = doc.data() as Athlet
-                    this.routerExtensions.navigate([athlet.phone], {relativeTo: this.activeRoute})
-                })
-            } else {
-                this.snackbar.alert(
-                    'Nfc tag not found in DB'
-                )
-            }
-        })
+        if (nfc_id) {
+            athlets = collection.where('nfc_id', '==', nfc_id.id).get()
+        } else if (qr_data) {
+            athlets = collection.where('number', '==', qr_data.number).get()
+        }
+
+        if (athlets) {
+            athlets.then((snapshot: firestore.QuerySnapshot) => {
+                if (snapshot.docs.length) {
+                    snapshot.forEach((doc: firestore.DocumentSnapshot) => {
+                        const athlet = doc.data() as Athlet
+                        this.routerExtensions.navigate([athlet.phone], {relativeTo: this.activeRoute})
+                    })
+                } else {
+                    this.snackbar.alert(
+                        'Nfc tag not found in DB'
+                    )
+                }
+            })
+        }
     }
 
     onBusyChanged($event) {

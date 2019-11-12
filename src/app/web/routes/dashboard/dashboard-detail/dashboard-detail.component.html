@@ -220,6 +220,9 @@
                         </mat-expansion-panel-header>
 
                         <mat-list>
+                            <mat-list-item *ngIf="competition.checking.indexOf('barcode') > -1" style="height: auto">
+                                <qr-code [value]="getQr(athlet)" [size]="150"></qr-code>
+                            </mat-list-item>
                             <mat-list-item *ngFor="let item of athlet|keyvalue">
                                 <h4 mat-line>{{item.key}}</h4>
                                 <p mat-line> {{item.value}} </p>

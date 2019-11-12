@@ -28,6 +28,8 @@ import {CompetitionService} from "@src/app/mobile/services/competition.service"
 import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
 import {Msg} from "@src/app/shared/interfaces/msg"
 import {keepAwake, allowSleepAgain} from "nativescript-insomnia";
+import {BarcodeService} from "@src/app/mobile/services/barcode.service"
+import {Qr} from "@src/app/shared/interfaces/qr"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
@@ -40,20 +42,22 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
     last_athlet: Athlet
     current_checkpoint: Checkpoint = null
     number$ = new BehaviorSubject(null)
+    input_number = ''
     private collection: firestore.CollectionReference
     private destroy = new ReplaySubject<any>(1)
 
     @ViewChild('activityIndicator', {static: false}) activityIndicatorRef: ElementRef
-    @ViewChild('textField', {static: false}) textFieldRef: ElementRef
+    @ViewChild('textField', {static: false}) textFieldRef: TextField
 
     constructor(public routerExtensions: RouterExtensions,
                 public nfc: NfcService,
                 private zone: NgZone,
                 private snackbar: SnackbarService,
+                private barcode: BarcodeService,
                 private modalService: ModalDialogService,
                 private viewContainerRef: ViewContainerRef,
                 private activeRoute: ActivatedRoute,
-                private _competition: CompetitionService,
+                public _competition: CompetitionService,
                 private options: SqliteService) {
         super(routerExtensions)
         this.collection = firebase.firestore().collection(this._competition.getAthletsCollectionPath())
@@ -114,6 +118,21 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
         this.nfc.doStopTagListener()
         this.destroy.next(null)
         this.destroy.complete()
+    }
+
+    onScan(): void {
+        this.barcode.scan().then((result) => {
+            try {
+                const data: Qr = JSON.parse(result.text)
+                setTimeout(() => {
+                    this.input_number = data.number.toString()
+                }, 100)
+                this.snackbar.success("Athlet number is found")
+            } catch (e) {
+                this.snackbar.alert(`Athlet number not found: ${e}`)
+            }
+
+        })
     }
 
     onFound(athlet: Athlet, msg: string, error?: boolean): void {
@@ -243,3 +262,4 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
         this.number$.next(textField.text)
     }
 }
+

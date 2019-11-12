@@ -27,13 +27,11 @@ import {environment} from "@src/environments/environment"
 export class AppAthletRegisterComponent implements OnInit, OnDestroy {
     competition: Competition
     athlet: Athlet
-    change = true
+    action: string = 'register'
     getAthletForm: FormGroup
     formIsValid = () => false
 
     private athlet_collection: AngularFirestoreCollection
-
-
     protected _onDestroy = new ReplaySubject<any>(1)
 
     constructor(private router: ActivatedRoute,
@@ -95,6 +93,17 @@ export class AppAthletRegisterComponent implements OnInit, OnDestroy {
 
     onPhoneInput(): void {
         this.getAthletForm.controls['code'].reset()
+    }
+
+    onSwitchForm($event: any, action: string): void {
+        $event.preventDefault()
+        this.action = action
+        if (action == 'register') {
+
+        } else if (action == 'change') {
+            this.athlet = null
+            this.getAthletForm.reset()
+        }
     }
 
      onCreated($event: {athlet: Athlet, form: FormGroupDirective}) {

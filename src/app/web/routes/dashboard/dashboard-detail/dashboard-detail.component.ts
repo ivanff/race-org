@@ -207,6 +207,12 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
                 batch.commit()
             })
         }
+    }
 
+    getQr(athlet: Athlet): string {
+        return JSON.stringify({
+            number: athlet.number,
+            competition_id: this.competition.parent_id || this.competition.id
+        })
     }
 }
