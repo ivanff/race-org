@@ -20,22 +20,6 @@
                     <qr-code [value]="competition.secret.marshal + ''" [size]="150"></qr-code>
                 </mat-card-content>
             </mat-card>
-            <mat-card fxFlex="0 0 300px" fxFlex.lt-sm="100%" class="m-r-8">
-                <mat-card-header>
-                    <mat-card-title>
-                        <h4>
-                            Код маршала
-                        </h4>
-                    </mat-card-title>
-                    <mat-card-subtitle>
-                        {{competition.secret.marshal}}
-                    </mat-card-subtitle>
-                </mat-card-header>
-
-                <mat-card-content class="text-center">
-                    <qr-code [value]="competition.secret.marshal + ''" [size]="150"></qr-code>
-                </mat-card-content>
-            </mat-card>
 
             <mat-card fxFlex="0 0 300px" fxFlex.lt-sm="100%" class="m-r-8">
                 <mat-card-header>

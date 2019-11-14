@@ -1,5 +1,11 @@
 import {Injectable, NgZone, OnDestroy} from '@angular/core'
-import {AuthStateChangeListener, FirebasePhoneLoginOptions, LoginOptions, User} from "nativescript-plugin-firebase"
+import {
+    AuthStateChangeListener,
+    FirebasePhoneLoginOptions,
+    LoginOptions,
+    Provider,
+    User
+} from "nativescript-plugin-firebase"
 import {RouterExtensions} from "nativescript-angular"
 import {BehaviorSubject} from "rxjs"
 // import {VerificationObservableModel} from "@src/app/mobile/observable/verification-custom-observable"
@@ -9,14 +15,24 @@ import {VerificationObservableModel} from "@src/app/mobile/observable/verificati
 const firebase = require("nativescript-plugin-firebase")
 export const verificationObservable: VerificationObservableModel = new VerificationObservableModel()
 
+interface Params {
+    displayName: string,
+    provider: Provider | null,
+    canCreate: boolean,
+}
+
 @Injectable({
     providedIn: 'root',
 })
 export class AuthService implements OnDestroy {
     verificationObservable: VerificationObservableModel = verificationObservable
     user: User | null
+    params: Params = {
+        displayName: '',
+        provider: null,
+        canCreate: false
+    }
     user$ = new BehaviorSubject(null)
-    private vcRef: any
     private authListener = {
         onAuthStateChanged: (data) => {
             console.dir('>>> authListener loggedIn', data.loggedIn)
@@ -42,7 +58,7 @@ export class AuthService implements OnDestroy {
         firebase.getCurrentUser().then((user: User) => {
             this.authListener.onAuthStateChanged({
                 loggedIn: true,
-                user: user
+                user: user,
             })
         }).catch(() => {
             this.authListener.onAuthStateChanged({
@@ -53,27 +69,24 @@ export class AuthService implements OnDestroy {
         firebase.addAuthStateListener(this.authListener)
         this.user$.subscribe((user: User | null) => {
             this.user = user
+            if (user) {
+                console.dir(user)
+                this.params.displayName = this.user.isAnonymous ? "Анонимный\nпользователь" : (this.user.displayName || this.user.email || this.user.phoneNumber)
+                this.params.provider = this.user.providers.filter((provider: Provider) => provider.id != 'firebase')[0] || null
+                this.params.canCreate = ['google.com', 'facebook.com', 'phone'].indexOf((this.params.provider || {id: null}).id) > -1
+            } else {
+                this.params = {
+                    displayName: '',
+                    provider: null,
+                    canCreate: false,
+                }
+            }
         })
     }
 
     ngOnDestroy(): void {
         firebase.removeAuthStateListener(this.authListener)
         console.log('>> AuthService ngOnDestroy')
-    }
-
-    setVcRef(vcRef) {
-        this.vcRef = vcRef
-    }
-
-    displayName(): string {
-        if (this.user) {
-            if (!this.user.isAnonymous) {
-                return this.user.displayName || this.user.email || this.user.phoneNumber
-            } else {
-                return 'Анонимный\nпользователь'
-            }
-        }
-        return ''
     }
 
     logout(): Promise<any> {

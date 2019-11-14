@@ -41,7 +41,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                 private zone: NgZone,
                 public auth: AuthService,
                 public _competition: CompetitionService) {
-        this.auth.setVcRef(this.vcRef)
     }
 
     ngOnInit(){

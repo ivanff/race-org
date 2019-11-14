@@ -10,11 +10,11 @@
 <!--    <mat-icon>search</mat-icon>-->
 <!--  </button>-->
 
-  <button mat-icon-button (click)="toggleFullscreen()" fxHide.lt-sm>
+  <button mat-icon-button (click)="toggleFullscreen()" fxHide.lt-sm [matTooltip]="'Expand to full screen'">
     <mat-icon>fullscreen</mat-icon>
   </button>
-  <a mat-icon-button href="/assets/data/race_org.latest.apk">
-    <mat-icon>mobile_screen_share</mat-icon>
+  <a mat-icon-button href="/assets/data/race_org.latest.apk" [matTooltip]="'Download mobile application for Android'">
+    <mat-icon>android</mat-icon>
   </a>
 
 <!--  <app-notification fxHide.lt-sm></app-notification>-->
