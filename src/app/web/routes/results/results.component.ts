@@ -8,7 +8,7 @@ import {ActivatedRoute} from "@angular/router"
 import * as _ from "lodash"
 import {Competition} from "@src/app/shared/interfaces/competition"
 import {Athlet} from "@src/app/shared/interfaces/athlet"
-import {filter, map, takeUntil} from "rxjs/operators"
+import {map, takeUntil} from "rxjs/operators"
 import {ReplaySubject} from "rxjs"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 
@@ -41,9 +41,11 @@ export interface Filter {
 })
 export class ResultsComponent implements OnInit, AfterViewInit {
     competition: Competition
-    dataSource = new MatTableDataSource<TableRow>([])
     protected _onDestroy = new ReplaySubject<any>(1)
+
+    dataSource = new MatTableDataSource<TableRow>([])
     displayedColumns: string[] = ['place', 'number', 'class', 'athlet']
+
     filter: Filter = {class: '', str: ''}
     now: Date = new Date()
     csv_export_options = {

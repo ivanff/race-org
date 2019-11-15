@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Competition} from "@src/app/shared/interfaces/competition"
 import {ActivatedRoute, Router} from "@angular/router"
 import {FormControl, FormGroup} from "@angular/forms"
@@ -9,11 +9,12 @@ import {Observable, ReplaySubject} from "rxjs"
 import {Athlet} from "@src/app/shared/interfaces/athlet"
 import {LocalStorageService} from "angular-2-local-storage"
 import {environment} from "@src/environments/environment.prod"
-import {MatSlideToggleChange} from "@angular/material"
+import {MatSlideToggleChange, MatSort, MatTableDataSource} from "@angular/material"
 import {ChartOptions} from 'chart.js'
 import {Label} from "ng2-charts"
 import * as _ from "lodash"
 import {Mark} from "@src/app/shared/interfaces/mark"
+import {ResultMark, TableRow} from "@src/app/web/routes/results/results.component"
 
 @Component({
     selector: 'app-dashboard-detail',
@@ -22,6 +23,10 @@ import {Mark} from "@src/app/shared/interfaces/mark"
 export class DashboardDetailComponent implements OnInit, OnDestroy {
     athlets$: Observable<Array<Athlet>>
     protected _onDestroy = new ReplaySubject<any>(1)
+
+    dataSource = new MatTableDataSource<Athlet>([])
+    displayedColumns: string[] = ['number', 'fio', 'phone', 'class', 'created']
+
     competition: Competition
     edit_competition: Competition
     active_tab: number = 0
@@ -59,6 +64,8 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
         },
     ]
 
+    @ViewChild(MatSort, {static: true}) sort: MatSort
+
     constructor(private route: ActivatedRoute,
                 private afs: AngularFirestore,
                 private router: Router,
@@ -95,12 +102,22 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
                         this.pieChartData = pieChartData
                         return athlets
                     }),
+                    tap((athlets: Array<Athlet>) => {
+                        console.log(athlets)
+                        this.dataSource.data = [...athlets]
+                    }),
                     takeUntil(this._onDestroy)
                 )
         })
     }
 
     ngOnInit() {
+        this.sort.sort({id: 'created', start: 'desc', disableClear: false})
+        this.dataSource.sort = this.sort
+        this.dataSource.sortingDataAccessor = (item, property) => {
+            return item[property]
+        }
+
         this.selectCompetition = new FormGroup({
             'competition_id': new FormControl(this.edit_competition.id, [])
         })

@@ -10,7 +10,6 @@ import {
     AbstractControl,
     AsyncValidatorFn,
     FormBuilder,
-    FormControl,
     FormGroup, FormGroupDirective,
     ValidationErrors,
     Validators
@@ -124,6 +123,12 @@ export class AppAthletRegisterComponent implements OnInit, OnDestroy {
 
     checkSmsCode(): AsyncValidatorFn {
         return (control: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null> => {
+            if (control.value === '123456' && !environment.production) {
+                return new Promise((resolve => {
+                    resolve(null)
+                }))
+            }
+
             return this.http.post(environment.backend_gateway + '/check',
                 JSON.stringify({
                     phone: this.getAthletForm.controls['phone'].value,
@@ -133,9 +138,6 @@ export class AppAthletRegisterComponent implements OnInit, OnDestroy {
                 debounceTime(300),
                 take(1),
                 map((res: Check) => {
-                    if (control.value === '123456' && !environment.production) {
-                        return null
-                    }
                     return !res.success ? {"code": {value: control.value, msg: res.error}} : null
                 })
             )
