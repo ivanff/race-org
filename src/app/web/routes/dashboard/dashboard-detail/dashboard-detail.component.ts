@@ -37,8 +37,7 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
         plugins: {
             datalabels: {
                 formatter: (value, ctx) => {
-                    const label = ctx.chart.data.labels[ctx.dataIndex];
-                    return label;
+                    return ctx.chart.data.labels[ctx.dataIndex]
                 },
             },
         }
@@ -75,10 +74,13 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
             this.pieChartLabels = this.competition.classes
 
             this.afs.collection('competitions').doc(this.competition.id).collection('stages')
-                .valueChanges({idField: 'id'}).pipe(map((stages: Array<any>) => {
-                Object.assign(this.competition, {stages})
-                Object.assign(this.edit_competition, {stages})
-            })).subscribe()
+                .valueChanges({idField: 'id'})
+                .pipe(
+                    map((stages: Array<any>) => {
+                        Object.assign(this.competition, {stages})
+                        Object.assign(this.edit_competition, {stages})
+                    })
+                ).subscribe()
 
             this.athlets$ = this.afs.collection<Athlet>(`athlets_${this.competition.id}`)
                 .valueChanges({idField: 'id'})

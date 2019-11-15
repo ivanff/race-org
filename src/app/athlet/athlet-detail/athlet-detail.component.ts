@@ -1,5 +1,5 @@
 import {Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core'
-import {Nfc, NfcTagData} from 'nativescript-nfc'
+import {NfcTagData} from 'nativescript-nfc'
 import {RouterExtensions} from 'nativescript-angular'
 import {firestore} from 'nativescript-plugin-firebase'
 import {ActivatedRoute} from '@angular/router'
@@ -11,7 +11,6 @@ import {Athlet} from "@src/app/shared/interfaces/athlet"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 import {SqliteService} from "@src/app/mobile/services/sqlite.service"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
-import {Competition} from "@src/app/shared/interfaces/competition"
 import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
 
 const firebase = require('nativescript-plugin-firebase/app')
@@ -66,7 +65,7 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
     }
 
     getCheckpoints(): Array<Mark> {
-        return this.athlet.checkpoints.filter((item: Mark) => item.competition_id == this._competition.selected_competition.id)
+        return this.athlet.marks.filter((item: Mark) => item.competition_id == this._competition.selected_competition.id)
     }
 
     setNfcId(data: NfcTagData) {

@@ -80,10 +80,11 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
                 const number: number = parseInt(value)
                 if (number) {
                     return defer(() => {
-                        return this.collection.where('number', '==', number).get()
+                        return this.collection.where('number', '==', number).get().then((item) => {
+                            return item
+                        })
                     }).pipe(
                         map((snapshot: firestore.QuerySnapshot) => {
-                            console.log(snapshot.docs)
                             let athlet: Athlet | null
                             if (snapshot.docs.length === 1) {
                                 if (this.current_checkpoint) {
@@ -106,8 +107,6 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
         ).subscribe((athlet: Athlet) => {
             this.last_athlet = athlet
         })
-
-        // this.onFound({phone: '9603273301'} as Athlet
     }
 
     ngOnDestroy(): void {
@@ -260,6 +259,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
     onTextChange($event): void {
         const textField = <TextField>$event.object
         this.number$.next(textField.text)
+        this.last_athlet = null
     }
 }
 

@@ -1,0 +1,51 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function writeRules() {
+      return request.auth != null && resource.data.user == request.auth.uid;
+    }
+
+    function athletMatch(collectionName) {
+      return collectionName.matches('athlets_.+')
+    }
+
+    function checkMarchal(competitionId) {
+    	//need update for marshals secret code, для записи отметок о прохождении
+     	return competitionId.size() == 20
+    }
+    function checkOwnerAthlet(competitionId) {
+      //обновление данных самом пользователем, например смена класса.
+    	return competitionId.size() == 20
+    }
+
+    function checkOwner(competitionId) {
+      return competitionId.size() == 20 && get(/databases/$(database)/documents/competitions/$(competitionId)).data.user == request.auth.uid;
+    }
+
+    match /{collectionName}/{doc} {
+      allow read: if athletMatch(collectionName);
+      allow create: if athletMatch(collectionName);
+      allow update: if request.auth != null && athletMatch(collectionName) && (checkOwner(collectionName.replace('athlets_', '')) || checkMarchal(collectionName.replace('athlets_', '')) || checkOwnerAthlet(collectionName.replace('athlets_', '')));
+      allow delete: if request.auth != null && athletMatch(collectionName) && checkOwner(collectionName.replace('athlets_', ''));
+    }
+    match /competitions/{competitionId}/stages/{stageCompetitionId} {
+      allow read: if request.auth != null;
+      allow write: if writeRules();
+    }
+    match /competitions/{competitionId} {
+      allow read;
+      allow write: if writeRules();
+    }
+    match /sms_codes/{sms_codeId} {
+    	allow read;
+      allow create;
+      allow update;
+      allow delete: if false;
+    }
+    //match /{document=**} {
+      //allow read;
+   // }
+  }
+}

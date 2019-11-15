@@ -99,11 +99,11 @@ export class EnterSecretComponent implements OnInit, OnDestroy {
         this.barcode.scan().then((result) => {
                 this.code = parseInt(result.text) || null
                 this.onCodeLogin()
-                alert({
-                    title: "Scan result",
-                    message: "Format: " + result.format + ",\nValue: " + result.text,
-                    okButtonText: "OK"
-                });
+                // alert({
+                //     title: "Scan result",
+                //     message: "Format: " + result.format + ",\nValue: " + result.text,
+                //     okButtonText: "OK"
+                // });
             }, (errorMessage) => {
                 console.log("No scan. " + errorMessage);
             }
