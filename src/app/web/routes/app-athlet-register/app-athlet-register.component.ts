@@ -129,7 +129,7 @@ export class AppAthletRegisterComponent implements OnInit, OnDestroy {
                 }))
             }
 
-            return this.http.post(environment.backend_gateway + '/check',
+            return this.http.post(environment.backend_gateway + '/check_sms',
                 JSON.stringify({
                     phone: this.getAthletForm.controls['phone'].value,
                     competition_id: this.competition.id,

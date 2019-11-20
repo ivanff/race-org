@@ -8,10 +8,9 @@ import {
 } from "nativescript-plugin-firebase"
 import {RouterExtensions} from "nativescript-angular"
 import {BehaviorSubject} from "rxjs"
-// import {VerificationObservableModel} from "@src/app/mobile/observable/verification-custom-observable"
 import {EventData} from "tns-core-modules/data/observable"
 import {VerificationObservableModel} from "@src/app/mobile/observable/verification-custom-observable"
-
+import * as _ from "lodash"
 const firebase = require("nativescript-plugin-firebase")
 export const verificationObservable: VerificationObservableModel = new VerificationObservableModel()
 
@@ -70,8 +69,8 @@ export class AuthService implements OnDestroy {
         this.user$.subscribe((user: User | null) => {
             this.user = user
             if (user) {
-                console.dir(user)
-                this.params.displayName = this.user.isAnonymous ? "Анонимный\nпользователь" : (this.user.displayName || this.user.email || this.user.phoneNumber)
+                console.dir(this.user.uid)
+                this.params.displayName = this.user.isAnonymous ? `Анонимный\nпользователь\n${_.truncate(this.user.uid, {length: 10})}` : (this.user.displayName || this.user.email || this.user.phoneNumber)
                 this.params.provider = this.user.providers.filter((provider: Provider) => provider.id != 'firebase')[0] || null
                 this.params.canCreate = ['google.com', 'facebook.com', 'phone'].indexOf((this.params.provider || {id: null}).id) > -1
             } else {

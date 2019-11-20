@@ -11,13 +11,14 @@ service cloud.firestore {
       return collectionName.matches('athlets_.+')
     }
 
-    function checkMarchal(competitionId) {
+    function checkMarshal(competitionId, roles) {
     	//need update for marshals secret code, для записи отметок о прохождении
-     	return competitionId.size() == 20
+     	return competitionId.size() == 20 && get(/databases/$(database)/documents/permissions/$(request.auth.uid)).data.role in roles
     }
     function checkOwnerAthlet(competitionId) {
       //обновление данных самом пользователем, например смена класса.
-    	return competitionId.size() == 20
+      // временное решение, пользователь должен авторизоваться через firebase phone чтобы -> permissions -> проверка
+    	return competitionId.size() == 20 && get(/databases/$(database)/documents/permissions/$(request.auth.uid)).data.role == 'client'
     }
 
     function checkOwner(competitionId) {
@@ -27,7 +28,7 @@ service cloud.firestore {
     match /{collectionName}/{doc} {
       allow read: if athletMatch(collectionName);
       allow create: if athletMatch(collectionName);
-      allow update: if request.auth != null && athletMatch(collectionName) && (checkOwner(collectionName.replace('athlets_', '')) || checkMarchal(collectionName.replace('athlets_', '')) || checkOwnerAthlet(collectionName.replace('athlets_', '')));
+      allow update: if request.auth != null && athletMatch(collectionName) && (checkOwner(collectionName.replace('athlets_', '')) || checkMarshal(collectionName.replace('athlets_', ''), ['admin', 'marshal']) || checkOwnerAthlet(collectionName.replace('athlets_', '')));
       allow delete: if request.auth != null && athletMatch(collectionName) && checkOwner(collectionName.replace('athlets_', ''));
     }
     match /competitions/{competitionId}/stages/{stageCompetitionId} {
@@ -36,13 +37,20 @@ service cloud.firestore {
     }
     match /competitions/{competitionId} {
       allow read;
-      allow write: if writeRules();
+      allow create: if writeRules();
+      allow update: if writeRules() || (request.auth != null && checkMarshal(competitionId, ['admin', 'marshal']));
+      allow delete: if writeRules() || (request.auth != null && checkMarshal(competitionId, ['admin']));
     }
-    match /sms_codes/{sms_codeId} {
+    match /sms_codes/{phone} {
+    // доработать
     	allow read;
       allow create;
       allow update;
-      allow delete: if false;
+      allow delete: if false; 
+    }
+    match /permissions/{userId} {
+    	allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if false;
     }
     //match /{document=**} {
       //allow read;

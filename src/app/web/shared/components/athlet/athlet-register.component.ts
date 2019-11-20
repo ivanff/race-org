@@ -140,7 +140,7 @@ export class AthletRegisterComponent implements OnInit {
 
     checkSmsCode(): AsyncValidatorFn {
         return (control: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null> => {
-            return this.http.post(environment.backend_gateway + '/check',
+            return this.http.post(environment.backend_gateway + '/check_sms',
                 JSON.stringify({
                     phone: this.registerForm.controls['phone'].value,
                     competition_id: this.competition.id,
