@@ -52,16 +52,7 @@ export class EnterSecretComponent implements OnInit, OnDestroy {
             this.auth.anonymousLogin().then(() => {
                 this.selectCompetition(this.code).then((competition: Competition) => {
                     this._competition.selected_competition_id$.next(competition)
-                }).catch((err) => {
-                    if (err) {
-                        if (err.error) {
-                            if (err.error.message) {
-                                this.snackbar.alert(err.error.message)
-                            } else {
-                                this.snackbar.alert(err.error)
-                            }
-                        }
-                    }
+                }).catch(() => {
                     this.auth.logout()
                 }).finally(() => {
                     this.setPending.emit(false)
@@ -73,10 +64,8 @@ export class EnterSecretComponent implements OnInit, OnDestroy {
             }).catch((err) => {
                 if (err) {
                     if (err.error) {
-                        if (err.error.message) {
-                            this.snackbar.warning(err.error.message)
-                        } else {
-                            this.snackbar.alert(err.error)
+                        if (err.error.error) {
+                            this.snackbar.warning(err.error.error)
                         }
                     }
                 }
@@ -88,20 +77,68 @@ export class EnterSecretComponent implements OnInit, OnDestroy {
 
     private selectCompetition(code: number): Promise<any> {
         return new Promise<any>((resolve, reject) => {
-            this._competition.getByCode(code).subscribe((next) => {
-                const competition = next.competition
-                if (!competition.mobile_devices.filter((item: MobileDevice) => item.uuid == device.uuid).length) {
-                    competition.mobile_devices.push({
-                        uuid: device.uuid,
-                        deviceType: device.deviceType,
-                        osVersion: device.osVersion,
-                        model: device.model,
-                        isAdmin: next.role == 'admin'
-                    } as MobileDevice)
+            this._competition.getByCode(code).pipe(first()).subscribe((next) => {
+                if (next.success) {
+                    let competition: Competition = next.competition
+
+                    if (!competition.mobile_devices.filter((item: MobileDevice) => item.uuid == device.uuid).length) {
+                        competition.mobile_devices.push({
+                            uuid: device.uuid,
+                            deviceType: device.deviceType,
+                            osVersion: device.osVersion,
+                            model: device.model,
+                            isAdmin: next.role == 'admin'
+                        } as MobileDevice)
+                        this._competition.update(competition, {
+                            'mobile_devices': competition.mobile_devices
+                        }).then(() => {
+                            resolve(competition)
+                        }).catch(reject)
+                    } else {
+                        resolve(competition)
+                    }
+                } else {
+                    reject(next)
                 }
-                resolve(competition)
             }, reject)
         })
+
+        /*
+        return this._competition.getByCode(code).then((docs: { [key: string]: Array<firestore.QueryDocumentSnapshot> }) => {
+            let competition: Competition
+
+            for (const key in docs) {
+                if (docs[key].length) {
+                    setNumber('code', this.code)
+                    const id = docs[key][0].id
+
+                    competition = {id, ...docs[key][0].data()} as Competition
+                    if (!competition.mobile_devices.filter((item: MobileDevice) => item.uuid == device.uuid).length) {
+                        competition.mobile_devices.push({
+                            uuid: device.uuid,
+                            deviceType: device.deviceType,
+                            osVersion: device.osVersion,
+                            model: device.model,
+                            isAdmin: key == 'admins'
+                        } as MobileDevice)
+                        this._competition.update(competition, {
+                            'mobile_devices': competition.mobile_devices
+                        }).then(() => {
+                            this._competition.selected_competition_id$.next(competition)
+                            this.setPending.emit(false)
+                        })
+                    } else {
+                        this._competition.selected_competition_id$.next(competition)
+                    }
+                    break
+                }
+            }
+            if (!competition) {
+                throw Error("Not found any competition")
+            }
+            return competition
+        })
+         */
     }
 
     onScan(): void {

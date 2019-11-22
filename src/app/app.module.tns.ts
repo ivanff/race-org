@@ -45,7 +45,7 @@ import {BarcodeService} from "@src/app/mobile/services/barcode.service"
 // import { NativeScriptFormsModule } from 'nativescript-angular/forms'
 
 // Uncomment and add to NgModule imports  if you need to use the HTTP wrapper
-// import { NativeScriptHttpClientModule } from 'nativescript-angular/http-client'
+import {NativeScriptHttpClientModule} from 'nativescript-angular/http-client'
 
 @NgModule({
     entryComponents: [
@@ -81,6 +81,7 @@ import {BarcodeService} from "@src/app/mobile/services/barcode.service"
         NativeScriptLocalizeModule,
         NativeScriptUIListViewModule,
         NativeScriptUISideDrawerModule,
+        NativeScriptHttpClientModule,
         NativeScriptModule,
         AppRoutingModule,
         OrderModule,

@@ -29,7 +29,22 @@ export class CompetitionResolve implements Resolve<Competition> {
                             }),
                             first()
                         )
-                })
+                }),
+                switchMap((doc): Observable<Competition> => {
+                    return this.afs.collection('competitions').doc(doc.id)
+                        .collection('test_secret')
+                        .valueChanges({idField: 'id'})
+                        .pipe(
+                            map((docs: Array<any>) => {
+                                const secret = {}
+                                docs.forEach((doc) => {
+                                    secret[doc.id] = doc.code
+                                })
+                                return Object.assign(doc, {secret: secret})
+                            }),
+                            first()
+                        )
+                }),
             )
     }
 }

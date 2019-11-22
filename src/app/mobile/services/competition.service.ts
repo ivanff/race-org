@@ -2,13 +2,15 @@ import {Injectable, NgZone, OnDestroy} from '@angular/core'
 import {Observable, of, ReplaySubject, Subject} from "rxjs"
 import {Competition} from "@src/app/shared/interfaces/competition"
 import {AuthService} from "@src/app/mobile/services/auth.service"
-import {shareReplay, switchMap, takeUntil} from "rxjs/operators"
+import {first, map, shareReplay, switchMap, takeUntil} from "rxjs/operators"
 import {firestore} from "nativescript-plugin-firebase"
 import {setString, remove} from "tns-core-modules/application-settings"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 import {device} from "tns-core-modules/platform"
 import * as moment from 'moment-timezone'
 import {MobileDevice} from "@src/app/shared/interfaces/mobile-device"
+import {HttpClient, HttpHeaders} from "@angular/common/http"
+import {environment} from "@src/environments/environment"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
@@ -23,7 +25,7 @@ export class CompetitionService implements OnDestroy {
     isAdmin = false
     private destroy = new ReplaySubject<any>(1)
 
-    constructor(private auth: AuthService, private zone: NgZone) {
+    constructor(private auth: AuthService, private http: HttpClient, private zone: NgZone) {
         console.log('>>> CompetitionService constructor')
 
         this.selected_competition_id$ = (new Subject).pipe(
@@ -66,16 +68,34 @@ export class CompetitionService implements OnDestroy {
         this.destroy.complete()
     }
 
-    getByCode(code: number): Promise<any> {
-        return Promise.all([
-            firebase.firestore().collection('competitions').where('secret.marshal', '==', code).get(),
-            firebase.firestore().collection('competitions').where('secret.admin', '==', code).get()
-        ]).then((results) => {
-            return {
-                marshals: results[0].docs,
-                admins: results[1].docs
-            }
-        })
+    getByCode(code: number): Observable<{competition: Competition, role: string}> {
+        return this.http.post<{competitionId: string, role: string}>(environment.google_gateway + '/set_permissions_new', {
+            user: this.auth.user ? this.auth.user.uid: null,
+            secret: code
+        }).pipe(
+            switchMap((resp) => {
+                return this.firestoreCollectionObservable(resp.competitionId).pipe(
+                    first(),
+                    map((competition: Competition) => {
+                       return {
+                           role: resp.role,
+                           competition: competition
+                       }
+                    })
+                )
+            })
+        )
+
+
+        // return Promise.all([
+        //     firebase.firestore().collection('competitions').where('secret.marshal', '==', code).get(),
+        //     firebase.firestore().collection('competitions').where('secret.admin', '==', code).get()
+        // ]).then((results) => {
+        //     return {
+        //         marshals: results[0].docs,
+        //         admins: results[1].docs
+        //     }
+        // })
     }
 
     getAthletsCollectionPath(): string {
@@ -87,10 +107,18 @@ export class CompetitionService implements OnDestroy {
             return competition
         })
     }
+
     update(competition, document: any): Promise<Competition> {
         return this.getCollection(competition).update(document).then(() => {
             return competition
         })
+    }
+
+    private createRequestOptions() {
+        const headers = new HttpHeaders({
+            "Content-Type": "application/json"
+        });
+        return headers;
     }
 
     private getCollection(competition: Competition): firestore.DocumentReference {

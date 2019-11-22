@@ -10,9 +10,6 @@ import {
     ViewChild
 } from '@angular/core';
 import {
-    MatCheckboxChange,
-    MatDatepickerInputEvent,
-    MatSlideToggleChange,
     MatVerticalStepper
 } from "@angular/material"
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidatorFn, Validators} from "@angular/forms"
@@ -24,9 +21,10 @@ import {Secret} from "@src/app/shared/interfaces/secret"
 import {Competition} from "@src/app/shared/interfaces/competition"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 import {ReplaySubject} from "rxjs"
-import {takeUntil} from "rxjs/operators"
+import {first, takeUntil} from "rxjs/operators"
 import {SettingsService} from "@src/app/web/core/services/settings.service"
 import {AuthService} from "@src/app/web/core/services/auth.service"
+import * as _ from "lodash"
 
 
 export function groupRequiredValidator(count: number): ValidatorFn {
@@ -313,12 +311,11 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
     onSave(): void {
         let collection = this.firestore.collection('competitions')
 
+        delete this.competition.stages
+        delete this.competition.secret
+
         if (this.competition.parent_id) {
             collection = this.firestore.collection('competitions').doc(this.competition.parent_id).collection('stages')
-        } else {
-            if (!this.competition.id) {
-                this.competition.secret = Object.assign({}, new Secret()) as Secret
-            }
         }
 
         let p: Promise<any>;
@@ -327,7 +324,7 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
             p = collection.doc(this.competition.id).set(this.competition)
         } else {
             this.competition.user = this.auth.user.uid
-            this.competition.secret = Object.assign({}, new Secret()) as Secret
+            console.log(this.competition)
             p = collection.add(this.competition)
         }
 
@@ -335,6 +332,33 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
             if (doc) {
                 this.competition.id = doc.id
             }
+
+            if (!this.competition.parent_id) {
+                const test_secret_collection = this.firestore.collection('competitions').doc(this.competition.id).collection('test_secret')
+
+                test_secret_collection.valueChanges().pipe(
+                    first()
+                ).subscribe((docs: any) => {
+                    if (!docs.length) {
+                        const batch = this.firestore.firestore.batch()
+
+                        batch.set(test_secret_collection.doc('admin').ref, {
+                            code: _.random(100000, 999999)
+                        })
+
+                        batch.set(test_secret_collection.doc('marshal').ref, {
+                            code: _.random(100000, 999999)
+                        })
+
+                        batch.set(test_secret_collection.doc('client').ref, {
+                            code: _.random(100000, 999999)
+                        })
+
+                        batch.commit()
+                    }
+                })
+            }
+
             this.router.navigate(['/dashboard'])
         })
     }

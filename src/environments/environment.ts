@@ -4,9 +4,10 @@
 
 export const environment = {
   production: false,
+  SERVER_URL: 'http://localhost:4200',
   // backend_gateway: 'https://agestart.ru/js_api/mobile',
-  SERVER_URL: 'http://local.agestart.ru:8003',
   backend_gateway: 'http://local.agestart.ru:8003/js_api/mobile',
+  google_gateway: 'https://us-central1-race-org.cloudfunctions.net/v1/api',
   firebase: {
     apiKey: "AIzaSyAKQN8eQ3HmfKE78qfczd6DLjKyRiS4ewA",
     authDomain: "race-org.firebaseapp.com",

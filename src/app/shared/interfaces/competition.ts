@@ -1,7 +1,7 @@
-import * as firebase from "firebase/app"
-import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
-import {Secret} from "@src/app/shared/interfaces/secret"
-import {MobileDevice} from "@src/app/shared/interfaces/mobile-device"
+import * as firebase from 'firebase/app'
+import {Checkpoint} from '@src/app/shared/interfaces/checkpoint'
+import {Secret} from '@src/app/shared/interfaces/secret'
+import {MobileDevice} from '@src/app/shared/interfaces/mobile-device'
 
 export interface Competition {
     id?: string,
