@@ -72,7 +72,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
 
     ngOnInit() {
         keepAwake().then(() => {
-            this.snackbar.warning("Disable device sleeping")
+            this.snackbar.success("Disable device sleeping")
         })
         this.number$.pipe(
             debounceTime(2000),
@@ -112,7 +112,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
     ngOnDestroy(): void {
         console.log('>> ScanCompenent ngOnDestroy')
         allowSleepAgain().then(() => {
-            this.snackbar.warning("Enable device sleeping")
+            this.snackbar.success("Enable device sleeping")
         })
         this.nfc.doStopTagListener()
         this.destroy.next(null)
@@ -141,25 +141,6 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
             msg: `${athlet.number}\n${msg}`,
             timeout: 3000
         } as Msg)
-
-        // const options: ModalDialogOptions = {
-        //     context: {
-        //         athlet: athlet,
-        //         msg: msg,
-        //         error: error
-        //     },
-        //     viewContainerRef: this.viewContainerRef,
-        //     fullscreen: false
-        // };
-        //
-        // this.modalService.showModal(FoundDialogComponent, options).then((path: Array<string> | null) => {
-        //     if (path) {
-        //         setTimeout(() =>
-        //                 this.routerExtensions.navigate(path, {relativeTo: this.activeRoute})
-        //             , 100)
-        //     }
-        //     return
-        // })
     }
 
     private setMark(mark: Mark) {

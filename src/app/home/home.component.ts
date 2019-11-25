@@ -2,6 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core'
 import {BaseComponent} from "@src/app/shared/base.component"
 import {RouterExtensions} from "nativescript-angular"
 import * as appversion from "nativescript-appversion"
+import {RadSideDrawer} from "nativescript-ui-sidedrawer"
 
 
 @Component({
@@ -26,4 +27,7 @@ export class HomeComponent extends BaseComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
     }
 
+    navigateTo(path: string, extras?: any): void {
+        this.routerExtensions.navigate([path], extras)
+    }
 }

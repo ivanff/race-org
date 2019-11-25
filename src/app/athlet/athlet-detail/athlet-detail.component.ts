@@ -64,8 +64,10 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
         }
     }
 
-    getCheckpoints(): Array<Mark> {
-        return this.athlet.marks.filter((item: Mark) => item.competition_id == this._competition.selected_competition.id)
+    getMarks(): Array<Mark> {
+        return this.athlet.marks
+            .filter((item: Mark) => item.competition_id == this._competition.selected_competition.id)
+            .sort((a, b) => a.created > b.created ? -1 : a.created < b.created ? 1 : 0)
     }
 
     setNfcId(data: NfcTagData) {
@@ -132,10 +134,10 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
                 }
                 confirm(options).then((result: boolean) => {
                     if (result) {
-                        const new_checkpoints: Array<Mark> = this.athlet.checkpoints.filter((item: Mark) => {return item.created != mark.created})
-                        if (new_checkpoints.length != this.athlet.checkpoints.length) {
+                        const marks: Array<Mark> = this.athlet.marks.filter((item: Mark) => {return item.created != mark.created})
+                        if (marks.length != this.athlet.marks.length) {
                             this.collection.doc(this.athlet.id).update({
-                                checkpoints: new_checkpoints
+                                marks: marks
                             })
                         }
                     }

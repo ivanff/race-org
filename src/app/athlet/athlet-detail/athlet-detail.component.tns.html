@@ -50,8 +50,8 @@
                                class="activity-indicator m-15"></ActivityIndicator>
         </StackLayout>
     </StackLayout>
-    <ScrollView row="2" col="0">
-        <ListView height="100%" [items]="getCheckpoints()|orderBy:'created':true">
+    <StackLayout row="2" col="0">
+        <ListView height="100%" [items]="getMarks()">
             <ng-template let-mark="item" let-i="index" let-odd="odd" let-even="even">
                 <GridLayout columns="*, auto" rows="*, *" class="p-l-5 p-r-5">
                     <Label col="0" row="0" [text]="checkpoints[mark.order].title" style="font-weight: bold; font-size: 15em"></Label>
@@ -70,5 +70,5 @@
                 </GridLayout>
             </ng-template>
         </ListView>
-    </ScrollView>
+    </StackLayout>
 </GridLayout>

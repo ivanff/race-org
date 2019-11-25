@@ -17,7 +17,6 @@ import {AngularFirestore, DocumentReference} from "@angular/fire/firestore"
 import {Router} from "@angular/router"
 import * as firebase from "firebase/app"
 import * as moment from "moment-timezone"
-import {Secret} from "@src/app/shared/interfaces/secret"
 import {Competition} from "@src/app/shared/interfaces/competition"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 import {ReplaySubject} from "rxjs"
@@ -324,7 +323,6 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
             p = collection.doc(this.competition.id).set(this.competition)
         } else {
             this.competition.user = this.auth.user.uid
-            console.log(this.competition)
             p = collection.add(this.competition)
         }
 

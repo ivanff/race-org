@@ -73,34 +73,18 @@ export const routes: Routes = [
         path: "scan",
         component: ScanComponent,
         resolve: {
-            'current_checkpoint': CheckpointResolver,
+            current_checkpoint: CheckpointResolver,
         }
     },
     {
         path: "scan/local_log",
         component: LocalLogComponent,
+        data: {
+            strict: true
+        },
+        resolve: {
+            competition: CompetitionResolve
+        }
     },
-    // {
-    //     path: 'athlets',
-    //     component: AthletsComponent
-    // },
-    // {
-    //     path: "athlets/:id",
-    //     component: AthletDetailComponent,
-    //     resolve: {athlet: AthletResolve}
-    // },
-    // {
-    //     path: "scan",
-    //     component: ScanComponent,
-    // },
-    // {
-    //     path: "scan/local_log",
-    //     component: LocalLogComponent,
-    // },
-    // {
-    //     path: "options",
-    //     component: OptionsComponent,
-    //     resolve: {is_admin: AdminResolve}
-    // },
 ]
 

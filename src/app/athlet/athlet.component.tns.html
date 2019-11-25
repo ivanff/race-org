@@ -23,7 +23,7 @@
                     *ngIf="_competition.selected_competition.checking.indexOf('barcode') > -1"
                     (tap)="onScan()"
                     text="QR"
-                    class="btn">
+                    class="btn -grey">
             </Button>
             <StackLayout row="1" colSpan="2"
                          [visibility]="activityIndicator.busy ? 'visible' : 'collapse'"
@@ -41,7 +41,7 @@
         </GridLayout>
     </StackLayout>
 
-    <ScrollView row="2" col="0">
+    <StackLayout row="2" col="0">
         <RadListView [items]="athlets|filter:['fio', 'number']:{search: searchPhrase}"
                      height="100%"
                      class="items">
@@ -63,5 +63,5 @@
                 </GridLayout>
             </ng-template>
         </RadListView>
-    </ScrollView>
+    </StackLayout>
 </GridLayout>

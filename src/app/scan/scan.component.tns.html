@@ -34,16 +34,17 @@
     </StackLayout>
     <Button [text]="activityIndicator.busy ? 'Прекратить сканирование NFC': 'Сканировать метку NFC'|L"
             (tap)="(activityIndicator.busy = !activityIndicator.busy)"
-            row="2"
             [rowSpan]="_competition.selected_competition.checking.indexOf('barcode') > -1 ? 1 : 2"
-            col="0"
             [class.-primary]="!activityIndicator.busy"
+            row="2"
+            col="0"
             class="btn"></Button>
     <Button [text]="'Сканировать QR код'|L"
             (tap)="onScan()"
+            *ngIf="_competition.selected_competition.checking.indexOf('barcode') > -1"
             row="3"
             col="0"
-            class="btn -primary"></Button>
+            class="btn -grey"></Button>
     <ActivityIndicator row="4"
                        col="0"
                        height="200"

@@ -9,13 +9,14 @@ import {CompetitionService} from "@src/app/mobile/services/competition.service"
 import {first, map} from "rxjs/operators"
 import {Observable} from "rxjs"
 import {firestore} from "nativescript-plugin-firebase"
+import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
 @Injectable()
 export class CompetitionResolve implements Resolve<Competition | null> {
 
-    constructor(private auth: AuthService, private competition: CompetitionService) {
+    constructor(private auth: AuthService, private competition: CompetitionService, private snackbar: SnackbarService) {
     }
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<Competition | null> | Observable<Competition | null> {
@@ -56,7 +57,12 @@ export class CompetitionResolve implements Resolve<Competition | null> {
                 first()
             )
         } else {
-            return Promise.resolve().then(() => null)
+            if (route.data.strict) {
+                this.snackbar.warning("Competitions is't selected")
+                return Promise.reject()
+            } else {
+                return Promise.resolve().then(() => null)
+            }
         }
     }
 }
