@@ -37,7 +37,7 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
                 private activeRoute: ActivatedRoute,
                 private nfc: NfcService,
                 private options: SqliteService,
-                private _competition: CompetitionService
+                public _competition: CompetitionService
     ) {
         super(routerExtensions)
         this.collection = firebase.firestore().collection(this._competition.getAthletsCollectionPath())

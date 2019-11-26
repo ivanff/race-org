@@ -1,4 +1,4 @@
-<ActionBar [title]="'Athlets'|L">
+<ActionBar [title]="'Athletes'|L">
     <NavigationButton icon="res://round_menu_black_24"
                       (tap)="onDrawerButtonTap()"></NavigationButton>
 </ActionBar>
@@ -14,10 +14,10 @@
         <GridLayout columns="2*, *" rows="*,*">
             <Button row="0" col="0"
                     [colSpan]="_competition.selected_competition.checking.indexOf('barcode') > -1 ? 1 : 2"
-                    [text]="activityIndicator.busy ? ('Остановить поиск'|L) :('По метке NFC'|L) "
+                    [text]="activityIndicator.busy ? ('Search shop'|L) :('By NFC tag'|L) "
                     (tap)="(activityIndicator.busy = !activityIndicator.busy)"
                     [class.-primary]="!activityIndicator.busy"
-                    class="btn" style="width: auto">
+                    class="btn">
             </Button>
             <Button row="0" col="1"
                     *ngIf="_competition.selected_competition.checking.indexOf('barcode') > -1"
@@ -46,19 +46,18 @@
                      height="100%"
                      class="items">
             <ng-template tkListItemTemplate let-athlet="item" let-i="index" let-odd="odd" let-even="even">
-                <GridLayout (tap)="onItemTap(athlet)" columns="60, *" rows="*, *, *, *, *"
+                <GridLayout (tap)="onItemTap(athlet)" columns="60, *" rows="*, *, *"
                             [class.odd]="odd"
                             [class.even]="even">
-                    <Label [text]="athlet.number" col="0" rowSpan="4" verticalAlignment="top"
+                    <Label [text]="athlet.number" col="0" rowSpan="2"
+                           verticalAlignment="top"
                            horizontalAlignment="center" class="number"></Label>
-                    <Label [text]="athlet.class" col="0" row="5" class="option" horizontalAlignment="center"></Label>
+                    <Label [text]="athlet.class" col="0" row="3" class="option" horizontalAlignment="center"></Label>
 
                     <Label [text]="'Имя: ' + athlet.fio" col="1" row="0" class="option"></Label>
-                    <Label [text]="'Город: ' + athlet.city" col="1" row="1" class="option"></Label>
-                    <Label [text]="'Марка мотоцикла: ' + athlet.bike" col="1" row="2" class="option"></Label>
-                    <Label [text]="'NFC: ' + (athlet.nfc_id ? 'назначено' : 'не назначено')" col="1" row="3"
+                    <Label [text]="'NFC: ' + (athlet.nfc_id ? ('assigned'|L) : ('not assigned'|L))" col="1" row="1"
                            [class.-warning]="!athlet.nfc_id" class="option font-weight-bold"></Label>
-                    <Label [text]="'Пройдено отметок: ' + athlet.marks.length" col="1" row="4"
+                    <Label [text]="('Passed marks: '|L) + athlet.marks.length" col="1" row="2"
                            class="font-weight-bold option"></Label>
                 </GridLayout>
             </ng-template>

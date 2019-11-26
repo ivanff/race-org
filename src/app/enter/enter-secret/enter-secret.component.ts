@@ -7,9 +7,7 @@ import {Competition} from "@src/app/shared/interfaces/competition"
 import {device} from "tns-core-modules/platform"
 import {MobileDevice} from "@src/app/shared/interfaces/mobile-device"
 import {getNumber, setNumber} from "tns-core-modules/application-settings"
-import {firestore} from "nativescript-plugin-firebase"
 import {BarcodeService} from "@src/app/mobile/services/barcode.service"
-import {first} from "rxjs/operators"
 import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
 
 
@@ -89,6 +87,7 @@ export class EnterSecretComponent implements OnInit, OnDestroy {
     private selectCompetition(code: number): Promise<any> {
         return new Promise<any>((resolve, reject) => {
             this._competition.getByCode(code).subscribe((next) => {
+                setNumber('code', code)
                 const competition = next.competition
                 if (!competition.mobile_devices.filter((item: MobileDevice) => item.uuid == device.uuid).length) {
                     competition.mobile_devices.push({
@@ -108,13 +107,8 @@ export class EnterSecretComponent implements OnInit, OnDestroy {
         this.barcode.scan().then((result) => {
                 this.code = parseInt(result.text) || null
                 this.onCodeLogin()
-                // alert({
-                //     title: "Scan result",
-                //     message: "Format: " + result.format + ",\nValue: " + result.text,
-                //     okButtonText: "OK"
-                // });
             }, (errorMessage) => {
-                console.log("No scan. " + errorMessage);
+                this.snackbar.alert("No qr code scan: " + errorMessage)
             }
         )
     }

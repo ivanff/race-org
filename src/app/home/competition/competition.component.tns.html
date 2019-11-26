@@ -3,7 +3,7 @@
     <StackLayout col="0" row="1">
         <app-enter-secret></app-enter-secret>
     </StackLayout>
-    <ScrollView col="0" row="2">
+    <StackLayout col="0" row="2">
         <ListView height="100%"
                   [items]="competitions"
                   (itemTap)="onItemTap($event)">
@@ -18,34 +18,9 @@
                             <Span text="&nbsp;&nbsp;&#xf101;" class="fas"></Span>
                         </FormattedString>
                     </Label>
-<!--                    <Label [text]="competition.id" col="0" colSpan="3" row="1"></Label>-->
-<!--                    <Label *ngIf="competition.parent_id" [text]="competition.parent_id" col="0" colSpan="3" row="2"></Label>-->
                 </GridLayout>
             </ng-template>
         </ListView>
-    </ScrollView>
+    </StackLayout>
 </GridLayout>
-<!--<TextView editable="false">-->
-<!--    <FormattedString>-->
-<!--        <Span text="This is a text view that uses attributed text. You can use text attributes such as "></Span>-->
-<!--        <Span text="bold, " fontWeight="Bold"></Span>-->
-<!--        <Span text="italic " fontStyle="Italic"></Span>-->
-<!--        <Span text="and " ></Span>-->
-<!--        <Span text="underline." textDecoration="Underline"></Span>-->
-<!--    </FormattedString>-->
-<!--</TextView>-->
-<!--<StackLayout *ngIf="app_settings.competition">-->
-<!--    <Label [text]="'UUID Device: ' + device_uuid" class="p-10 font-weight-bold"></Label>-->
-<!--    <Label [text]="'Competition name: ' + app_settings.competition.name" class="p-10"></Label>-->
-<!--    <Label [text]="'Count of devices: ' + app_settings.competition.devices.length" class="p-10"></Label>-->
-<!--    <Label [text]="'This is admin device: ' + (app_settings.competition.admin_device.uuid == device_uuid)" class="p-10"></Label>-->
-<!--    <Label [text]="'Завершение соревнований: ' + (app_settings.competition.finish|date)" class="p-10"></Label>-->
-
-<!--    <Button (tap)="onSetAdmin()"-->
-<!--            [text]="'Set this device to admin'"-->
-<!--            [isEnabled]="app_settings.competition.admin_device.uuid != device_uuid" class="btn -outline"></Button>-->
-<!--    <Button (tap)="onJoin()"-->
-<!--            [text]="'Join'|L"-->
-<!--            [isEnabled]="checkExists(app_settings.competition.devices)" class="btn -primary"></Button>-->
-<!--</StackLayout>-->
 

@@ -1,5 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Race Org</string>
-    <string name="title_activity_kimera">Race Org</string>
+  <string name="_app_name_1k3Sbz">"RaceOrg"</string>
+  <string name="app_name">"RaceOrg"</string>
+  <string name="title_activity_kimera">"RaceOrg"</string>
+  <string name="_Scanning_NFC_tag_Z2n9FGF">"Scanning NFC tag"</string>
+  <string name="_Stop_scanning_NFC_1LOR0n">"Stop scanning NFC"</string>
+  <string name="_Clear_NFC_tag_Z27kkG3">"Clear NFC tag"</string>
+  <string name="_Set_NFC_tag_28ppl6">"Set NFC tag"</string>
+  <string name="_Send_sms_1xDPRk">"Send sms"</string>
+  <string name="_By_NFC_tag_Z1NwGum">"By NFC tag"</string>
+  <string name="wait">"wait"</string>
+  <string name="fio">"fio"</string>
+  <string name="_Search_by_full_name_or_number_19GJm6">"Search by full name or number"</string>
+  <string name="home">"home"</string>
+  <string name="_Local_log_VzeW7">"Local log"</string>
+  <string name="Join">"Join"</string>
+  <string name="visible">"visible"</string>
+  <string name="competitions">"competitions"</string>
+  <string name="_Use_secret_code_ZDj9M5">"Use secret code"</string>
+  <string name="number">"number"</string>
+  <string name="barcode">"barcode"</string>
+  <string name="_Via_sms_on_this_phone_2s1L3r">"Via sms on this phone"</string>
+  <string name="Athlets">"Athlets"</string>
+  <string name="collapse">"collapse"</string>
+  <string name="Detail">"Detail"</string>
+  <string name="_Enter_with_Social_account_1FNIa3">"Enter with Social account"</string>
+  <string name="_Set_this_device_to_admin_zj7DQ">"Set this device to admin"</string>
+  <string name="_Scan_QR_code_Z1UmHjW">"Scan QR code"</string>
+  <string name="Cancel">"Cancel"</string>
+  <string name="_Athlete_number_1qzOcS">"Athlete number"</string>
+  <string name="Close">"Close"</string>
+  <string name="Open">"Open"</string>
+  <string name="_Class__2nWmVG">"Class "</string>
+  <string name="_Stop_scan_ZPV4Pq">"Stop scan"</string>
+  <string name="Call">"Call"</string>
+  <string name="_not_setup_ZcJakB">"not setup"</string>
+  <string name="setup">"setup"</string>
+  <string name="_Search_shop_1giToM">"Search shop"</string>
+  <string name="Scan">"Scan"</string>
 </resources>

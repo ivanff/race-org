@@ -1,45 +1,41 @@
-<ActionBar [title]="'Athlets'|L">
+<ActionBar [title]="'Athletes'|L">
     <NavigationButton icon="res://round_menu_black_24"
                       (tap)="onDrawerButtonTap()"></NavigationButton>
-    <ActionItem [text]="'Позвонить'|L"
+    <ActionItem [text]="'Call'|L"
                 (tap)="onPhone()"
                 ios.position="right"
                 android.position="popup"></ActionItem>
-    <ActionItem [text]="'Отправить sms'|L"
+    <ActionItem [text]="'Send sms'|L"
                 (tap)="onSms()"
                 ios.position="right"
                 android.position="popup"></ActionItem>
 </ActionBar>
 <GridLayout rows="auto, auto, *" columns="*" class="p-l-10 p-r-10">
     <StackLayout row="0" col="0">
+        <Label [text]="('Name: '|L) + athlet.fio"></Label>
+        <Label [text]="('Class: '|L) + athlet.class"></Label>
+        <Label [text]="('Phone no.: +7'|L) + athlet.phone" col="0" verticalAlignment="center"></Label>
+        <Label *ngFor="let field of _competition.selected_competition.athlet_extra_fields" [text]="(field|titlecase) + ': ' + athlet[field]"></Label>
 
-<!--        <GridLayout columns="*, *" rows="auto">-->
-<!--            <Button text="&#xf095;" (tap)="onPhone()" class="btn fas" col="0"></Button>-->
-<!--            <Button text="&#xf7cd;" (tap)="onSms()" class="btn fas " col="1"></Button>-->
-<!--        </GridLayout>-->
-
-        <Label [text]="'Имя: ' + athlet.fio"></Label>
-        <Label [text]="'Город: ' + athlet.city"></Label>
-        <Label [text]="'Класс: ' + athlet.class"></Label>
-        <Label [text]="'Телефон: +7' + athlet.phone" col="0" verticalAlignment="center"></Label>
-        <Label [text]="'Мотоцикл: ' + athlet.bike"></Label>
-        <Label [text]="'NFC: ' + (athlet.nfc_id ? athlet.nfc_id : 'не назначено')"
+        <Label [text]="'NFC: ' + (athlet.nfc_id ? athlet.nfc_id : ('not assigned'|L))"
                [class.-warning]="!athlet.nfc_id"
                class="font-weight-bold"></Label>
         <Button *ngIf="athlet.nfc_id"
-                [text]="'Очистить метку Nfc'|L"
+                [text]="'Clear NFC tag'|L"
                 (tap)="onClearNfc()"
                 class="btn -outline"></Button>
     </StackLayout>
     <StackLayout row="1" col="0">
-        <Button [text]="activityIndicator.busy ? ('Остановить сканировение'|L) :('Назначить метку NFC'|L) "
+        <Button [text]="activityIndicator.busy ? ('Stop scan'|L) :('Set NFC tag'|L) "
                 (tap)="(activityIndicator.busy = !activityIndicator.busy)"
                 [class.-primary]="!activityIndicator.busy"
                 row="0"
                 col="0"
                 class="btn">
         </Button>
-        <StackLayout horizontalAlignment="center" [visibility]="activityIndicator.busy ? 'visible' : 'collapse'" verticalAlignment="center">
+        <StackLayout horizontalAlignment="center"
+                     [visibility]="activityIndicator.busy ? 'visible' : 'collapse'"
+                     verticalAlignment="center">
             <ActivityIndicator height="20"
                                width="20"
                                #activityIndicator
@@ -66,7 +62,6 @@
                            class="far p-l-8 p-r-8"
                            verticalAlignment="center"
                            style="font-size: 18em"></Label>
-
                 </GridLayout>
             </ng-template>
         </ListView>
