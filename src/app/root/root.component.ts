@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ModalDialogParams, RouterExtensions} from "nativescript-angular"
 import {ActivatedRoute} from "@angular/router"
 

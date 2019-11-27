@@ -9,13 +9,12 @@ import {
     ViewContainerRef
 } from '@angular/core'
 import {firestore} from 'nativescript-plugin-firebase'
-import {ModalDialogOptions, ModalDialogService, RouterExtensions} from 'nativescript-angular'
+import {ModalDialogService, RouterExtensions} from 'nativescript-angular'
 import {NfcTagData} from 'nativescript-nfc'
 import {BaseComponent} from "@src/app/shared/base.component"
 import {NfcService} from "@src/app/mobile/services/nfc.service"
 import {Mark} from "@src/app/shared/interfaces/mark"
 import {isAndroid} from "tns-core-modules/platform"
-import {FoundDialogComponent} from "@src/app/scan/found-dialog/found-dialog.component"
 import {ActivatedRoute} from "@angular/router"
 import * as moment from 'moment'
 import {TextField} from "tns-core-modules/ui/text-field"
@@ -30,8 +29,10 @@ import {Msg} from "@src/app/shared/interfaces/msg"
 import {keepAwake, allowSleepAgain} from "nativescript-insomnia";
 import {BarcodeService} from "@src/app/mobile/services/barcode.service"
 import {Qr} from "@src/app/shared/interfaces/qr"
+import {localize as L} from "nativescript-localize"
 
 const firebase = require('nativescript-plugin-firebase/app')
+
 
 @Component({
     selector: 'app-scan',
@@ -72,7 +73,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
 
     ngOnInit() {
         keepAwake().then(() => {
-            this.snackbar.success("Disable device sleeping")
+            this.snackbar.success(L("Disable device sleeping"))
         })
         this.number$.pipe(
             debounceTime(2000),
@@ -112,7 +113,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
     ngOnDestroy(): void {
         console.log('>> ScanCompenent ngOnDestroy')
         allowSleepAgain().then(() => {
-            this.snackbar.success("Enable device sleeping")
+            this.snackbar.success(L("Enable device sleeping"))
         })
         this.nfc.doStopTagListener()
         this.destroy.next(null)
@@ -126,9 +127,9 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
                 setTimeout(() => {
                     this.input_number = data.number.toString()
                 }, 100)
-                this.snackbar.success("Athlet number is found")
+                this.snackbar.success(L("Athlete number is found"))
             } catch (e) {
-                this.snackbar.alert(`Athlet number not found: ${e}`)
+                this.snackbar.alert(L('Athlete number is\'t found: %s', e))
             }
 
         })
@@ -138,7 +139,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
 
         this.snackbar.snackbar$.next({
             level: error ? 'alert' : 'success',
-            msg: `${athlet.number}\n${msg}`,
+            msg: `<${athlet.number}> ${msg}`,
             timeout: 3000
         } as Msg)
     }
@@ -151,26 +152,26 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
             const last_mark = marks[marks.length - 1]
 
             if ((moment().diff(last_mark.created, 'minutes') <= 5) && (last_mark.order == this.current_checkpoint.order)) {
-                this.snackbar.alert('Текущая метка отмечена менее 5 минут назад!')
+                this.snackbar.alert(L('Current mark marked less than 5 minutes ago!'))
                 return
             }
 
             if (this.current_checkpoint.order > 0) {
                 if ((this.current_checkpoint.order - 1) != last_mark.order) {
-                    this.onFound(this.last_athlet, 'Возможно пропущена предыдущая отметка маршала', true)
+                    this.onFound(this.last_athlet, L('The Marshal\'s previous mark may have been missed'), true)
                 }
             }
         } else {
             if (this.current_checkpoint.order != 0) {
-                this.onFound(this.last_athlet, 'Возможно пропущена предыдущая отметка маршала', true)
+                this.onFound(this.last_athlet, L('The Marshal\'s previous mark may have been missed'), true)
             }
         }
 
         if (moment() > this._competition.finish_time) {
-            this.onFound(this.last_athlet, 'Соревнование окончено, время вышло!', true)
+            this.onFound(this.last_athlet, L('The competition is over, time is up!'), true)
         }
 
-        this.onFound(this.last_athlet, 'ПРОХОЖДЕНИЕ ТОЧКИ ЗАПИСАНО')
+        this.onFound(this.last_athlet, L('THE PASSAGE MARK RECORDED'))
 
         this.collection.doc(this.last_athlet.id).update({marks: [...this.last_athlet.marks, mark]}).then(() => {
         }).catch((err) => {
@@ -198,7 +199,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
                             this.last_athlet = null
                         })
                     } else {
-                        alert(`Athlet is\'t found which has NFC tag ${data.id}!`)
+                        this.snackbar.alert(L('Athlete is\'t found by NFC tag\n%s', data.id.toString()))
                         this.activityIndicatorRef.nativeElement.busy = false
                         this.last_athlet = null
                     }

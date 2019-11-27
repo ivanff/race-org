@@ -9,9 +9,9 @@ import {NfcService} from "@src/app/mobile/services/nfc.service"
 import {Mark} from "@src/app/shared/interfaces/mark"
 import {Athlet} from "@src/app/shared/interfaces/athlet"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
-import {SqliteService} from "@src/app/mobile/services/sqlite.service"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
 import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
+import {localize as L} from "nativescript-localize"
 
 const firebase = require('nativescript-plugin-firebase/app')
 const phone = require("nativescript-phone")
@@ -25,7 +25,7 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
     athlet: Athlet
     tap_remove_index: number | null
     current_checkpoint: Checkpoint
-    checkpoints: {[key:number]: Checkpoint} = {}
+    checkpoints: { [key: number]: Checkpoint } = {}
     private unsubscribe: any
     private collection: firestore.CollectionReference
 
@@ -36,7 +36,6 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
                 private zone: NgZone,
                 private activeRoute: ActivatedRoute,
                 private nfc: NfcService,
-                private options: SqliteService,
                 public _competition: CompetitionService
     ) {
         super(routerExtensions)
@@ -52,7 +51,7 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
         this.unsubscribe = this.collection.doc(this.athlet.id).onSnapshot((doc: firestore.DocumentSnapshot) => {
             if (doc.exists) {
                 const id = doc.id
-                this.athlet = {id,...doc.data()} as Athlet
+                this.athlet = {id, ...doc.data()} as Athlet
             }
         })
     }
@@ -85,12 +84,12 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
             this.activityIndicatorRef.nativeElement.busy = false
             batch.commit().then(() => {
                 this.snackbar.success(
-                    'Nfc метка назначена'
+                    L('NFC tag is assigned')
                 )
                 this.athlet.nfc_id = data.id
             }).then(res => this.activityIndicatorRef.nativeElement.busy = false).catch(error => {
                 this.snackbar.alert(
-                    'Batch error: ' + error
+                    L('Batch commit error: %s', error)
                 )
             })
         })
@@ -99,9 +98,9 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
     onClearNfc() {
         const options = {
             title: '',
-            message: 'Очистить nfc метку',
-            okButtonText: 'Yes',
-            cancelButtonText: 'No',
+            message: L('Clear NFC tag'),
+            okButtonText: L('Yes'),
+            cancelButtonText: L('No'),
         }
         confirm(options).then((result: boolean) => {
             if (result) {
@@ -119,22 +118,24 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
         setTimeout(() => {
                 this.tap_remove_index = null
             }
-        , 500)
+            , 500)
 
         if (!this.current_checkpoint) {
-            alert(`This device is't manage any checkpoint`)
+            this.snackbar.alert(L('This device is\'t READER in current competition!'))
             return
         } else {
             if (mark.order == this.current_checkpoint.order) {
                 const options = {
                     title: '',
-                    message: `Удалить прохождени отметки ${this.current_checkpoint.title}`,
-                    okButtonText: 'Да',
-                    cancelButtonText: 'Нет',
+                    message: L('Delete the passage of the mark %s', this.current_checkpoint.title),
+                    okButtonText: L('Yes'),
+                    cancelButtonText: L('No'),
                 }
                 confirm(options).then((result: boolean) => {
                     if (result) {
-                        const marks: Array<Mark> = this.athlet.marks.filter((item: Mark) => {return item.created != mark.created})
+                        const marks: Array<Mark> = this.athlet.marks.filter((item: Mark) => {
+                            return item.created != mark.created
+                        })
                         if (marks.length != this.athlet.marks.length) {
                             this.collection.doc(this.athlet.id).update({
                                 marks: marks
@@ -143,7 +144,7 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
                     }
                 })
             } else {
-                this.snackbar.alert(`This device is't manage checkpoint ${mark.key}`)
+                this.snackbar.alert(L('This device is\'t manage checkpoint', mark.key))
             }
         }
     }

@@ -9,6 +9,7 @@ import {MobileDevice} from "@src/app/shared/interfaces/mobile-device"
 import {getNumber, setNumber} from "tns-core-modules/application-settings"
 import {BarcodeService} from "@src/app/mobile/services/barcode.service"
 import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
+import {localize as L} from "nativescript-localize"
 
 
 @Component({
@@ -108,7 +109,7 @@ export class EnterSecretComponent implements OnInit, OnDestroy {
                 this.code = parseInt(result.text) || null
                 this.onCodeLogin()
             }, (errorMessage) => {
-                this.snackbar.alert("No qr code scan: " + errorMessage)
+                this.snackbar.alert(L("Вarcode scan error: %s", errorMessage))
             }
         )
     }

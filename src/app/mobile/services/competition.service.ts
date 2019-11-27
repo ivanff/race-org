@@ -9,8 +9,10 @@ import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 import {device} from "tns-core-modules/platform"
 import * as moment from 'moment-timezone'
 import {MobileDevice} from "@src/app/shared/interfaces/mobile-device"
-import {HttpClient, HttpHeaders} from "@angular/common/http"
+import {HttpClient} from "@angular/common/http"
 import {environment} from "@src/environments/environment"
+import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
+import {localize as L} from "nativescript-localize"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
@@ -25,7 +27,10 @@ export class CompetitionService implements OnDestroy {
     isAdmin = false
     private destroy = new ReplaySubject<any>(1)
 
-    constructor(private auth: AuthService, private http: HttpClient, private zone: NgZone) {
+    constructor(private auth: AuthService,
+                private http: HttpClient,
+                private zone: NgZone,
+                private snackbar: SnackbarService,) {
         console.log('>>> CompetitionService constructor')
 
         this.selected_competition_id$ = (new Subject).pipe(
@@ -85,17 +90,6 @@ export class CompetitionService implements OnDestroy {
                 )
             })
         )
-
-
-        // return Promise.all([
-        //     firebase.firestore().collection('competitions').where('secret.marshal', '==', code).get(),
-        //     firebase.firestore().collection('competitions').where('secret.admin', '==', code).get()
-        // ]).then((results) => {
-        //     return {
-        //         marshals: results[0].docs,
-        //         admins: results[1].docs
-        //     }
-        // })
     }
 
     getAthletsCollectionPath(): string {
@@ -112,13 +106,6 @@ export class CompetitionService implements OnDestroy {
         return this.getCollection(competition).update(document).then(() => {
             return competition
         })
-    }
-
-    private createRequestOptions() {
-        const headers = new HttpHeaders({
-            "Content-Type": "application/json"
-        });
-        return headers;
     }
 
     private getCollection(competition: Competition): firestore.DocumentReference {
@@ -188,9 +175,9 @@ export class CompetitionService implements OnDestroy {
         const checkpoints = this.selected_competition.checkpoints.filter((item: Checkpoint) => item.devices.indexOf(device.uuid) > -1)
         if (!silent) {
             if (checkpoints.length <= 0) {
-                alert('This device is\'t READER in current competition!')
+                this.snackbar.alert(L('This device is\'t READER in current competition!'))
             } else if (checkpoints.length > 1) {
-                alert('This device is\'t MULTIPLE READER in current competition!')
+                this.snackbar.alert(L('This device is MULTIPLE READER in current competition!'))
             }
         }
 

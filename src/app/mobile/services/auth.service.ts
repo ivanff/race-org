@@ -13,6 +13,7 @@ import {VerificationObservableModel} from "@src/app/mobile/observable/verificati
 import * as _ from "lodash"
 const firebase = require("nativescript-plugin-firebase")
 export const verificationObservable: VerificationObservableModel = new VerificationObservableModel()
+import {localize as L} from "nativescript-localize"
 
 interface Params {
     displayName: string,
@@ -49,6 +50,7 @@ export class AuthService implements OnDestroy {
         },
         thisArg: this
     } as AuthStateChangeListener
+    private anonUsername = L('Анонимный\nпользователь')
 
     constructor(private routerExtensions: RouterExtensions,
                 private zone: NgZone
@@ -70,7 +72,7 @@ export class AuthService implements OnDestroy {
             this.user = user
             if (user) {
                 console.dir(this.user.uid)
-                this.params.displayName = this.user.isAnonymous ? `Анонимный\nпользователь\n${_.truncate(this.user.uid, {length: 10})}` : (this.user.displayName || this.user.email || this.user.phoneNumber)
+                this.params.displayName = this.user.isAnonymous ? `${this.anonUsername}\n${_.truncate(this.user.uid, {length: 10})}` : (this.user.displayName || this.user.email || this.user.phoneNumber)
                 this.params.provider = this.user.providers.filter((provider: Provider) => provider.id != 'firebase')[0] || null
                 this.params.canCreate = ['google.com', 'facebook.com', 'phone'].indexOf((this.params.provider || {id: null}).id) > -1
             } else {

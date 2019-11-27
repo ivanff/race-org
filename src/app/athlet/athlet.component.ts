@@ -12,6 +12,7 @@ import {CompetitionService} from "@src/app/mobile/services/competition.service"
 import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
 import {BarcodeService} from "@src/app/mobile/services/barcode.service"
 import {Qr} from "@src/app/shared/interfaces/qr"
+import {localize as L} from "nativescript-localize"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
@@ -24,7 +25,6 @@ const firebase = require('nativescript-plugin-firebase/app')
 export class AthletComponent extends BaseComponent implements OnInit, OnDestroy {
     athlets: Array<Athlet> = []
     searchPhrase = ''
-    searchPhrase2 = ''
     @ViewChild('activityIndicator', {static: false}) activityIndicatorRef: ElementRef
     @ViewChild('searchBar', {static: false}) searchBarRef: ElementRef
     private unsubscribe: () => void
@@ -74,10 +74,10 @@ export class AthletComponent extends BaseComponent implements OnInit, OnDestroy 
                     this.searchPhrase = data.number.toString()
                 }, 100)
             } catch (e) {
-                this.snackbar.warning(`Athlet number not found: ${e}`)
+                this.snackbar.warning(L('Athlete number is\'t found: %s', e))
             }
         }, (errorMessage) => {
-            this.snackbar.alert("No scan: " + errorMessage)
+            this.snackbar.alert(L("Вarcode scan error: %s", errorMessage))
         })
     }
 
@@ -144,7 +144,7 @@ export class AthletComponent extends BaseComponent implements OnInit, OnDestroy 
                     })
                 } else {
                     this.snackbar.alert(
-                        'Nfc tag not found in DB'
+                        L('NFC tag is\'t found in DB')
                     )
                 }
             })

@@ -1,8 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core'
 import {RouterExtensions} from "nativescript-angular"
 import {device} from "tns-core-modules/platform"
-import * as dialogs from "tns-core-modules/ui/dialogs"
-import {PromptResult} from "tns-core-modules/ui/dialogs"
 import {firestore} from "nativescript-plugin-firebase"
 import {Competition} from "@src/app/shared/interfaces/competition"
 import {AuthService} from "@src/app/mobile/services/auth.service"
@@ -11,7 +9,7 @@ import {MobileDevice} from "@src/app/shared/interfaces/mobile-device"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
 import {ReplaySubject} from "rxjs"
-import {filter, skip, takeUntil} from "rxjs/operators"
+import {takeUntil} from "rxjs/operators"
 import * as _ from "lodash"
 
 const firebase = require('nativescript-plugin-firebase/app')

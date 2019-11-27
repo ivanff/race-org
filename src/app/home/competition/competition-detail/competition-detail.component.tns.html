@@ -1,6 +1,9 @@
 <GridLayout columns="*, *" rows="auto, *">
     <StackLayout col="0" row="0" class="p-t-10 p-b-10">
-        <Label [text]="'Connected devices'|L" class="font-weight-bold" horizontalAlignment="center"></Label>
+        <Label [text]="'Connected\ndevices'|L"
+               textWrap="true"
+               class="font-weight-bold"
+               horizontalAlignment="center"></Label>
     </StackLayout>
     <ListView col="0"
               row="1"
@@ -13,7 +16,7 @@
         </ng-template>
     </ListView>
     <StackLayout col="1" row="0" class="p-t-10 p-b-10">
-        <Label text="Checkpoints" class="font-weight-bold" horizontalAlignment="center"></Label>
+        <Label [text]="'Checkpoints'|L" class="font-weight-bold" horizontalAlignment="center"></Label>
     </StackLayout>
     <ListView col="1"
               row="1"

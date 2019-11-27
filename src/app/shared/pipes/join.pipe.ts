@@ -1,5 +1,4 @@
 import {Pipe, PipeTransform} from '@angular/core'
-import {MobileDevice} from "@src/app/shared/interfaces/mobile-device"
 
 @Pipe({
     name: 'join'

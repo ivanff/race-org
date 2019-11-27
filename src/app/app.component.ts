@@ -21,6 +21,7 @@ import {AuthService} from "./mobile/services/auth.service"
 import {CompetitionService} from "./mobile/services/competition.service"
 import {openUrl} from "tns-core-modules/utils/utils"
 import {RadSideDrawer} from "nativescript-ui-sidedrawer"
+import {localize as L} from "nativescript-localize"
 
 const firebase = require('nativescript-plugin-firebase')
 
@@ -43,7 +44,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                 public _competition: CompetitionService) {
     }
 
-    ngOnInit(){
+    ngOnInit() {
         this.onBackPressed()
         firebase.init({
             //local cache
@@ -97,7 +98,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         openUrl(url)
     }
 
-    onBackPressed():void {
+    onBackPressed(): void {
         console.log('>> AppComponent onBackPressed')
         application.android.on(application.AndroidApplication.activityBackPressedEvent, (args: any) => {
                 args.cancel = true
@@ -126,10 +127,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     onExit(): void {
         confirm({
-            title: 'Are you sure?',
-            message: 'This application will be closed',
-            okButtonText: 'Yes',
-            cancelButtonText: 'No'
+            title: L('Are you sure?'),
+            message: L('This application will be closed'),
+            okButtonText: L('Yes'),
+            cancelButtonText: L('No')
         }).then((result: boolean) => {
             if (result) {
                 exit()

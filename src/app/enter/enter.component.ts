@@ -3,19 +3,8 @@ import {Page} from "tns-core-modules/ui/page"
 import {AuthService, verificationObservable} from "@src/app/mobile/services/auth.service"
 import {TextField} from "tns-core-modules/ui/text-field"
 import * as firebase from 'nativescript-plugin-firebase'
-// import {VerificationObservableModel} from "@src/app/mobile/observable/verification-custom-observable"
-// import {TouchGestureEventData} from "tns-core-modules/ui/gestures"
 
 firebase["requestPhoneAuthVerificationCode"] = onRequestPhoneAuthVerificationCode
-
-const options = {
-    message: 'Loading...',
-    android: {
-        indeterminate: true,
-        cancelable: false,
-    },
-}
-
 
 
 function onRequestPhoneAuthVerificationCode(onUserResponse: (phoneAuthVerificationCode: string) => void, verificationPrompt: string) {

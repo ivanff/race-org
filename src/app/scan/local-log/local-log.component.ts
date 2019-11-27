@@ -6,6 +6,7 @@ import {SqlRow} from "@src/app/shared/interfaces/sql-row"
 import {confirm, ConfirmOptions} from "tns-core-modules/ui/dialogs"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
 import {Competition} from "@src/app/shared/interfaces/competition"
+import {localize as L} from "nativescript-localize"
 
 @Component({
     selector: 'app-local-log',
@@ -34,11 +35,11 @@ export class LocalLogComponent extends BaseComponent implements OnInit {
 
     onDropTable(): void {
         confirm({
-            title: "Are you shure?",
-            message: "All data will be lost",
-            okButtonText: 'Yes',
-            cancelButtonText: 'No',
-        }).then((result) => {
+            title: L("Are you shure?"),
+            message: L("All data will be lost"),
+            okButtonText: L('Yes'),
+            cancelButtonText: L('No'),
+        } as ConfirmOptions).then((result) => {
             if (result) {
                 this.options.dropTable()
             }

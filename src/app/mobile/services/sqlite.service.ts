@@ -1,4 +1,4 @@
-import {Injectable, NgZone, OnDestroy, OnInit} from '@angular/core'
+import {Injectable, OnDestroy, OnInit} from '@angular/core'
 import {ReplaySubject} from "rxjs"
 import {Folder, File} from "tns-core-modules/file-system"
 import {Request} from "nativescript-background-http"
@@ -11,6 +11,7 @@ import {SqlRow} from "@src/app/shared/interfaces/sql-row"
 import {AuthService} from "@src/app/mobile/services/auth.service"
 import * as _ from "lodash"
 import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
+import {localize as L} from "nativescript-localize"
 
 const bghttp = require("nativescript-background-http")
 const Sqlite = require("nativescript-sqlite")
@@ -28,10 +29,10 @@ export class SqliteService implements OnInit, OnDestroy {
             "Content-Type": "application/octet-stream",
             "File-Name": this.sqlite_db_name
         },
-        description: "Uploading " + this.sqlite_db_name,
+        description: L("Uploading... %s", this.sqlite_db_name),
         utf8: true,
         androidDisplayNotificationProgress: true,
-        androidNotificationTitle: "Uploading " + this.sqlite_db_name,
+        androidNotificationTitle: L("Uploading... %s", this.sqlite_db_name),
         androidMaxRetries: 1,
         androidAutoClearNotification: true,
         androidRingToneEnabled: true
@@ -77,8 +78,7 @@ export class SqliteService implements OnInit, OnDestroy {
 
     constructor(private _competition: CompetitionService,
                 private snackbar: SnackbarService,
-                private auth: AuthService,
-                private zone: NgZone) {
+                private auth: AuthService) {
         this.sqlite_db_name = `race_org_local_${this._competition.selected_competition.parent_id || this._competition.selected_competition.id}.db`
         new Sqlite(this.sqlite_db_name).then(db => {
             db.execSQL(`CREATE TABLE IF NOT EXISTS ${this.tableName} (${_.map(this.dbFields, (value: any, key: string) => key + ' ' + value.create_string).join(', ')})`).then(id => {
@@ -93,7 +93,7 @@ export class SqliteService implements OnInit, OnDestroy {
                     }).catch((err) => {
                         this.snackbar.snackbar$.next({
                             level: 'alert',
-                            msg: `CREATE INDEX ERROR ${_.truncate(err.message, {length: 150})}`
+                            msg: L(`Create index error: %s`, _.truncate(err.message, {length: 150}))
                         })
                     })
                 })
@@ -101,13 +101,13 @@ export class SqliteService implements OnInit, OnDestroy {
             }).catch((err: Error) => {
                 this.snackbar.snackbar$.next({
                     level: 'alert',
-                    msg: `CREATE TABLE ERROR ${_.truncate(err.message, {length: 150})}`
+                    msg: L('Create table error: %s', _.truncate(err.message, {length: 150}))
                 })
             })
         }, (err: Error) => {
             this.snackbar.snackbar$.next({
                 level: 'alert',
-                msg: `OPEN DB ERROR ${_.truncate(err.message, {length: 150})}`
+                msg: L('Open db error: %s', _.truncate(err.message, {length: 150}))
             })
         });
     }
@@ -196,7 +196,7 @@ export class SqliteService implements OnInit, OnDestroy {
     dropTable() {
         this.database.execSQL(`DROP TABLE ${this.tableName}`).then((f) => {
             this.snackbar.success(
-                `Table ${this.tableName} dropped!`
+                L('Table %s dropped!', this.tableName)
             )
         }).catch((err: Error) => {
             this.snackbar.alert(
@@ -221,13 +221,13 @@ export class SqliteService implements OnInit, OnDestroy {
                 task.on("error", (err) => console.log(err))
                 task.on("responded", (err) => console.log(err))
             } else {
-                alert(
-                    "File size is zero"
+                this.snackbar.alert(
+                    L("File size is zero")
                 )
             }
         } else {
-            alert(
-                "Not exists " + db_file.path
+            this.snackbar.alert(
+                L("File does't exists %s", db_file.path)
             )
         }
     }

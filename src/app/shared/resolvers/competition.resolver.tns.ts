@@ -6,17 +6,20 @@ import {AuthService} from "@src/app/mobile/services/auth.service"
 import {MobileDevice} from "@src/app/shared/interfaces/mobile-device"
 import {device} from "tns-core-modules/platform"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
-import {first, map} from "rxjs/operators"
+import {first} from "rxjs/operators"
 import {Observable} from "rxjs"
 import {firestore} from "nativescript-plugin-firebase"
 import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
+import {localize as L} from "nativescript-localize"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
 @Injectable()
 export class CompetitionResolve implements Resolve<Competition | null> {
 
-    constructor(private auth: AuthService, private competition: CompetitionService, private snackbar: SnackbarService) {
+    constructor(private auth: AuthService,
+                private competition: CompetitionService,
+                private snackbar: SnackbarService) {
     }
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<Competition | null> | Observable<Competition | null> {
@@ -58,7 +61,7 @@ export class CompetitionResolve implements Resolve<Competition | null> {
             )
         } else {
             if (route.data.strict) {
-                this.snackbar.warning("Competitions is't selected")
+                this.snackbar.warning(L("Competitions is't selected"))
                 return Promise.reject()
             } else {
                 return Promise.resolve().then(() => null)

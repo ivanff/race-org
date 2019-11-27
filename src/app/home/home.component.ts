@@ -2,8 +2,6 @@ import {Component, OnDestroy, OnInit} from '@angular/core'
 import {BaseComponent} from "@src/app/shared/base.component"
 import {RouterExtensions} from "nativescript-angular"
 import * as appversion from "nativescript-appversion"
-import {RadSideDrawer} from "nativescript-ui-sidedrawer"
-
 
 @Component({
     selector: 'app-home',

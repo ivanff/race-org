@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import * as email from "nativescript-email";
-import {compose} from "nativescript-email";
+import {localize as L} from "nativescript-localize"
 
 @Component({
     selector: 'app-about',
@@ -20,7 +20,7 @@ export class AboutComponent implements OnInit {
 
     onMailTo(): void {
         email.compose({
-            subject: "[Race Org]Предложение по приложению",
+            subject: L("[Race Org] Suggestion about application"),
             body: "",
             to: ['agestart@gmail.com'],
         }).then(

@@ -2,10 +2,9 @@ import {Component, NgZone, OnDestroy, OnInit} from '@angular/core'
 import {firestore} from "nativescript-plugin-firebase"
 import {Competition} from "@src/app/shared/interfaces/competition"
 import {ActivatedRoute} from "@angular/router"
-import {filter, first, switchMap, take, takeUntil, tap} from "rxjs/operators"
+import {filter, switchMap, take, takeUntil, tap} from "rxjs/operators"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
 import {Observable, ReplaySubject} from "rxjs"
-import {SqliteService} from "@src/app/mobile/services/sqlite.service"
 
 const firebase = require('nativescript-plugin-firebase/app')
 

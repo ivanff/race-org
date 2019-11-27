@@ -9,6 +9,7 @@ import * as _ from "lodash"
 import {confirm} from "tns-core-modules/ui/dialogs"
 import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
+import {localize as L} from "nativescript-localize"
 
 
 @Component({
@@ -36,9 +37,9 @@ export class CompetitionDetailComponent extends BaseComponent implements OnInit,
         const checkpoint = this.competition.checkpoints[$event.index]
         const options = {
             title: '',
-            message: checkpoint.devices.indexOf(device.uuid) == -1 ? `Назначить это устройство считывателем для контрольной точки "${checkpoint.title}"` : 'Убрать назначение' ,
-            okButtonText: 'Да',
-            cancelButtonText: 'Нет',
+            message: checkpoint.devices.indexOf(device.uuid) == -1 ? L('Assign this device as a reader for the checkpoint %s', checkpoint.title) : L('Remove assignment'),
+            okButtonText: L('Yes'),
+            cancelButtonText: L('No'),
         }
         confirm(options).then((result: boolean) => {
             if (result) {
@@ -58,11 +59,11 @@ export class CompetitionDetailComponent extends BaseComponent implements OnInit,
                     'checkpoints': this.competition.checkpoints
                 }).then(() => {
                     this.snackbar.success(
-                        this.competition.checkpoints[$event.index].devices.indexOf(device.uuid) > -1 ? 'Устройство установлено как считыватель' : 'Устройство удалено из считывателей точки'
+                        this.competition.checkpoints[$event.index].devices.indexOf(device.uuid) > -1 ? L('The device is installed as a reader') : L('The device is removed from the readers checkpoint')
                     )
                 }).catch(() => {
                     this.snackbar.alert(
-                        "Ошибка устновки считывателя для контрольной точки"
+                        L("Error assigning the reader for the checkpoint")
                     )
                 })
             }
