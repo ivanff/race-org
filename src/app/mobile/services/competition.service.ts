@@ -104,7 +104,7 @@ export class CompetitionService implements OnDestroy {
 
     update(competition, document: any): Promise<Competition> {
         return this.getCollection(competition).update(document).then(() => {
-            return competition
+            return Object.assign(competition, document)
         })
     }
 

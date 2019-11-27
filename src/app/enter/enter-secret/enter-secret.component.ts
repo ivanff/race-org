@@ -98,8 +98,15 @@ export class EnterSecretComponent implements OnInit, OnDestroy {
                         model: device.model,
                         isAdmin: next.role == 'admin'
                     } as MobileDevice)
+                    this._competition.update(competition, {
+                        mobile_devices: competition.mobile_devices
+                    }).then((data) => {
+                        resolve(data)
+                    })
+                } else {
+                    resolve(competition)
                 }
-                resolve(competition)
+
             }, reject)
         })
     }

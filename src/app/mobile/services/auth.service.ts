@@ -30,7 +30,7 @@ export class AuthService implements OnDestroy {
     params: Params = {
         displayName: '',
         provider: null,
-        canCreate: false
+        canCreate: false,
     }
     user$ = new BehaviorSubject(null)
     private authListener = {

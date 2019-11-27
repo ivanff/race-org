@@ -12,6 +12,7 @@
                             class="p-0 m-0">
                     <Label col="0" [text]="competition.title" horizontalAlignment="left"></Label>
                     <Label col="1" text="&#xf3cd;" *ngIf="isReader(competition.checkpoints)" class="fas"></Label>
+
                     <Label col="2" [nsRouterLink]="competition.parent_id ? [competition.parent_id, competition.id] : [competition.id]" class="label-detail">
                         <FormattedString>
                             <Span [text]="'Detail'|L"></Span>
