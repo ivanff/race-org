@@ -12,6 +12,7 @@ import {ResultDetailComponent} from "@src/app/web/routes/results/results-admin/r
 import {ResultSetTimeComponent} from "@src/app/web/routes/results/results-admin/result-detail/result-set-time/result-set-time.component"
 import {ResultAddMarkComponent} from "@src/app/web/routes/results/results-admin/result-detail/result-add-mark/result-add-mark.component"
 import {ResultsComponent} from "@src/app/web/routes/results/results.component"
+import {PrivatePolicyComponent} from "@src/app/web/routes/private-policy/private-policy.component"
 
 const COMPONENTS = [
     DashboardComponent,
@@ -28,6 +29,8 @@ const COMPONENTS = [
     LoginComponent,
 
     // RegisterComponent,
+
+    PrivatePolicyComponent
 ];
 const COMPONENTS_DYNAMIC = [
     ResultAddMarkComponent,

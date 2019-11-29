@@ -14,7 +14,7 @@
     <StackLayout row="1" col="0" colSpan="2">
 <!--        <Button text="Home" [nsRouterLink]="['home']" [isEnabled]="!!auth.user" class="-primary"></Button>-->
         <Label [text]="'Via sms on this phone'|L" class="h2" horizontalAlignment="center"></Label>
-        <GridLayout columns="*, 150" rows="auto">
+        <GridLayout columns="*, 150" rows="auto, auto">
             <TextField col="0" row="0"
                        text="{{getPhone()}}"
                        (textChange)="onPhoneNumberChange($event)"
@@ -24,6 +24,7 @@
                        autocorrect="false"
                        keyboardType="phone"></TextField>
             <Button (tap)="onPhoneNumberLogin()" col="1" row="0" [text]="'Send sms'|L" class="-primary"></Button>
+            <Label colSpan="2" row="1" [text]="'Example: 9603331234, 10 digits'|L" class="help p-l-16"></Label>
         </GridLayout>
     </StackLayout>
     <StackLayout row="2" col="0" colSpan="2">

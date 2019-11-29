@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "599442157307-mro6tsdi79fv339hq20vqf0ms9nfrgkf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.nativescript.raceorg",
+            "certificate_hash": "c4eebe990b46dd27a0eb9745e530cb8d6fbd0555"
+          }
+        },
+        {
           "client_id": "599442157307-9sg32lpjovj7m50a02unqqpgi3k06lja.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

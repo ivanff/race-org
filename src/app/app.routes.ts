@@ -13,6 +13,7 @@ import {ResultsAdminComponent} from "@src/app/web/routes/results/results-admin/r
 import {ResultDetailComponent} from "@src/app/web/routes/results/results-admin/result-detail/result-detail.component"
 import {AthletResolve} from "@src/app/shared/resolvers/athlet.resolver"
 import {DashboardEditComponent} from "@src/app/web/routes/dashboard/dashboard-edit/dashboard-edit.component"
+import {PrivatePolicyComponent} from "@src/app/web/routes/private-policy/private-policy.component"
 
 const routes: Routes = [
     // {
@@ -88,6 +89,10 @@ const routes: Routes = [
     }, {
         path: 'public',
         loadChildren: () => import('@src/app/web/routes/app-athlet-register/app-athlet-register.module').then(m => m.AppAthletRegisterModule),
+    },
+    {
+        path: 'private_policy',
+        component: PrivatePolicyComponent
     },
     // {
     //     path: 'athlet/register/:id',

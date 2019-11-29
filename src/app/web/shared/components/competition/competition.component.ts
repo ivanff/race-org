@@ -294,7 +294,8 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
             this.fb.group({
                 title: ['', [Validators.required]],
                 marshal: ['', []],
-                classes: this.formArrayCheckboxes(this.competition.classes)
+                classes: this.formArrayCheckboxes(this.competition.classes),
+                devices: this.formArrayDevices([]),
             })
         )
     }

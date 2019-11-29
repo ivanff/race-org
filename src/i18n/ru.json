@@ -96,5 +96,7 @@
   "NFC tag is assigned": "Nfc метка назначена",
   "Batch commit error: %s": "Ошибка пакетной обработки: %s",
   "Delete the passage of the mark %s": "Удалить прохождение отметки %s",
-  "This device is't manage checkpoint %s": "Это устройство не может управлять контрольной точкой %s"
+  "This device is't manage checkpoint %s": "Это устройство не может управлять контрольной точкой %s",
+  "Example: 9603331234, 10 digits": "Пример: 9603331234, 10 цифр",
+  "Private Policy": "Политика конфиденциальности"
 }

@@ -57,13 +57,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit(): void {
+        //check ngDestroy
         this.drawer = this.drawerComponent.sideDrawer
         this.routerExtensions.router.events
             .pipe(
                 filter((event: any) => event instanceof NavigationEnd),
             )
             .subscribe((event: NavigationEnd) => {
-                this._activatedUrl = event.urlAfterRedirects
+                this._activatedUrl = event.urlAfterRedirects || ''
             })
         this._changeDetectionRef.detectChanges()
     }

@@ -5,6 +5,10 @@
                 [nsRouterLink]="['/scan/local_log']"
                 ios.position="right"
                 android.position="popup"></ActionItem>
+    <ActionItem [text]="'Private Policy'|L"
+                (tap)="goTo('https://raceorg.agestart.ru/private_policy')"
+                ios.position="right"
+                android.position="popup"></ActionItem>
     <ActionItem [text]="'About'|L"
                 (tap)="navigateTo('/home/about')"
                 ios.position="right"
