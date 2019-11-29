@@ -3,6 +3,13 @@
   <string name="_app_name_1k3Sbz">"RaceOrg"</string>
   <string name="app_name">"RaceOrg"</string>
   <string name="title_activity_kimera">"RaceOrg"</string>
+  <string name="_Competition_not_found_QjPsa">"Competition not found"</string>
+  <string name="_Permission_deny_to_competition_2vnXRd">"Permission deny to competition"</string>
+  <string name="Info">"Info"</string>
+  <string name="_Timezone_of_the_competition_place__1sAgNh">"Timezone of the competition place "</string>
+  <string name="_Finish_date___Z1KvaiB">"Finish date: "</string>
+  <string name="_Start_date___ZoMO7p">"Start date: "</string>
+  <string name="_Current_timezone__18b5jw">"Current timezone "</string>
   <string name="_Example__9603331234__10_digits_Zw40oP">"Example: 9603331234, 10 digits"</string>
   <string name="_This_device_is_t_manage_checkpoint__s_Z1Jzc87">"This device is\'t manage checkpoint %1$s"</string>
   <string name="_Delete_the_passage_of_the_mark__s_Zomndj">"Delete the passage of the mark %1$s"</string>
@@ -79,6 +86,7 @@
   <string name="visible">"visible"</string>
   <string name="Checkpoints">"Checkpoints"</string>
   <string name="_Connected_devices_ZNVN4p">"Connected\ndevices"</string>
+  <string name="Competitions">"Competitions"</string>
   <string name="competitions">"competitions"</string>
   <string name="_Use_secret_code_ZDj9M5">"Use secret code"</string>
   <string name="number">"number"</string>

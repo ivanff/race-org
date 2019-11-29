@@ -23,7 +23,8 @@ export class CompetitionService implements OnDestroy {
     selected_competition: Competition
     current_checkpoint: Checkpoint
     selected_competition_id$: any
-    finish_time: any
+    start_time: moment | null
+    finish_time: moment | null
     isAdmin = false
     private destroy = new ReplaySubject<any>(1)
 
@@ -59,10 +60,11 @@ export class CompetitionService implements OnDestroy {
                 setString('selected_competition_id', `${competition.parent_id ? competition.parent_id + '_' : ''}${competition.id}`)
                 this.setCp()
                 this.setIsAdmin()
-                this.setStartTime()
+                this.setFinishTime()
             } else {
                 remove('selected_competition_id')
                 this.current_checkpoint = null
+                this.start_time = null
                 this.finish_time = null
             }
         })
@@ -117,7 +119,7 @@ export class CompetitionService implements OnDestroy {
         return collection
     }
 
-    private firestoreCollectionObservable(parent_id, id?) {
+    firestoreCollectionObservable(parent_id, id?) {
         return new Observable(subscriber => {
             let colRef: firestore.DocumentReference = firebase.firestore().collection("competitions").doc(parent_id)
 
@@ -132,21 +134,35 @@ export class CompetitionService implements OnDestroy {
                 if (doc.exists) {
                     this.zone.run(() => {
                         if (!id) {
-                            console.log(1)
-                            firebase.firestore().collection("competitions").doc(parent_id).collection('stages').get().then((docs: firestore.QuerySnapshot) => {
-                                const stages: Array<Competition> = []
-                                console.log(2)
-                                docs.forEach((doc: firestore.QueryDocumentSnapshot) => {
-                                    const id = doc.id
-                                    stages.push({id, ...doc.data(), parent_id} as Competition)
+
+                            Promise.all([
+                                firebase.firestore().collection("competitions").doc(parent_id).collection('stages').get().then((docs: firestore.QuerySnapshot) => {
+                                    const stages: Array<Competition> = []
+                                    docs.forEach((doc: firestore.QueryDocumentSnapshot) => {
+                                        const id = doc.id
+                                        stages.push({id, ...doc.data(), parent_id} as Competition)
+                                    })
+
+                                    return stages
+                                }),
+                                firebase.firestore().collection("competitions").doc(parent_id).collection('test_secret').get().then((docs: firestore.QuerySnapshot) => {
+                                    const secret = {}
+                                    docs.forEach((doc: firestore.QueryDocumentSnapshot) => {
+                                        secret[doc.id] = doc.data().code
+                                    })
+
+                                    return secret
                                 })
-                                this.selected_competition = {...doc.data(), stages} as Competition
-                                this.selected_competition.id = parent_id
-                                subscriber.next(this.selected_competition)
+                            ]).then((result) => {
+                                const stages = result[0]
+                                const secret = result[1]
+                                const id = doc.id
+                                const competition = {id, ...doc.data(), stages, secret} as Competition
+                                subscriber.next(competition)
                             })
+
                         } else {
-                            this.selected_competition = {id, ...doc.data(), parent_id} as Competition
-                            subscriber.next(this.selected_competition)
+                            subscriber.next({id, ...doc.data(), parent_id} as Competition)
                         }
                     })
                 } else {
@@ -190,8 +206,13 @@ export class CompetitionService implements OnDestroy {
         }
     }
 
-    private setStartTime() {
-        this.finish_time = moment(this.selected_competition.start_date).add(this.selected_competition.start_time, 's').add(this.selected_competition.duration, 's')
+    private setStartTime(): moment {
+        this.start_time = moment(this.selected_competition.start_date).add(this.selected_competition.start_time, 's')
+        return this.start_time
+    }
+    private setFinishTime(): moment {
+        this.finish_time = this.setStartTime().clone().add(this.selected_competition.duration, 's')
+        return this.finish_time
     }
 
 }

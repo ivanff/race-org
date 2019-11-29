@@ -1,0 +1,6 @@
+<StackLayout margin="24" horizontalAlignment="center" verticalAlignment="center">
+    <Label [text]="('Secret code for '|L) + (role|titlecase)" class="h2"></Label>
+    <Label [text]="('Code: '|L) + code"></Label>
+    <Image [src]="imageFromBase64" stretch="aspectFit"></Image>
+    <Button [text]="'Close'|L" (tap)="onClose()"></Button>
+</StackLayout>

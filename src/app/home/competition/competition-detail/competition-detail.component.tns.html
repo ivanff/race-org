@@ -1,13 +1,16 @@
-<GridLayout columns="*, *" rows="auto, *">
-    <StackLayout col="0" row="0" class="p-t-10 p-b-10">
+<GridLayout columns="*, *" rows="auto, auto, *">
+    <GridLayout *ngIf="isAdmin" col="0" colSpan="2" row="0" columns="*, *" rows="auto">
+        <Button col="0" row="0" [text]="'Admin QR code'|L" (tap)="onTapQr('admin')"></Button>
+        <Button col="1" row="0" [text]="'Marshal QR code'|L" (tap)="onTapQr('marshal')"></Button>
+    </GridLayout>
+
+    <StackLayout col="0" row="1" class="p-t-10 p-b-10">
         <Label [text]="'Connected\ndevices'|L"
                textWrap="true"
                class="font-weight-bold"
                horizontalAlignment="center"></Label>
     </StackLayout>
-    <ListView col="0"
-              row="1"
-              height="100%"
+    <ListView col="0" row="2"
               [items]="competition?.mobile_devices">
         <ng-template let-device="item" let-i="index">
             <StackLayout>
@@ -15,12 +18,10 @@
             </StackLayout>
         </ng-template>
     </ListView>
-    <StackLayout col="1" row="0" class="p-t-10 p-b-10">
+    <StackLayout col="2" row="1" class="p-t-10 p-b-10">
         <Label [text]="'Checkpoints'|L" class="font-weight-bold" horizontalAlignment="center"></Label>
     </StackLayout>
-    <ListView col="1"
-              row="1"
-              height="100%"
+    <ListView col="2" row="2"
               [items]="competition?.checkpoints"
               (itemTap)="onItemTap($event)">
         <ng-template let-checkpoint="item" let-i="index">

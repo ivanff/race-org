@@ -77,6 +77,8 @@
     "ngx-select": "0.0.1",
     "ngx-toastr": "^11.1.2",
     "photoviewer": "^3.4.0",
+    "qrcode-generator-ts": "0.0.4",
+    "qrious": "^4.0.2",
     "reflect-metadata": "~0.1.13",
     "request": "^2.88.0",
     "rxjs": "^6.5.3",

@@ -1,5 +1,5 @@
-import {Component, OnDestroy, OnInit} from '@angular/core'
-import {RouterExtensions} from "nativescript-angular"
+import {Component, OnDestroy, OnInit, ViewContainerRef} from '@angular/core'
+import {ModalDialogOptions, ModalDialogService, RouterExtensions} from "nativescript-angular"
 import {device} from "tns-core-modules/platform"
 import {Competition} from "@src/app/shared/interfaces/competition"
 import {BaseComponent} from "@src/app/shared/base.component"
@@ -10,6 +10,9 @@ import {confirm} from "tns-core-modules/ui/dialogs"
 import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
 import {localize as L} from "nativescript-localize"
+import {CompetitionDetailQrComponent} from "@src/app/home/competition/competition-detail/competition-detail-qr/competition-detail-qr.component"
+import {MobileDevice} from "@src/app/shared/interfaces/mobile-device"
+import {AuthService} from "@src/app/mobile/services/auth.service"
 
 
 @Component({
@@ -18,13 +21,19 @@ import {localize as L} from "nativescript-localize"
 })
 export class CompetitionDetailComponent extends BaseComponent implements OnInit, OnDestroy {
     competition: Competition
+    isAdmin = false
 
     constructor(public routerExtensions: RouterExtensions,
+                private _modalService: ModalDialogService,
+                private _vcRef: ViewContainerRef,
                 private router: ActivatedRoute,
                 private _competition: CompetitionService,
-                private snackbar: SnackbarService) {
+                private snackbar: SnackbarService,
+                private auth: AuthService) {
         super(routerExtensions)
         this.competition = this.router.snapshot.data['competition']
+        this.isAdmin = this.competition.mobile_devices.filter((item: MobileDevice) => item.isAdmin && (item.uuid == device.uuid)).length > 0 ||
+            this.competition.user == this.auth.user.uid
     }
 
     ngOnInit() {
@@ -73,4 +82,19 @@ export class CompetitionDetailComponent extends BaseComponent implements OnInit,
     isReader(checkpoint: Checkpoint) {
         return checkpoint.devices.indexOf(device.uuid) > -1
     }
+
+    onTapQr(role: string): void {
+        console.log(this.competition.secret)
+        const options: ModalDialogOptions = {
+            viewContainerRef: this._vcRef,
+            context: {
+                code: this.competition.secret[role],
+                role: role
+            },
+            fullscreen: true
+        };
+
+        this._modalService.showModal(CompetitionDetailQrComponent, options)
+    }
+
 }

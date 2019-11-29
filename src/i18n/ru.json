@@ -22,6 +22,7 @@
   "number": "номер",
   "Use secret code": "Использовать секретный код",
   "competitions": "соревнования",
+  "Competitions": "Соревнования",
   "Connected\ndevices": "Подключенные\nустройства",
   "Checkpoints": "Чекпоинты",
   "visible": "",
@@ -98,5 +99,13 @@
   "Delete the passage of the mark %s": "Удалить прохождение отметки %s",
   "This device is't manage checkpoint %s": "Это устройство не может управлять контрольной точкой %s",
   "Example: 9603331234, 10 digits": "Пример: 9603331234, 10 цифр",
-  "Private Policy": "Политика конфиденциальности"
+  "Current timezone ": "Текущая временная зона ",
+  "Start date: ": "Время начала: ",
+  "Finish date: ": "Время окончания: ",
+  "Timezone of the competition place ": "Временная зона проведения соревнования",
+  "Info": "Информация",
+  "Permission deny to competition": "Недостаточно прав для просмотра соревнования",
+  "Competition not found": "Соревнование не найдено",
+  "Secret code for ": "Секретный код для ",
+  "Code: ": "Код: ",
 }

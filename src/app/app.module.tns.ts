@@ -22,6 +22,7 @@ import {EnterComponent} from "@src/app/enter/enter.component"
 import {AuthService} from "@src/app/mobile/services/auth.service"
 import {CompetitionResolve} from "@src/app/shared/resolvers/competition.resolver"
 import {CompetitionDetailComponent} from "@src/app/home/competition/competition-detail/competition-detail.component"
+import {CompetitionDetailQrComponent} from "@src/app/home/competition/competition-detail/competition-detail-qr/competition-detail-qr.component"
 import {DeviceNamePipe} from "@src/app/shared/pipes/device-name.pipe"
 import {GetDevicePipe} from "@src/app/shared/pipes/get-device.pipe"
 import {SqliteService} from "@src/app/mobile/services/sqlite.service"
@@ -50,7 +51,8 @@ import {NativeScriptHttpClientModule} from 'nativescript-angular/http-client'
 @NgModule({
     entryComponents: [
         RootComponent,
-        FoundDialogComponent,
+        // FoundDialogComponent,
+        CompetitionDetailQrComponent,
     ],
     declarations: [
         BaseComponent,
@@ -69,13 +71,14 @@ import {NativeScriptHttpClientModule} from 'nativescript-angular/http-client'
         LocalLogComponent,
         CompetitionComponent,
         CompetitionDetailComponent,
+        CompetitionDetailQrComponent,
 
         FilterPipe,
         DeviceNamePipe,
         GetDevicePipe,
         JoinPipe,
         TzDatePipe,
-        FoundDialogComponent
+        // FoundDialogComponent
     ],
     imports: [
         NativeScriptLocalizeModule,

@@ -102,7 +102,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     onBackPressed(): void {
         console.log('>> AppComponent onBackPressed')
         application.android.on(application.AndroidApplication.activityBackPressedEvent, (args: any) => {
-                args.cancel = true
+            args.cancel = true
+            if (!args.stopEvent) {
                 this.zone.run(() => {
                     if (this.routerExtensions.canGoBack()) {
                         this.routerExtensions.back()
@@ -112,7 +113,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 })
             }
-        )
+        })
     }
 
     closeDrawer(): void {

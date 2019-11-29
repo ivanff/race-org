@@ -5,6 +5,7 @@ import {ActivatedRoute} from "@angular/router"
 import {filter, switchMap, take, takeUntil, tap} from "rxjs/operators"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
 import {Observable, ReplaySubject} from "rxjs"
+import * as moment from 'moment-timezone'
 
 const firebase = require('nativescript-plugin-firebase/app')
 
@@ -17,11 +18,13 @@ export class StatComponent implements OnInit, OnDestroy {
     athlets_count: number = 0
     by_class_count: { [key: string]: number } = {}
     competition: Competition | null
+    current_timezone = moment.tz.guess()
+    now = new Date()
     private destroy = new ReplaySubject<any>(1)
 
     constructor(private zone: NgZone,
                 private router: ActivatedRoute,
-                private _competition: CompetitionService) {
+                public _competition: CompetitionService) {
         console.log('>> StatComponent constructor')
 
         this._competition.selected_competition_id$.pipe(
@@ -70,5 +73,6 @@ export class StatComponent implements OnInit, OnDestroy {
             })
         })
     }
+
 
 }

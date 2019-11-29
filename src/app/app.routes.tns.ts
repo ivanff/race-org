@@ -13,6 +13,7 @@ import {AuthGuard} from "@src/app/web/core/guard/auth.guard"
 import {ScanComponent} from "@src/app/scan/scan.component"
 import {LocalLogComponent} from "@src/app/scan/local-log/local-log.component"
 import {CheckpointResolver} from "@src/app/shared/resolvers/checkpoint.resolver"
+import {CompetitionDetailQrComponent} from "@src/app/home/competition/competition-detail/competition-detail-qr/competition-detail-qr.component"
 
 export const routes: Routes = [
     {
