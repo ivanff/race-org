@@ -22,6 +22,7 @@ import {AuthService} from "@src/app/mobile/services/auth.service"
 export class CompetitionDetailComponent extends BaseComponent implements OnInit, OnDestroy {
     competition: Competition
     isAdmin = false
+    uuid = device.uuid
 
     constructor(public routerExtensions: RouterExtensions,
                 private _modalService: ModalDialogService,

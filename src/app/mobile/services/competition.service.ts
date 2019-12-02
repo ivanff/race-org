@@ -1,5 +1,5 @@
 import {Injectable, NgZone, OnDestroy} from '@angular/core'
-import {Observable, of, ReplaySubject, Subject} from "rxjs"
+import {defer, Observable, of, ReplaySubject, Subject} from "rxjs"
 import {Competition} from "@src/app/shared/interfaces/competition"
 import {AuthService} from "@src/app/mobile/services/auth.service"
 import {first, map, shareReplay, switchMap, takeUntil} from "rxjs/operators"
@@ -26,6 +26,7 @@ export class CompetitionService implements OnDestroy {
     start_time: moment | null
     finish_time: moment | null
     isAdmin = false
+    private roles = {}
     private destroy = new ReplaySubject<any>(1)
 
     constructor(private auth: AuthService,
@@ -75,7 +76,7 @@ export class CompetitionService implements OnDestroy {
         this.destroy.complete()
     }
 
-    getByCode(code: number): Observable<{competition: Competition, role: string}> {
+    getByCode(code: number): Observable<Competition> {
         return this.http.post<{competitionId: string, role: string}>(environment.google_gateway + '/set_permissions_new', {
             user: this.auth.user ? this.auth.user.uid: null,
             secret: code
@@ -84,10 +85,8 @@ export class CompetitionService implements OnDestroy {
                 return this.firestoreCollectionObservable(resp.competitionId).pipe(
                     first(),
                     map((competition: Competition) => {
-                       return {
-                           role: resp.role,
-                           competition: competition
-                       }
+                       this.roles[competition.id] = resp.role
+                       return competition
                     })
                 )
             })
@@ -108,6 +107,36 @@ export class CompetitionService implements OnDestroy {
         return this.getCollection(competition).update(document).then(() => {
             return Object.assign(competition, document)
         })
+    }
+
+    updateMobileDevices(competition, role: string): Promise<Competition> {
+        const joined: Array<MobileDevice> = (competition.mobile_devices || []).filter((item: MobileDevice) => item.uuid == device.uuid)
+        let mobile_device: MobileDevice
+
+        if (joined.length) {
+            mobile_device = joined[0]
+        }
+
+        if (mobile_device) {
+            if (mobile_device.isAdmin != (role == 'admin')) {
+                mobile_device.isAdmin = (role == 'admin')
+                return this.update(competition, {
+                    mobile_devices: competition.mobile_devices
+                })
+            }
+        } else {
+            competition.mobile_devices.push({
+                uuid: device.uuid,
+                deviceType: device.deviceType,
+                osVersion: device.osVersion,
+                model: device.model,
+                isAdmin: role == 'admin'
+            } as MobileDevice)
+            return this.update(competition, {
+                mobile_devices: competition.mobile_devices
+            })
+        }
+        return new Promise<Competition>((resolve => resolve(competition)))
     }
 
     private getCollection(competition: Competition): firestore.DocumentReference {
@@ -172,21 +201,17 @@ export class CompetitionService implements OnDestroy {
         })
     }
 
-    private setCp(silent = true) {
-        this.selected_competition.mobile_devices = this.selected_competition.mobile_devices || []
-        if (!this.selected_competition.mobile_devices.filter((item: MobileDevice) => item.uuid == device.uuid).length) {
-            // недоработка связанная с этапами проведения
-            const isAdmin = this.selected_competition.user == this.auth.user.uid
-            this.selected_competition.mobile_devices.push({
-                uuid: device.uuid,
-                deviceType: device.deviceType,
-                osVersion: device.osVersion,
-                model: device.model,
-                isAdmin: isAdmin
-            } as MobileDevice)
-
-            this.update(this.selected_competition, {'mobile_devices': this.selected_competition.mobile_devices})
+    private setCp(silent=true): void {
+        let role = 'marshal'
+        if (this.roles.hasOwnProperty(this.selected_competition.id)) {
+            role = this.roles[this.selected_competition.id]
+        } else {
+            if (this.selected_competition.user == this.auth.user.uid) {
+                role = 'admin'
+            }
         }
+
+        this.updateMobileDevices(this.selected_competition, role)
 
         const checkpoints = this.selected_competition.checkpoints.filter((item: Checkpoint) => item.devices.indexOf(device.uuid) > -1)
         if (!silent) {
@@ -201,7 +226,7 @@ export class CompetitionService implements OnDestroy {
     }
 
     private setIsAdmin() {
-        if (this.auth.user.uid == this.selected_competition.user) {
+        if (this.selected_competition.mobile_devices.filter((item: MobileDevice) => (item.uuid == device.uuid) && item.isAdmin).length) {
             this.isAdmin = true
         }
     }

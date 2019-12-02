@@ -14,7 +14,7 @@
               [items]="competition?.mobile_devices">
         <ng-template let-device="item" let-i="index">
             <StackLayout>
-                <Label [text]="device|deviceName" [class.-warning]="device.isAdmin"></Label>
+                <Label [text]="device|deviceName" [ngClass]="{'-warning': device.isAdmin, 'font-weight-bold': device.uuid == uuid}"></Label>
             </StackLayout>
         </ng-template>
     </ListView>

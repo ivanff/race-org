@@ -17,7 +17,7 @@ export class CompetitionDetailQrComponent implements OnInit, OnDestroy {
         this.role = _params.context.role
         this.code = _params.context.code
         const qr = new QRCode()
-        qr.setTypeNumber(5)
+        qr.setTypeNumber(2)
         qr.addData(this.code.toString())
         qr.make()
         this.imageFromBase64 = fromBase64(qr.toDataURL(10).replace('data:image/gif;base64,', ''))
