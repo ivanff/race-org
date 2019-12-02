@@ -1,5 +1,4 @@
 import {Component, EventEmitter, Input, NgZone, OnDestroy, OnInit, Output} from '@angular/core'
-import {Page} from "tns-core-modules/ui/page"
 import {AuthService} from "@src/app/mobile/services/auth.service"
 import {TextField} from "tns-core-modules/ui/text-field"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
@@ -11,7 +10,6 @@ import {BarcodeService} from "@src/app/mobile/services/barcode.service"
 import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
 import {localize as L} from "nativescript-localize"
 
-
 @Component({
     selector: 'app-enter-secret',
     templateUrl: './enter-secret.component.html',
@@ -22,9 +20,7 @@ export class EnterSecretComponent implements OnInit, OnDestroy {
     @Input() pending: boolean = false
     @Output() setPending = new EventEmitter<boolean>()
 
-    constructor(private page: Page,
-                private zone: NgZone,
-                private barcode: BarcodeService,
+    constructor(private barcode: BarcodeService,
                 private snackbar: SnackbarService,
                 private _competition: CompetitionService,
                 public auth: AuthService) {

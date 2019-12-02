@@ -127,7 +127,7 @@ export class SqliteService implements OnInit, OnDestroy {
         if (athlet_id) {
             check_sql = [`SELECT id, created FROM ${this.tableName} WHERE athlet_id = ? AND checkpoint_order = ? ORDER BY id DESC LIMIT 1`, [athlet_id, mark.order]]
         } else if (nfc_id.length) {
-            check_sql = [`SELECT id, created FROM${this.tableName} WHERE nfc_id = ? AND checkpoint_order = ? ORDER BY id DESC LIMIT 1`, [nfc_id.join(','), mark.order]]
+            check_sql = [`SELECT id, created FROM ${this.tableName} WHERE nfc_id = ? AND checkpoint_order = ? ORDER BY id DESC LIMIT 1`, [nfc_id.join(','), mark.order]]
         }
 
         return await this.database.all(check_sql[0], check_sql[1])
