@@ -7,7 +7,7 @@ import {
   HttpErrorResponse,
 } from '@angular/common/http';
 
-import { Observable, of } from 'rxjs';
+import {Observable, of, throwError} from 'rxjs';
 import { mergeMap, catchError } from 'rxjs/operators';
 
 /** Pass untouched request through to the next request handler. */
@@ -19,7 +19,14 @@ export class DefaultInterceptor implements HttpInterceptor {
         return of(event);
       }),
       catchError((err: HttpErrorResponse) => {
-        return of(err);
+        if (err.error) {
+          if (err.error.message) {
+            return throwError(err)
+          }
+        } else {
+          console.error(err)
+          return of(err)
+        }
       })
     );
   }

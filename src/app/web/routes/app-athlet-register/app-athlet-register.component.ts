@@ -6,26 +6,25 @@ import {MatSnackBar} from "@angular/material"
 import {AngularFirestore, AngularFirestoreCollection} from "@angular/fire/firestore"
 import {
     catchError,
-    debounceTime,
     first,
     map,
-    skipWhile,
-    switchMap,
-    take,
+    skipWhile, switchMap,
     takeUntil
 } from "rxjs/operators"
-import {combineLatest, Observable, ReplaySubject, throwError} from "rxjs"
+import {defer, of, ReplaySubject, throwError} from "rxjs"
 import {
     AbstractControl,
-    AsyncValidatorFn,
     FormBuilder,
     FormGroup, FormGroupDirective,
-    ValidationErrors,
     Validators
 } from "@angular/forms"
 import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http"
-import {AthletRegisterComponent, Check} from "@src/app/web/shared/components/athlet/athlet-register.component"
+import {AthletRegisterComponent} from "@src/app/web/shared/components/athlet/athlet-register.component"
 import {environment} from "@src/environments/environment"
+import {BackendService} from "@src/app/web/core/services/backend.service"
+import * as firebase from "firebase"
+import {AuthService} from "@src/app/web/core/services/auth.service"
+
 
 @Component({
     selector: 'app-app-athlet-register',
@@ -45,9 +44,14 @@ export class AppAthletRegisterComponent implements OnInit, OnDestroy {
     constructor(private router: ActivatedRoute,
                 private afs: AngularFirestore,
                 private _fb: FormBuilder,
+                private auth: AuthService,
                 private http: HttpClient,
+                private backend: BackendService,
                 private _snackBar: MatSnackBar) {
         this.competition = this.router.snapshot.data['competition']
+        console.log(
+            this.auth.user
+        )
     }
 
     ngOnInit() {
@@ -58,15 +62,19 @@ export class AppAthletRegisterComponent implements OnInit, OnDestroy {
             code: [{
                 value: '',
                 disabled: true
-            }, [<any>Validators.minLength(6), <any>Validators.required], [this.checkSmsCode()]],
+            }, [<any>Validators.minLength(6), <any>Validators.required], [this.checkSmsCode.bind(this)]],
             captcha: ['', []]
         })
+
         this.getAthletForm.statusChanges.pipe(
             map((next) => {
-                if (this.getAthletForm.controls['captcha'].valid && this.getAthletForm.controls['phone'].valid) {
-                    if (this.getAthletForm.controls['code'].disabled) {
-                        this.getAthletForm.controls['code'].reset({value: '', disabled: false})
-                        return 'SKIP'
+                if (this.getAthletForm.controls.hasOwnProperty('captcha')) {
+                    if (this.getAthletForm.controls['captcha'].valid &&
+                        this.getAthletForm.controls['phone'].valid) {
+                        if (this.getAthletForm.controls['code'].disabled) {
+                            this.getAthletForm.controls['code'].reset({value: '', disabled: false})
+                            return 'SKIP'
+                        }
                     }
                 }
                 return next
@@ -139,40 +147,27 @@ export class AppAthletRegisterComponent implements OnInit, OnDestroy {
     onCreated($event: { athlet: Athlet, form: FormGroupDirective }) {
         $event.form.resetForm()
         $event.form.form.reset()
-        this._snackBar.open("Поздравляем", `Ждем Вас ${this.competition.start_date.toDate()}`, {
+        this._snackBar.open("Поздравляем", `Ждем Вас #TODO}`, {
             duration: 5000,
-            verticalPosition: "top"
+            verticalPosition: "top",
+            panelClass: 'snack-bar-success'
         })
     }
 
     onChange($event: { athlet: Athlet, form: FormGroupDirective }) {
         this._snackBar.open("Сохранено", `Ждем Вас ${this.competition.start_date.toDate()}`, {
             duration: 5000,
-            verticalPosition: "top"
+            verticalPosition: "top",
+            panelClass: 'snack-bar-success'
         })
     }
 
-    checkSmsCode(): AsyncValidatorFn {
-        return (control: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null> => {
-            if (control.value === '123456' && !environment.production) {
-                return new Promise((resolve => {
-                    resolve(null)
-                }))
-            }
-
-            return this.http.post(environment.google_gateway + '/check_sms',
-                JSON.stringify({
-                    phone: this.getAthletForm.controls['phone'].value,
-                    competitionId: this.competition.id,
-                    code: control.value
-                }), {headers: new HttpHeaders({'Content-Type': 'application/json'})}).pipe(
-                debounceTime(300),
-                take(1),
-                map((res: Check) => {
-                    return !res.success ? {"code": {value: control.value, msg: res.error}} : null
-                })
-            )
-        }
+    checkSmsCode(control: AbstractControl) {
+        return this.backend.checkSmsCodeValidator({
+            user: this.auth.user.uid,
+            phone: this.getAthletForm.controls['phone'].value,
+            competitionId: this.competition.id,
+        })(control)
     }
 
     onSendSms(): void {
@@ -187,18 +182,26 @@ export class AppAthletRegisterComponent implements OnInit, OnDestroy {
                     if (err.error) {
                         this._snackBar.open("Ошибка", err.error.body, {
                             duration: 5000,
-                            verticalPosition: "top"
+                            verticalPosition: "top",
+                            panelClass: 'snack-bar-alert'
                         })
                         return throwError(err.error.body)
                     }
                 }),
-                map((res) => {
-                    res
+                switchMap((resp) => {
+                    return defer(() => {
+                        if (!this.auth.user) {
+                            return firebase.auth().signInWithCustomToken(resp['token'])
+                        } else {
+                            of(null)
+                        }
+                    })
                 })
-            ).subscribe(() => {
+            ).subscribe((resp) => {
                 this._snackBar.open("Код выслан", "проверьте телефон", {
                     duration: 5000,
-                    verticalPosition: "top"
+                    verticalPosition: "top",
+                    panelClass: 'snack-bar-success'
                 })
             })
         }

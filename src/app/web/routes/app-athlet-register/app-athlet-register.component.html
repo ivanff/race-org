@@ -5,7 +5,6 @@
             <mat-card-subtitle class="text-center m-b-24" fxLayout="row" fxLayoutAlign="space-between center">
                 <a (click)="onSwitchForm($event, 'register');"  href [class.disabled]="action === 'register'">Регистрация участника</a>
                 <a (click)="onSwitchForm($event, 'change');" href [class.disabled]="action === 'change'">Сменить номер или класс</a>
-                {{athlet}}
             </mat-card-subtitle>
             <mat-card-content [ngSwitch]="competition.stop_registration">
 
@@ -38,13 +37,13 @@
                                     </mat-error>
                                 </mat-form-field>
 
-                                <div *ngIf="getAthletForm.controls['captcha']" class="mat-form-field full-width">
+                                <div [class.hidden]="getAthletForm.controls['phone'].invalid || getAthletForm.controls['phone'].pending" class="mat-form-field full-width">
                                     <re-captcha formControlName="captcha" required></re-captcha>
                                 </div>
 
                                 <mat-form-field class="full-width">
                                     <mat-label>Код подтверждения</mat-label>
-                                    <input disabled matInput formControlName="code" required>
+                                    <input disabled matInput formControlName="code" required type="number">
                                     <mat-hint>Код состоит из 6-ти цифр</mat-hint>
                                     <div matSuffix>
                                         <mat-spinner *ngIf="getAthletForm.controls['code'].pending"

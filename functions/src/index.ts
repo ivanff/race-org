@@ -47,8 +47,21 @@ app.use(cors(corsOptions))
 app.post('/api/check_sms', async (req, resp) => {
     await firestore.doc(`/sms_codes/${req.body.phone}_${req.body.competitionId}`).get().then((doc: DocumentSnapshot) => {
         if (doc.exists) {
-            if (doc.data().code === req.body.code) {
-                resp.status(200).json({})
+            if (doc.data().code === parseInt(req.body.value)) {
+                if (req.body.user) {
+                    firestore.doc(`/permissions/${req.body.user}`).set({
+                        competitionId: req.body.competitionId,
+                        role: 'client',
+                    }).then(() => {
+                        resp.status(200).json({})
+                    }).catch(() => {
+                        resp.status(400).json({
+                            message: "Ошибка создания прав"
+                        })
+                    })
+                } else {
+                    resp.status(200).json({})
+                }
             } else {
                 resp.status(400).json({
                     message: "Проверочный код не совпадает"

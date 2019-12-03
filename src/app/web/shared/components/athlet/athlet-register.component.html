@@ -40,27 +40,33 @@
         <input (input)="onPhoneInput()" type="tel" matInput placeholder="Телефон" formControlName="phone"
                required>
         <mat-hint>Убедитесь, что вводите номер телефона без пробелов, только 10 цифр</mat-hint>
-        <span matSuffix>
-                    <mat-spinner *ngIf="registerForm.controls['phone'].pending" diameter="24"></mat-spinner>
-                </span>
+        <div matSuffix>
+            <mat-spinner *ngIf="registerForm.controls['phone'].pending" diameter="24"></mat-spinner>
+        </div>
         <mat-error
                 *ngIf="registerForm.controls['phone'].hasError('used_value') && !registerForm.controls['phone'].hasError('required')">
             Указанный телефонный номер уже зарегистрирован
         </mat-error>
     </mat-form-field>
 
-    <div *ngIf="registerForm.controls['captcha']" class="mat-form-field full-width">
+    <div [class.hidden]="registerForm.controls['phone'].invalid || registerForm.controls['phone'].pending"
+         *ngIf="registerForm.controls.hasOwnProperty('captcha')"
+         class="mat-form-field full-width">
         <re-captcha formControlName="captcha" required></re-captcha>
     </div>
 
     <div *ngIf="registerForm.controls.hasOwnProperty('code')">
         <mat-form-field class="full-width">
             <mat-label>Код подтверждения</mat-label>
-            <input matInput formControlName="code" required>
+            <input matInput disabled formControlName="code" required type="number">
             <mat-hint>Код состоит из 6-ти цифр</mat-hint>
-            <span matSuffix>
-                    <mat-spinner *ngIf="registerForm.controls['code'].pending" diameter="24"></mat-spinner>
-                </span>
+            <div matSuffix>
+                <mat-spinner *ngIf="registerForm.controls['code'].pending" diameter="24"></mat-spinner>
+            </div>
+            <mat-error
+                    *ngIf="registerForm.controls['code'].hasError('code') && !registerForm.controls['code'].hasError('required')">
+                {{registerForm.controls['code'].errors['code'].message}}
+            </mat-error>
         </mat-form-field>
         <div *ngIf="!registerForm.controls['code'].valid" class="mat-form-field full-width">
             <button mat-raised-button color="warn"

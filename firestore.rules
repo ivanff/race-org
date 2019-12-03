@@ -2,7 +2,9 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
+    function writeCreateRules() {
+      return request.auth != null && request.resource.data.user == request.auth.uid;
+    }
     function writeRules() {
       return request.auth != null && resource.data.user == request.auth.uid;
     }
@@ -12,11 +14,10 @@ service cloud.firestore {
     }
 
     function checkMarshal(competitionId, roles) {
-    	//need update for marshals secret code, для записи отметок о прохождении
      	return competitionId.size() == 20 && get(/databases/$(database)/documents/permissions/$(request.auth.uid)).data.role in roles
     }
     function checkOwnerAthlet(competitionId) {
-      //обновление данных самом пользователем, например смена класса.
+      //обновление данных самим пользователем, например смена класса.
       // временное решение, пользователь должен авторизоваться через firebase phone чтобы -> permissions -> проверка
     	return competitionId.size() == 20 && get(/databases/$(database)/documents/permissions/$(request.auth.uid)).data.role == 'client'
     }
@@ -31,27 +32,46 @@ service cloud.firestore {
       allow update: if request.auth != null && athletMatch(collectionName) && (checkOwner(collectionName.replace('athlets_', '')) || checkMarshal(collectionName.replace('athlets_', ''), ['admin', 'marshal']) || checkOwnerAthlet(collectionName.replace('athlets_', '')));
       allow delete: if request.auth != null && athletMatch(collectionName) && checkOwner(collectionName.replace('athlets_', ''));
     }
-    match /competitions/{competitionId}/stages/{stageCompetitionId} {
-      allow read: if request.auth != null;
-      allow write: if writeRules();
-    }
-    match /competitions/{competitionId} {
+    match /{path=**}/test_secret/{code} {
       allow read;
-      allow create: if writeRules();
+    }
+    match /competitions/{competitionId}/test_secret/{code} {
+      allow read: if request.auth != null && checkOwner(competitionId);
+      allow write: if request.auth != null && checkOwner(competitionId);
+    }
+    match /competitions/{competitionId}/stages/{stageCompetitionId} {
+      allow read;
+      allow create: if writeCreateRules();
       allow update: if writeRules() || (request.auth != null && checkMarshal(competitionId, ['admin', 'marshal']));
       allow delete: if writeRules() || (request.auth != null && checkMarshal(competitionId, ['admin']));
     }
-    match /sms_codes/{phone} {
+    match /competitions/{competitionId} {
+    // ужесточить, както нужно secret выделить в новую сущность
+      allow read;
+      allow create: if writeCreateRules();
+      allow update: if writeRules() || (request.auth != null && checkMarshal(competitionId, ['admin', 'marshal']));
+      allow delete: if writeRules() || (request.auth != null && checkMarshal(competitionId, ['admin']));
+    }
+    match /sms_codes/{phone_competitionId} {
     // доработать
     	allow read;
-      allow create;
-      allow update;
-      allow delete: if false; 
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
     }
     match /permissions/{userId} {
     	allow read: if request.auth != null && request.auth.uid == userId;
       allow write: if false;
     }
+    /* old version collections only for read for all*/
+    match /athlets/{phone} {
+    	allow read;
+    }
+    match /checkpoints/{checkpointId} {
+    	allow read;
+    }
+    /* end section */
+
     //match /{document=**} {
       //allow read;
    // }

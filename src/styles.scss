@@ -26,6 +26,25 @@ a.disabled {
   }
 }
 
+.hidden {
+  display: none !important;
+}
+
+.snack-bar-success{
+  color: black;
+  background: #c6ff00;
+  .mat-simple-snackbar-action {
+    color: #3f51b5;
+  }
+}
+.snack-bar-alert{
+  color: black;
+  background: #ff6e40;
+  .mat-simple-snackbar-action {
+    color: #3f51b5;
+  }
+}
+
 //.mat-checkbox-layout {
 //  white-space: normal !important;
 //}
