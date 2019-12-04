@@ -3,8 +3,10 @@
         <mat-card class="mat-elevation-z4 m-b-8 m-t-8" fxFlex="400px" fxFlex.xs="90%">
             <mat-card-title class="text-center m-b-24">{{competition.title}}</mat-card-title>
             <mat-card-subtitle class="text-center m-b-24" fxLayout="row" fxLayoutAlign="space-between center">
-                <a (click)="onSwitchForm($event, 'register');"  href [class.disabled]="action === 'register'">Регистрация участника</a>
-                <a (click)="onSwitchForm($event, 'change');" href [class.disabled]="action === 'change'">Сменить номер или класс</a>
+                <a (click)="onSwitchForm($event, 'register');" href [class.disabled]="action === 'register'">Регистрация
+                    участника</a>
+                <a (click)="onSwitchForm($event, 'change');" href [class.disabled]="action === 'change'">Сменить номер
+                    или класс</a>
             </mat-card-subtitle>
             <mat-card-content [ngSwitch]="competition.stop_registration">
 
@@ -16,7 +18,8 @@
 
                         <div *ngSwitchCase="'change'">
                             <form [formGroup]="getAthletForm"
-                                  #formDirective="ngForm" class="my-form">
+                                  (ngSubmit)="onSendSms(getAthletForm.value, getAthletForm.valid, formDirective)"
+                                  #formDirective="ngForm">
 
                                 <mat-form-field class="full-width">
                                     <mat-label>Телефонный номер</mat-label>
@@ -37,7 +40,9 @@
                                     </mat-error>
                                 </mat-form-field>
 
-                                <div [class.hidden]="getAthletForm.controls['phone'].invalid || getAthletForm.controls['phone'].pending" class="mat-form-field full-width">
+                                <div [class.hidden]="getAthletForm.controls['phone'].invalid || getAthletForm.controls['phone'].pending"
+                                     *ngIf="getAthletForm.controls.hasOwnProperty('captcha')"
+                                     class="mat-form-field full-width">
                                     <re-captcha formControlName="captcha" required></re-captcha>
                                 </div>
 
@@ -49,23 +54,27 @@
                                         <mat-spinner *ngIf="getAthletForm.controls['code'].pending"
                                                      diameter="24"></mat-spinner>
                                     </div>
+                                    <mat-error *ngIf="getAthletForm.controls['code'].hasError('code') && !getAthletForm.controls['code'].hasError('required')">
+                                        {{getAthletForm.controls['code'].errors['code'].message}}
+                                    </mat-error>
                                 </mat-form-field>
 
                                 <div *ngIf="!getAthletForm.controls['code'].valid"
                                      class="mat-form-field full-width">
-                                    <button mat-raised-button color="warn"
-                                            [disabled]="getAthletForm.controls['phone'].invalid || getAthletForm.controls['captcha'].invalid"
-                                            (click)="onSendSms()" type="button">Выслать код подтверждения номера
+                                    <button mat-raised-button color="warn" type="submit"
+                                            [disabled]="!getAthletForm.controls['code'].valid">
+                                        Выслать код подтверждения номера
                                     </button>
                                 </div>
 
-                                <athlet-change
-                                        *ngIf="athlet"
-                                        [athlet]="athlet"
-                                        [competition]="competition"
-                                        (onCreated)="onChange($event)"></athlet-change>
-
                             </form>
+
+                            <athlet-change
+                                    *ngIf="athlet"
+                                    [athlet]="athlet"
+                                    [competition]="competition"
+                                    (onCreated)="onChange($event)"></athlet-change>
+
                         </div>
                     </div>
                 </div>

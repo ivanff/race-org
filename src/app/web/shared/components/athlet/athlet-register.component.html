@@ -1,5 +1,5 @@
 <form [formGroup]="registerForm" #formDirective="ngForm"
-      (ngSubmit)="onSave(registerForm.value, registerForm.valid, formDirective)" class="my-form">
+      (ngSubmit)="onSave(registerForm.value, registerForm.valid, formDirective)">
     <mat-form-field class="full-width">
         <mat-label>Фамилия Имя Отчество</mat-label>
         <input matInput placeholder="" formControlName="fio" required>

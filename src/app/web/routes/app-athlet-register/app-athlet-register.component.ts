@@ -14,7 +14,7 @@ import {
 import {defer, of, ReplaySubject, throwError} from "rxjs"
 import {
     AbstractControl,
-    FormBuilder,
+    FormBuilder, FormControl,
     FormGroup, FormGroupDirective,
     Validators
 } from "@angular/forms"
@@ -49,9 +49,6 @@ export class AppAthletRegisterComponent implements OnInit, OnDestroy {
                 private backend: BackendService,
                 private _snackBar: MatSnackBar) {
         this.competition = this.router.snapshot.data['competition']
-        console.log(
-            this.auth.user
-        )
     }
 
     ngOnInit() {
@@ -83,13 +80,27 @@ export class AppAthletRegisterComponent implements OnInit, OnDestroy {
                 return next == 'SKIP'
             })
         ).subscribe((next) => {
+            console.log(next)
             if (next == 'VALID') {
+                if (this.getAthletForm.controls.hasOwnProperty('captcha')) {
+                    console.log('remove')
+                    this.getAthletForm.removeControl('captcha')
+                }
                 this.athlet_collection.doc(this.getAthletForm.controls['phone'].value).valueChanges().pipe(
                     first()
                 ).subscribe((doc: Athlet) => {
                     doc.id = this.getAthletForm.controls['phone'].value
                     this.athlet = doc
                 })
+            }
+            if (next == 'INVALID') {
+                if (!this.getAthletForm.controls.hasOwnProperty('captcha')) {
+                    console.log('add')
+                    this.getAthletForm.addControl('captcha', new FormControl(''))
+                }
+                if (this.athlet) {
+                    this.athlet = null
+                }
             }
         })
 
@@ -119,7 +130,6 @@ export class AppAthletRegisterComponent implements OnInit, OnDestroy {
         this.afs.collection('competitions').doc(this.competition.id).valueChanges().pipe(
             takeUntil(this._onDestroy)
         ).subscribe((doc) => {
-            console.log(doc)
             Object.assign(this.competition, doc)
         })
     }
@@ -170,7 +180,7 @@ export class AppAthletRegisterComponent implements OnInit, OnDestroy {
         })(control)
     }
 
-    onSendSms(): void {
+    onSendSms(model, is_valid: boolean, formDirective?: FormGroupDirective): void {
         if (this.getAthletForm.controls['phone'].valid) {
             this.http.post(environment.backend_gateway + '/sms',
                 JSON.stringify({

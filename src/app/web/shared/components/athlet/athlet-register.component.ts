@@ -87,7 +87,7 @@ export class AthletRegisterComponent implements OnInit {
         }))
     }
 
-    onSave(model, is_valid: boolean, formDirective?: FormGroupDirective): Promise<Athlet> | null {
+    onSave(model, is_valid: boolean, formDirective?: FormGroupDirective): void {
         if (is_valid) {
             let athlet = {...model}
             delete athlet.code
@@ -96,7 +96,7 @@ export class AthletRegisterComponent implements OnInit {
             athlet.marks = []
             athlet.created = firebase.firestore.Timestamp.fromDate(new Date())
 
-            return this.athlet_collection.doc(athlet.phone + '').set(athlet).then(() => {
+            this.athlet_collection.doc(athlet.phone + '').set(athlet).then(() => {
                 this.onCreated.emit({
                     athlet: athlet,
                     form: formDirective

@@ -29,6 +29,11 @@ export class BackendService implements OnDestroy {
                     resolve(null)
                 }))
             }
+            if (control.value.toString().length < 6) {
+                return new Promise((resolve => {
+                    resolve({"required": true})
+                }))
+            }
 
             return this.http.post(environment.google_gateway + '/check_sms', JSON.stringify(Object.assign(data, {value: control.value})),
                 {headers: this.jsonHttpHeaders, observe: 'body', responseType: 'json'})
