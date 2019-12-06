@@ -31,11 +31,12 @@ export interface Check {
 export class AthletRegisterComponent implements OnInit {
     registerForm: FormGroup
     athlet: Athlet
+    hasSubmitButton = true
     formIsValid = () => false
 
     @Input() competition: Competition
     @Output() onCreated = new EventEmitter<{ athlet: Athlet, form: FormGroupDirective }>()
-    @Output() onValid = new EventEmitter<Athlet>()
+    @Output() onValid = new EventEmitter<boolean>()
 
     athlet_collection: AngularFirestoreCollection
 
@@ -82,6 +83,7 @@ export class AthletRegisterComponent implements OnInit {
                 return next == 'SKIP'
             })
         ).subscribe((next) => {
+            this.onValid.emit(next == 'VALID')
         }, (error => {
             console.log('error', error)
         }))

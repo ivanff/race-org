@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core'
 import {SharedModule} from "@src/app/web/shared/shared.module"
 import {AppAthletRegisterRoutingModule} from './app-athlet-register-routing.module'
-import {AppAthletRegisterComponent, SuccessComponent} from "./app-athlet-register.component"
+import {AppAthletRegisterComponent, SuccessDialogComponent} from "./app-athlet-register.component"
 import {CompetitionResolve} from "@src/app/shared/resolvers/competition.resolver"
 import {NotificationComponent} from "@src/app/web/theme/admin-layout/notification/notification.component"
 
@@ -9,7 +9,7 @@ const COMPONENTS = [
     AppAthletRegisterComponent,
 ];
 const COMPONENTS_DYNAMIC = [
-    SuccessComponent,
+    SuccessDialogComponent,
 ];
 
 @NgModule({

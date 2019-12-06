@@ -11,7 +11,8 @@ export class AuthService implements OnDestroy {
     readonly unsubscribe: any
 
     constructor(public afAuth: AngularFireAuth){
-        this.unsubscribe = this.currentUserObservable.subscribe((user: firebase.User) => {
+        this.unsubscribe = this.currentUserObservable.subscribe((user: firebase.User | null) => {
+            console.log(user)
             this.user = user
         })
     }

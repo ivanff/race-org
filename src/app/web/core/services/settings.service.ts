@@ -30,9 +30,15 @@ export class SettingsService implements OnDestroy {
                 switchMap((values: Array<any>) => {
                     return combineLatest(
                         values.map((doc) => {
-                            return this.afs.collection('competitions').doc(doc.id).collection('stages').valueChanges(first()).pipe(map((stages) => {
-                                return Object.assign(doc, {stages})
-                            }))
+                            return this.afs.collection('competitions').doc(doc.id).collection('stages')
+                                .valueChanges()
+                                .pipe(
+                                    first(),
+                                    map((stages) => {
+                                        console.log(2)
+                                        return Object.assign(doc, {stages})
+                                    })
+                                )
                         })
                     )
                 }),

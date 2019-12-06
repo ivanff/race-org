@@ -4,13 +4,7 @@ import {ActivatedRoute} from "@angular/router"
 import {Athlet} from "@src/app/shared/interfaces/athlet"
 import {MatDialog, MatDialogConfig, MatDialogRef, MatSnackBar} from "@angular/material"
 import {AngularFirestore, AngularFirestoreCollection} from "@angular/fire/firestore"
-import {
-    catchError,
-    first,
-    map,
-    skipWhile, switchMap,
-    takeUntil
-} from "rxjs/operators"
+import {catchError, first, map, skipWhile, switchMap, takeUntil} from "rxjs/operators"
 import {defer, of, ReplaySubject, throwError} from "rxjs"
 import {
     AbstractControl,
@@ -28,12 +22,13 @@ import {MAT_DIALOG_DATA} from '@angular/material/dialog'
 
 
 @Component({
-    selector: 'success',
-    templateUrl: './success.component.html',
+    selector: 'success-dialog',
+    templateUrl: './success-dialog.component.html',
 })
-export class SuccessComponent {
-    constructor(public dialogRef: MatDialogRef<SuccessComponent>,
-                @Inject(MAT_DIALOG_DATA) public data: any) { }
+export class SuccessDialogComponent {
+    constructor(public dialogRef: MatDialogRef<SuccessDialogComponent>,
+                @Inject(MAT_DIALOG_DATA) public data: any) {
+    }
 
     closeDialog(): void {
         this.dialogRef.close()
@@ -100,9 +95,6 @@ export class AppAthletRegisterComponent implements OnInit, OnDestroy {
                 return next == 'SKIP'
             })
         ).subscribe((next) => {
-            console.log(
-                this.getAthletForm.controls
-            )
             if (next == 'VALID') {
                 if (this.getAthletForm.controls.hasOwnProperty('captcha')) {
                     this.getAthletForm.removeControl('captcha')
@@ -178,7 +170,7 @@ export class AppAthletRegisterComponent implements OnInit, OnDestroy {
     onCreated($event: { athlet: Athlet, form: FormGroupDirective }) {
         $event.form.resetForm()
         $event.form.form.reset()
-        this.dialog.open(SuccessComponent, {
+        this.dialog.open(SuccessDialogComponent, {
             data: {
                 title: "Регистрация прошла успешно!",
                 start_date: this.competition.start_date
@@ -188,7 +180,7 @@ export class AppAthletRegisterComponent implements OnInit, OnDestroy {
     }
 
     onChange($event: { athlet: Athlet, form: FormGroupDirective }) {
-        this.dialog.open(SuccessComponent, {
+        this.dialog.open(SuccessDialogComponent, {
             data: {
                 title: "Сохранено!",
                 start_date: this.competition.start_date

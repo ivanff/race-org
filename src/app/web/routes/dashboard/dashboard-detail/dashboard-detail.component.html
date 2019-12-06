@@ -153,9 +153,9 @@
             <h2>Добавить следующий этап(день) соревнований</h2>
             <p>
                 Если соревнование многодневное / поэтапное, необходимо добавить следующий этап, при этому указать новые
-                установочные данные, например, дату начала, время или продолжительность. При этом атлеты зарегистрированные
-                для
-                первого (основного) этапа будут перенесены на все последующие этапы, БЕЗ перерегистрации.
+                установочные данные, например, дату начала, время или продолжительность.
+                При этом атлеты зарегистрированные для первого (основного) этапа будут перенесены
+                на все последующие этапы, БЕЗ перерегистрации.
             </p>
             <app-competition [clone_competition]="competition"
                              [isLinear]="false"
@@ -168,6 +168,13 @@
                     <mat-card-subtitle></mat-card-subtitle>
                 </mat-card-header>
                 <mat-card-content>
+                    <p>
+                        <button (click)="onAddAthlet()" mat-fab aria-label="Добавить атлетаы" class="m-r-8">
+                            <mat-icon>add</mat-icon>
+                        </button>
+                        Добавить атлета
+                    </p>
+
                     <form [formGroup]="filterAthlets" *ngIf="(athlets$ | async)">
                         <mat-card class="m-20">
                             <mat-card-content fxLayout="row wrap">
@@ -225,38 +232,6 @@
                         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
                         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
                     </table>
-                    <!--
-                                    <mat-accordion>
-                                        <mat-expansion-panel
-                                                *ngFor="let athlet of athlets$|async|filter:['fio', 'number']:{'search': search, 'class': filterAthlets.controls['class'].value}">
-                                            <mat-expansion-panel-header fxLayout="row" fxLayoutAlign="start center">
-                                                <mat-panel-title fxFlex="70" fxLayoutAlign="start center">
-                                                    <mat-icon mat-list-icon>person</mat-icon>
-                                                    <a [routerLink]="['detail', athlet.id]" mat-icon-button color="warn">
-                                                        <mat-icon>edit</mat-icon>
-                                                    </a>
-                                                    <b class="p-r-8">&nbsp;{{athlet.number}}&nbsp;</b>
-                                                    {{athlet.fio}}
-                                                </mat-panel-title>
-                                                <mat-panel-description fxFlex="30" fxLayoutAlign="start center">
-                                                    {{ athlet.class }}
-                                                </mat-panel-description>
-                                            </mat-expansion-panel-header>
-
-                                            <mat-list>
-                                                <mat-list-item *ngIf="competition.checking.indexOf('barcode') > -1" style="height: auto">
-                                                    <qr-code [value]="getQr(athlet)" [size]="150"></qr-code>
-                                                </mat-list-item>
-                                                <mat-list-item *ngFor="let item of athlet|keyvalue">
-                                                    <h4 mat-line>{{item.key}}</h4>
-                                                    <p mat-line> {{item.value}} </p>
-                                                </mat-list-item>
-                                                <mat-divider></mat-divider>
-                                            </mat-list>
-
-                                        </mat-expansion-panel>
-                                    </mat-accordion>
-                                    -->
                 </mat-card-content>
 </mat-card>
     </mat-tab>

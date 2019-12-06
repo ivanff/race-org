@@ -9,11 +9,13 @@ import {Observable, ReplaySubject} from "rxjs"
 import {Athlet} from "@src/app/shared/interfaces/athlet"
 import {LocalStorageService} from "angular-2-local-storage"
 import {environment} from "@src/environments/environment.prod"
-import {MatSlideToggleChange, MatSort, MatTableDataSource} from "@angular/material"
+import {MatDialog, MatDialogConfig, MatSlideToggleChange, MatSort, MatTableDataSource} from "@angular/material"
 import {ChartOptions} from 'chart.js'
 import {Label} from "ng2-charts"
 import * as _ from "lodash"
 import {Mark} from "@src/app/shared/interfaces/mark"
+import {AddAthletDialogComponent} from "@src/app/web/routes/dashboard/dashboard-detail/add-athlet-dialog.component"
+import {SuccessDialogComponent} from "@src/app/web/routes/app-athlet-register/app-athlet-register.component"
 
 @Component({
     selector: 'app-dashboard-detail',
@@ -68,7 +70,8 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
     constructor(private route: ActivatedRoute,
                 private afs: AngularFirestore,
                 private router: Router,
-                private localStorageService: LocalStorageService) {
+                private localStorageService: LocalStorageService,
+                private dialog: MatDialog) {
         this.active_tab = this.localStorageService.get(`ActiveTab_${this.route.component['name']}`) || 0
 
         this.route.params.pipe(
@@ -251,6 +254,12 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
 
     getFullRegisterUrl() {
         return `${environment.SERVER_URL}/public/athlet/register/${this.competition.id}`
+    }
+
+    onAddAthlet(): void {
+        this.dialog.open(AddAthletDialogComponent, {
+            data: {competition: this.competition}
+        })
     }
 
     onAdmin(action: string) {

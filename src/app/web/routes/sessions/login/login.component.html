@@ -5,7 +5,7 @@
             <form class="matero-form-horizontal" [formGroup]="reactiveForm">
                 <mat-form-field class="m-b-32">
                     <mat-label>Телефонный номер</mat-label>
-                    <span matPrefix>+7 &nbsp;</span>
+                    <div matPrefix>+7 &nbsp;</div>
                     <input matInput [(ngModel)]="phone" placeholder="Телефон" formControlName="phone" required>
                     <mat-hint>Убедитесь, что вводите номер телефона без пробелов, только 10 цифр</mat-hint>
                     <div matSuffix>

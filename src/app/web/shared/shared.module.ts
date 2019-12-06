@@ -29,6 +29,7 @@ import {
     RecaptchaSettings
 } from "ng-recaptcha"
 import {ChartsModule} from "ng2-charts"
+import {AthletAddComponent} from "@src/app/web/shared/components/athlet/athlet-add.component"
 
 const THIRD_MODULES = [
     DemoMaterialModule,
@@ -51,6 +52,7 @@ const COMPONENTS = [
 
     AthletRegisterComponent,
     AthletChangeComponent,
+    AthletAddComponent,
     CsvComponent,
     CompetitionComponent,
 ];

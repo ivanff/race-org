@@ -1,0 +1,14 @@
+<div mat-dialog-content fxLayout="column" fxLayoutAlign="center center">
+    <h3 class="m-0">Добавить атлета</h3>
+    {{valid}}
+    <athlet-add [competition]="data.competition"
+                (onValid)="valid = $event"
+                (onCreated)="onCreated($event)"
+                #athletAdd></athlet-add>
+</div>
+<div mat-dialog-actions>
+    <button mat-button mat-flat-button color="primary"
+            [disabled]="!valid"
+            (click)="onSave(athletAdd.registerForm.value, athletAdd.registerForm.valid)">Сохранить</button>
+    <button mat-button mat-flat-button cdkFocusInitial (click)="closeDialog()">Закрыть</button>
+</div>

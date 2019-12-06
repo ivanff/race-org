@@ -6,9 +6,9 @@
     </mat-form-field>
     <mat-form-field class="full-width">
         <mat-label>Желаемый стартовый номер участника</mat-label>
-        <span matPrefix>
-                    <mat-spinner *ngIf="registerForm.controls['number'].pending" diameter="24"></mat-spinner>
-                </span>
+        <div matPrefix>
+            <mat-spinner *ngIf="registerForm.controls['number'].pending" diameter="24"></mat-spinner>
+        </div>
         <input matInput placeholder="" type="number" formControlName="number" required>
         <mat-error
                 *ngIf="registerForm.controls['number'].hasError('used_value') && !registerForm.controls['number'].hasError('required')">
@@ -36,7 +36,7 @@
     <mat-form-field *ngIf="registerForm.controls.hasOwnProperty('phone')" class="full-width">
         <mat-label>Телефонный номер</mat-label>
 
-        <span matPrefix>+7 &nbsp;</span>
+        <div matPrefix>+7 &nbsp;</div>
         <input (input)="onPhoneInput()" type="tel" matInput placeholder="Телефон" formControlName="phone"
                required>
         <mat-hint>Убедитесь, что вводите номер телефона без пробелов, только 10 цифр</mat-hint>
@@ -76,7 +76,7 @@
         </div>
     </div>
 
-    <div class="mat-form-field full-width">
+    <div *ngIf="hasSubmitButton" class="mat-form-field full-width">
         <button mat-raised-button color="primary"
                 [disabled]="!formIsValid()"
                 type="submit">

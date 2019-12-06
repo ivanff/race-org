@@ -13,6 +13,7 @@ import {ResultSetTimeComponent} from "@src/app/web/routes/results/results-admin/
 import {ResultAddMarkComponent} from "@src/app/web/routes/results/results-admin/result-detail/result-add-mark/result-add-mark.component"
 import {ResultsComponent} from "@src/app/web/routes/results/results.component"
 import {PrivatePolicyComponent} from "@src/app/web/routes/private-policy/private-policy.component"
+import {AddAthletDialogComponent} from "@src/app/web/routes/dashboard/dashboard-detail/add-athlet-dialog.component"
 
 const COMPONENTS = [
     DashboardComponent,
@@ -35,6 +36,7 @@ const COMPONENTS = [
 const COMPONENTS_DYNAMIC = [
     ResultAddMarkComponent,
     ResultSetTimeComponent,
+    AddAthletDialogComponent,
 ];
 
 @NgModule({
