@@ -1,0 +1,10 @@
+<div mat-dialog-content fxLayout="column" fxLayoutAlign="center center">
+    <h3 class="m-0">{{ data.title }}</h3>
+    <p>
+        <notification></notification>
+    </p>
+</div>
+<div mat-dialog-actions>
+    <button mat-button mat-flat-button color="primary">Список атлетов</button>
+    <button mat-button mat-flat-button cdkFocusInitial (click)="closeDialog()">Закрыть</button>
+</div>

@@ -1,0 +1,93 @@
+$circle-length: 300px;
+$check-length: ($circle-length / 4.3)px;
+
+@keyframes scaleAnimation {
+  0% {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes drawCircle {
+  0% {
+    stroke-dashoffset: $circle-length;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes drawCheck {
+  0% {
+    stroke-dashoffset: $check-length;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes checkFadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes checkFadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@mixin notification-svg($checkbox-color) {
+  .notification-svg-circle {
+    stroke-dasharray: $circle-length $circle-length;
+    stroke: $checkbox-color;
+  }
+
+  .notification-svg-check {
+    stroke-dasharray: $check-length $check-length;
+    stroke: $checkbox-color;
+  }
+
+  .notification-svg-result {
+    fill: $checkbox-color;
+    opacity: 0;
+  }
+}
+
+.alert-success {
+  @include notification-svg(#809900);
+}
+.alert-error {
+  @include notification-svg(#B33300);
+}
+
+
+
+.notification-svg-container {
+  animation: 1s ease-out 0s 1 both scaleAnimation;
+
+  .notification-svg-circle {
+    animation: 1s cubic-bezier(0.77, 0, 0.175, 1) 0s 1 both drawCircle,
+    0.3s linear 0.9s 1 both checkFadeOut;
+  }
+
+  .notification-svg-check {
+    animation: 1s cubic-bezier(0.77, 0, 0.175, 1) 0s 1 both drawCheck,
+    0.3s linear 0.9s 1 both checkFadeOut;
+  }
+
+  .notification-svg-result {
+    animation: 0.3s linear 0.9s both checkFadeIn;
+  }
+}

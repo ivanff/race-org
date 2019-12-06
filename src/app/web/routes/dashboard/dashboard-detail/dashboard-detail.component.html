@@ -59,7 +59,7 @@
                 </mat-card-content>
             </mat-card>
 
-            <mat-card *ngIf="(athlets$ | async)" fxFlex="50" class="m-r-8">
+            <mat-card *ngIf="(athlets$ | async)" fxFlex="0 0 300px" fxFlex.lt-sm="100%" class="m-r-8">
                 <mat-card-header>
                     <mat-card-title>
                         <h2>
@@ -89,6 +89,7 @@
 
         </div>
     </mat-tab>
+
     <mat-tab label="Редактировать">
         <div fxLayout="row wrap" fxLayoutAlign="space-between stretch" class="p-t-8">
             <div fxFlex="40" fxFlex.lt-sm="100" class="p-r-4">
@@ -146,19 +147,20 @@
             </div>
         </div>
     </mat-tab>
-    <mat-tab label="Добавить этап">
-        <h2>Добавить следующий этап(день) соревнований</h2>
-        <p>
-            Если соревнование многодневное / поэтапное, необходимо добавить следующий этап, при этому указать новые
-            установочные данные, например, дату начала, время или продолжительность. При этом атлеты зарегистрированные
-            для
-            первого (основного) этапа будут перенесены на все последующие этапы, БЕЗ перерегистрации.
-        </p>
-        <app-competition [competition]="competition"
-                         [clone]="true"
-                         [isLinear]="false"
-                         (setActiveTabEvent)="setActiveTab($event)"></app-competition>
-    </mat-tab>
+
+
+        <mat-tab label="Добавить этап">
+            <h2>Добавить следующий этап(день) соревнований</h2>
+            <p>
+                Если соревнование многодневное / поэтапное, необходимо добавить следующий этап, при этому указать новые
+                установочные данные, например, дату начала, время или продолжительность. При этом атлеты зарегистрированные
+                для
+                первого (основного) этапа будут перенесены на все последующие этапы, БЕЗ перерегистрации.
+            </p>
+            <app-competition [clone_competition]="competition"
+                             [isLinear]="false"
+                             (setActiveTabEvent)="setActiveTab($event)"></app-competition>
+        </mat-tab>
     <mat-tab label="Атлеты">
         <mat-card style="overflow: hidden">
                 <mat-card-header>
@@ -171,7 +173,7 @@
                             <mat-card-content fxLayout="row wrap">
                                 <mat-form-field fxFlex="100" class="p-16">
                                     <input matInput formControlName="search" placeholder="Фильтр">
-                                    <mat-hint>По фамилии или номеру участника</mat-hint>
+                                    <mat-hint>По фамилии, номеру телефона или номеру участника</mat-hint>
                                 </mat-form-field>
                                 <div fxFlex="100" class="mat-form-field p-16">
                                     <label id="competition_classes" class="p-r-16">
@@ -198,7 +200,9 @@
 
                         <ng-container matColumnDef="fio">
                             <th mat-header-cell *matHeaderCellDef mat-sort-header> Имя</th>
-                            <td mat-cell *matCellDef="let element">{{element.fio}}</td>
+                            <td mat-cell *matCellDef="let element">
+                                <a [routerLink]="['detail', element.id]">{{element.fio}}</a>
+                            </td>
                         </ng-container>
 
                         <ng-container matColumnDef="phone">
@@ -213,7 +217,9 @@
 
                         <ng-container matColumnDef="created">
                             <th mat-header-cell *matHeaderCellDef mat-sort-header> Зарегистрировался</th>
-                            <td mat-cell *matCellDef="let element">{{element.created.toDate()|date}}</td>
+                            <td mat-cell *matCellDef="let element">
+                                {{ element.created?.toDate()|date:"dd.MM.yy" }}<br>
+                                {{ element.created?.toDate()|date:"HH:mm:ss" }}
                         </ng-container>
 
                         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>

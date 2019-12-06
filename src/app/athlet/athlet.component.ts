@@ -42,7 +42,9 @@ export class AthletComponent extends BaseComponent implements OnInit, OnDestroy 
 
     ngOnInit() {
         console.log('>>> AthletComponent ngOnInit')
-        const collectionRef: firestore.CollectionReference = firebase.firestore().collection(this._competition.getAthletsCollectionPath())
+        const collectionRef: firestore.CollectionReference = firebase.firestore()
+            .collection(this._competition.getAthletsCollectionPath())
+            .orderBy('created', 'desc')
         this.unsubscribe = collectionRef.onSnapshot((snapshot: firestore.QuerySnapshot) => {
             this.zone.run(() => {
                 this.athlets = []
@@ -126,7 +128,7 @@ export class AthletComponent extends BaseComponent implements OnInit, OnDestroy 
     }
 
     searchAthlet(nfc_id?: NfcTagData, qr_data?: Qr) {
-        const collection = firebase.firestore().collection(`athlets_${this._competition.selected_competition.id}`)
+        const collection = firebase.firestore().collection(this._competition.getAthletsCollectionPath())
         let athlets: Promise<firestore.QuerySnapshot> | null
 
         if (nfc_id) {

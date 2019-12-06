@@ -9,11 +9,11 @@ import {Competition} from "@src/app/shared/interfaces/competition"
 })
 export class ResultsAdminComponent implements OnInit {
   hasChildren: boolean
-  classes: Array<string> = []
+  competition: Competition
 
   constructor(private route: ActivatedRoute) {
     this.route.params.subscribe(() => {
-      this.classes = (this.route.snapshot.data['competition'] as Competition).classes
+      this.competition = this.route.snapshot.data['competition'] as Competition
     })
     this.hasChildren = Boolean(route.children.length)
   }

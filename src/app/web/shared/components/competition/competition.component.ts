@@ -58,7 +58,7 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
     protected _onDestroy = new ReplaySubject<any>(1)
 
     @Input('isLinear') isLinear = true
-    @Input('clone') clone = false
+    @Input('clone_competition') clone_competition: Competition
     @Input('competition') competition = {
         checking: ['manual', 'nfc'],
         classes: ['hobby'],
@@ -96,7 +96,7 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     ngOnInit(): void {
-        if (this.clone) {
+        if (this.clone_competition) {
             this.competition = this.getStageInitial()
         }
 
@@ -244,7 +244,7 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     private getStageInitial(): Competition {
-        let competition = {...this.competition}
+        let competition = {...this.clone_competition}
         competition.parent_id = competition.id
         competition.title = `Этап № ${competition.title}`
         competition.is_stage = true

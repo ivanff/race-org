@@ -30,18 +30,18 @@ const routes: Routes = [
             {
                 path: 'dashboard',
                 component: DashboardComponent,
-                data: {title: 'Соревнования', titleI18n: 'dashboard'},
+                data: {title: 'Соревнования', titleI18n: 'Competitions'},
             }, {
                 path: 'add',
                 component: DashboardAddComponent,
-                data: {title: 'Добавить соревнование', titleI18n: 'dashboard'},
+                data: {title: 'Добавить соревнование', titleI18n: 'Add competition'},
             }, {
                 path: 'edit',
                 redirectTo: 'dashboard'
             }, {
                 path: 'edit/:id',
                 component: DashboardDetailComponent,
-                data: {title: 'Соревнование', titleI18n: 'dashboard'},
+                data: {title: 'Соревнование', titleI18n: 'Competition'},
                 resolve: {
                     competition: CompetitionResolve
                 }
@@ -56,7 +56,8 @@ const routes: Routes = [
                 path: 'results/:id',
                 component: ResultsAdminComponent,
                 data: {
-                    is_admin: true
+                    title: 'Результат',
+                    titleI18n: 'Result'
                 },
                 resolve: {
                     competition: CompetitionResolve,

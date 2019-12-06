@@ -74,7 +74,7 @@ export class MenuService {
                     // Level1
                     if (item.children && item.children.length) {
                         item.children.forEach(itemlvl1 => {
-                            if (stateArr[1] && itemlvl1.state === stateArr[1]) {
+                            if ((stateArr[1] && itemlvl1.state === stateArr[1]) || (stateArr[1] && itemlvl1.state == `/${stateArr[0]}/${stateArr[1]}`)) {
                                 tempArr.push(itemlvl1.name);
                                 // Level2
                                 if (itemlvl1.children && itemlvl1.children.length) {

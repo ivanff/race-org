@@ -1,5 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 @import "styles/app";
+@import "styles_custom/custom_app";
 
 a[matSuffix] {
   cursor: pointer
@@ -29,26 +30,3 @@ a.disabled {
 .hidden {
   display: none !important;
 }
-
-.snack-bar-success{
-  color: black;
-  background: #c6ff00;
-  .mat-simple-snackbar-action {
-    color: #3f51b5;
-  }
-}
-.snack-bar-alert{
-  color: black;
-  background: #ff6e40;
-  .mat-simple-snackbar-action {
-    color: #3f51b5;
-  }
-}
-
-//.mat-checkbox-layout {
-//  white-space: normal !important;
-//}
-//
-//.mat-radio-label {
-//  white-space: normal !important;
-//}

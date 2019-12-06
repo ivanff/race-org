@@ -1,8 +1,8 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {Competition} from "@src/app/shared/interfaces/competition"
 import {ActivatedRoute} from "@angular/router"
 import {Athlet} from "@src/app/shared/interfaces/athlet"
-import {MatSnackBar} from "@angular/material"
+import {MatDialog, MatDialogConfig, MatDialogRef, MatSnackBar} from "@angular/material"
 import {AngularFirestore, AngularFirestoreCollection} from "@angular/fire/firestore"
 import {
     catchError,
@@ -24,6 +24,21 @@ import {environment} from "@src/environments/environment"
 import {BackendService} from "@src/app/web/core/services/backend.service"
 import * as firebase from "firebase"
 import {AuthService} from "@src/app/web/core/services/auth.service"
+import {MAT_DIALOG_DATA} from '@angular/material/dialog'
+
+
+@Component({
+    selector: 'success',
+    templateUrl: './success.component.html',
+})
+export class SuccessComponent {
+    constructor(public dialogRef: MatDialogRef<SuccessComponent>,
+                @Inject(MAT_DIALOG_DATA) public data: any) { }
+
+    closeDialog(): void {
+        this.dialogRef.close()
+    }
+}
 
 
 @Component({
@@ -47,7 +62,8 @@ export class AppAthletRegisterComponent implements OnInit, OnDestroy {
                 private auth: AuthService,
                 private http: HttpClient,
                 private backend: BackendService,
-                private _snackBar: MatSnackBar) {
+                private _snackBar: MatSnackBar,
+                private dialog: MatDialog) {
         this.competition = this.router.snapshot.data['competition']
     }
 
@@ -55,7 +71,11 @@ export class AppAthletRegisterComponent implements OnInit, OnDestroy {
         this.athlet_collection = this.afs.collection<Athlet>(`athlets_${this.competition.id}`)
 
         this.getAthletForm = this._fb.group({
-            phone: ['', [<any>Validators.minLength(10), <any>Validators.maxLength(10), Validators.pattern("^[0-9]*$")], [AthletRegisterComponent.usedValue(this.athlet_collection, 'phone', true)]],
+            phone: [
+                '',
+                [<any>Validators.minLength(10), <any>Validators.maxLength(10), Validators.pattern("^[0-9]*$")],
+                [AthletRegisterComponent.usedValue(this.athlet_collection, 'phone', true)]
+            ],
             code: [{
                 value: '',
                 disabled: true
@@ -80,10 +100,11 @@ export class AppAthletRegisterComponent implements OnInit, OnDestroy {
                 return next == 'SKIP'
             })
         ).subscribe((next) => {
-            console.log(next)
+            console.log(
+                this.getAthletForm.controls
+            )
             if (next == 'VALID') {
                 if (this.getAthletForm.controls.hasOwnProperty('captcha')) {
-                    console.log('remove')
                     this.getAthletForm.removeControl('captcha')
                 }
                 this.athlet_collection.doc(this.getAthletForm.controls['phone'].value).valueChanges().pipe(
@@ -157,19 +178,23 @@ export class AppAthletRegisterComponent implements OnInit, OnDestroy {
     onCreated($event: { athlet: Athlet, form: FormGroupDirective }) {
         $event.form.resetForm()
         $event.form.form.reset()
-        this._snackBar.open("Поздравляем", `Ждем Вас #TODO}`, {
-            duration: 5000,
-            verticalPosition: "top",
-            panelClass: 'snack-bar-success'
-        })
+        this.dialog.open(SuccessComponent, {
+            data: {
+                title: "Регистрация прошла успешно!",
+                start_date: this.competition.start_date
+            },
+            panelClass: 'alert-success'
+        } as MatDialogConfig)
     }
 
     onChange($event: { athlet: Athlet, form: FormGroupDirective }) {
-        this._snackBar.open("Сохранено", `Ждем Вас ${this.competition.start_date.toDate()}`, {
-            duration: 5000,
-            verticalPosition: "top",
-            panelClass: 'snack-bar-success'
-        })
+        this.dialog.open(SuccessComponent, {
+            data: {
+                title: "Сохранено!",
+                start_date: this.competition.start_date
+            },
+            panelClass: 'alert-success'
+        } as MatDialogConfig)
     }
 
     checkSmsCode(control: AbstractControl) {

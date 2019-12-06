@@ -70,7 +70,7 @@
         </mat-form-field>
         <div *ngIf="!registerForm.controls['code'].valid" class="mat-form-field full-width">
             <button mat-raised-button color="warn"
-                    [disabled]="registerForm.controls['phone'].invalid || registerForm.controls['captcha']?.invalid"
+                    [disabled]="registerForm.controls['code'].status == 'DISABLED'"
                     (click)="onSendSms()" type="button">Выслать код подтверждения номера
             </button>
         </div>

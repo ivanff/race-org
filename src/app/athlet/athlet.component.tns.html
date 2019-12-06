@@ -42,7 +42,7 @@
     </StackLayout>
 
     <StackLayout row="2" col="0">
-        <RadListView [items]="athlets|filter:['fio', 'number']:{search: searchPhrase}"
+        <RadListView [items]="athlets|filter:['fio', 'number', 'phone']:{search: searchPhrase}"
                      height="100%"
                      class="items">
             <ng-template tkListItemTemplate let-athlet="item" let-i="index" let-odd="odd" let-even="even">

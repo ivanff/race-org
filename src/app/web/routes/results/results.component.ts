@@ -177,7 +177,7 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         const cp_in_circle = (this.checkpoints.length / this.circles)
 
         this.athlets.forEach((athlet: Athlet, y: number) => {
-            // if (athlet.number != 888) {
+            // if ([888, 131].indexOf(athlet.number) < 0) {
             //     return
             // }
             const clean_marks: Array<ResultMark | null> = [...athlet.marks.sort((a, b) => a.created < b.created ? -1 : a.created > b.created ? 1 : 0)]
@@ -236,6 +236,10 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         if (this.competition.result_by_full_circle) {
             for (let row of rows) {
                 const [credit_circle, credit_cp] = this.getCreditCircle(row.marks)
+                console.log(
+                    row.athlet.fio,
+                    [credit_circle, credit_cp]
+                )
                 if (credit_circle.length) {
                     row.last_created = credit_circle.pop().created
                     row.last_cp = credit_cp
@@ -344,7 +348,6 @@ export class ResultsComponent implements OnInit, AfterViewInit {
 
         for (let i = 0; i < circles_marks.length ; i++) {
             const circle = circles_marks[i]
-            circle_index = i + 1
 
             if (circle.filter((mark) => {
                 if (mark) {
@@ -358,6 +361,8 @@ export class ResultsComponent implements OnInit, AfterViewInit {
             } else {
                 break
             }
+
+            circle_index = i + 1
         }
 
         const credit_circle = (last_circle || []).filter((item) => !!item)

@@ -4,7 +4,7 @@ import {ActivatedRoute, Router} from "@angular/router"
 import {FormControl, FormGroup} from "@angular/forms"
 import * as moment from 'moment-timezone'
 import {AngularFirestore, AngularFirestoreDocument} from "@angular/fire/firestore"
-import {debounceTime, distinctUntilChanged, first, map, shareReplay, takeUntil, tap} from "rxjs/operators"
+import {debounceTime, first, shareReplay, takeUntil, tap} from "rxjs/operators"
 import {Observable, ReplaySubject} from "rxjs"
 import {Athlet} from "@src/app/shared/interfaces/athlet"
 import {LocalStorageService} from "angular-2-local-storage"
@@ -14,16 +14,15 @@ import {ChartOptions} from 'chart.js'
 import {Label} from "ng2-charts"
 import * as _ from "lodash"
 import {Mark} from "@src/app/shared/interfaces/mark"
-import {ResultMark, TableRow} from "@src/app/web/routes/results/results.component"
 
 @Component({
     selector: 'app-dashboard-detail',
     templateUrl: './dashboard-detail.component.html',
 })
 export class DashboardDetailComponent implements OnInit, OnDestroy {
-    athlets$: Observable<Array<Athlet>>
     protected _onDestroy = new ReplaySubject<any>(1)
 
+    athlets$: Observable<Array<Athlet>>
     dataSource = new MatTableDataSource<Athlet>([])
     displayedColumns: string[] = ['number', 'fio', 'phone', 'class', 'created']
 
@@ -75,21 +74,24 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
         this.route.params.pipe(
             takeUntil(this._onDestroy)
         ).subscribe(params => {
+            console.log(
+                this.route.snapshot.data
+            )
             this.competition = this.route.snapshot.data.competition
             this.edit_competition = {...this.route.snapshot.data.competition}
 
             this.pieChartLabels = this.competition.classes
 
-            this.afs.collection('competitions').doc(this.competition.id).collection('stages')
-                .valueChanges({idField: 'id'})
-                .pipe(
-                    map((stages: Array<any>) => {
-                        Object.assign(this.competition, {stages})
-                        Object.assign(this.edit_competition, {stages})
-                    })
-                ).subscribe()
+            // this.afs.collection('competitions').doc(this.competition.id).collection('stages')
+            //     .valueChanges({idField: 'id'})
+            //     .pipe(
+            //         map((stages: Array<any>) => {
+            //             Object.assign(this.competition, {stages})
+            //             Object.assign(this.edit_competition, {stages})
+            //         })
+            //     ).subscribe()
 
-            this.athlets$ = this.afs.collection<Athlet>(`athlets_${this.competition.id}`)
+            this.athlets$ = this.afs.collection<Athlet>(`athlets_${this.competition.id}`, (ref => ref.orderBy('created', 'desc')))
                 .valueChanges({idField: 'id'})
                 .pipe(
                     debounceTime(1000),
@@ -103,7 +105,6 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
                         return athlets
                     }),
                     tap((athlets: Array<Athlet>) => {
-                        console.log(athlets)
                         this.dataSource.data = [...athlets]
                     }),
                     takeUntil(this._onDestroy)
@@ -117,6 +118,41 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
         this.dataSource.sortingDataAccessor = (item, property) => {
             return item[property]
         }
+
+        this.dataSource.filterPredicate = (athlet: Athlet, filter: string) => {
+            const data: {search: string, class: string} | null = JSON.parse(filter)
+            let result = true
+
+            if (!data) {
+                result = true
+            } else {
+                const search = data.search.trim().toLowerCase()
+                const _class = data.class.trim().toLowerCase()
+
+                if (data.search.length) {
+                    if (parseInt(search).toString() == search) {
+                        if (athlet.number.toString().indexOf(search) >= 0) {
+                            result = true
+                        } else if (athlet.id.toString().indexOf(search) >= 0) {
+                            result = true
+                        } else {
+                            result = false
+                        }
+                    } else if ((athlet.fio.toLowerCase().indexOf(search) >= 0) && (search.length >= 3)) {
+                        result = true
+                    } else {
+                        result = false
+                    }
+                }
+                if (_class.length) {
+                    if (athlet.class != _class) {
+                        result = false
+                    }
+                }
+            }
+            return result
+        }
+
 
         this.selectCompetition = new FormGroup({
             'competition_id': new FormControl(this.edit_competition.id, [])
@@ -137,15 +173,32 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
             'class': new FormControl('', [])
         })
 
-        this.filterAthlets.controls['search'].valueChanges
-            .pipe(debounceTime(500))
-            .pipe(distinctUntilChanged())
-            .subscribe((next => this.search = next))
+        this.filterAthlets.statusChanges.subscribe((next) => {
+            if (next == 'VALID') {
+                this.applyFilter(this.filterAthlets.value)
+            } else {
+                this.applyFilter(null)
+            }
+        })
+
+        // this.filterAthlets.controls['search'].valueChanges
+        //     .pipe(debounceTime(500))
+        //     .pipe(distinctUntilChanged())
+        //     .subscribe((next => this.search = next))
     }
 
     ngOnDestroy(): void {
         this._onDestroy.next(null)
         this._onDestroy.complete()
+    }
+
+    private applyFilter(data: {search: string, class: string} | null): void {
+        if (!data) {
+            this.dataSource.filter = JSON.stringify(null)
+        } else {
+            this.dataSource.filter = JSON.stringify(data)
+        }
+
     }
 
     private getCollection(competition): AngularFirestoreDocument {

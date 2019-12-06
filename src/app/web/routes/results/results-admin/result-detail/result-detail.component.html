@@ -79,8 +79,8 @@
             <th mat-header-cell *matHeaderCellDef mat-sort-header>NFC отметка времени</th>
             <td mat-cell *matCellDef="let element"
                 [class.active]="element.mark?.manual && !element.mark?.missing">
-                {{ element.mark?.created?.toDate()|date:"dd.MM.yy":getTzOffset(competition.timezone)  }}<br>
-                {{ element.mark?.created?.toDate()|date:"HH:mm:ss z":getTzOffset(competition.timezone)  }}
+                {{ element.mark?.created?.toDate()|date:"dd.MM.yy":getTzOffset(competition.timezone) }}<br>
+                {{ element.mark?.created?.toDate()|date:"HH:mm:ss z":getTzOffset(competition.timezone) }}
             </td>
         </ng-container>
 

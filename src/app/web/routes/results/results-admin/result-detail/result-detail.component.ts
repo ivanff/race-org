@@ -35,9 +35,6 @@ export class ResultDetailComponent implements OnInit {
                 private dialog: MatDialog) {
 
         this.athlet = route.snapshot.data['athlet']
-        console.log(
-            this.athlet
-        )
         this.competition = route.snapshot.data['competition']
 
         this.checkpoints = this.competition.checkpoints.filter((checkpoint: Checkpoint) => checkpoint.classes.indexOf(this.athlet.class) > -1)

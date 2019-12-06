@@ -3,13 +3,14 @@
         <mat-card class="mat-elevation-z4 m-b-8 m-t-8" fxFlex="400px" fxFlex.xs="90%">
             <mat-card-title class="text-center m-b-24">{{competition.title}}</mat-card-title>
             <mat-card-subtitle class="text-center m-b-24" fxLayout="row" fxLayoutAlign="space-between center">
-                <a (click)="onSwitchForm($event, 'register');" href [class.disabled]="action === 'register'">Регистрация
-                    участника</a>
-                <a (click)="onSwitchForm($event, 'change');" href [class.disabled]="action === 'change'">Сменить номер
-                    или класс</a>
+                <a (click)="onSwitchForm($event, 'register');" href [class.disabled]="action === 'register'">
+                    Регистрация участника
+                </a>
+                <a (click)="onSwitchForm($event, 'change');" href [class.disabled]="action === 'change'">
+                    Сменить номер или класс
+                </a>
             </mat-card-subtitle>
             <mat-card-content [ngSwitch]="competition.stop_registration">
-
                 <div *ngSwitchDefault>
                     <div [ngSwitch]="action">
                         <athlet-register *ngSwitchCase="'register'"
@@ -35,7 +36,7 @@
                                                      diameter="24"></mat-spinner>
                                     </div>
                                     <mat-error
-                                            *ngIf="getAthletForm.controls['phone'].hasError('used_value') && !getAthletForm.controls['phone'].hasError('required')">
+                                            *ngIf="getAthletForm.controls['phone'].hasError('unused_value') && !getAthletForm.controls['phone'].hasError('required')">
                                         Указанный телефонный номер не зарегистрирован
                                     </mat-error>
                                 </mat-form-field>
@@ -62,7 +63,7 @@
                                 <div *ngIf="!getAthletForm.controls['code'].valid"
                                      class="mat-form-field full-width">
                                     <button mat-raised-button color="warn" type="submit"
-                                            [disabled]="!getAthletForm.controls['code'].valid">
+                                            [disabled]="getAthletForm.controls['code'].status == 'DISABLED'">
                                         Выслать код подтверждения номера
                                     </button>
                                 </div>

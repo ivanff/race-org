@@ -52,7 +52,7 @@
                     <Label col="0" text="&#xf044;" class="fas"></Label>
                     <Label [text]="'Edit competition'|L" col="1"></Label>
                 </GridLayout>
-                <GridLayout *ngIf="_competition.selected_competition"
+                <GridLayout *ngIf="_competition.selected_competition && !_competition.selected_competition?.stop_registration"
                             (tap)="goTo('https://raceorg.agestart.ru/public/athlet/register/' + _competition.selected_competition.id)"
                             columns="auto, *"
                             class="side-label">

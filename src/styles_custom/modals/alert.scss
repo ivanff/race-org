@@ -1,0 +1,22 @@
+.alert-success {
+  .mat-dialog-container {
+    color: rgba(0, 0, 0, 0.87);
+    background-color: $success;
+  }
+  .mat-dialog-actions {
+    button {
+      padding: 0 8px;
+    }
+  }
+}
+.alert-error {
+  .mat-dialog-container {
+    color: rgba(0, 0, 0, 0.87);
+    background-color: $error;
+  }
+  .mat-dialog-actions {
+    button {
+      padding: 0 8px;
+    }
+  }
+}
