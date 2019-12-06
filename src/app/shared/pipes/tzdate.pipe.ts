@@ -7,6 +7,6 @@ import {DatePipe} from "@angular/common"
 })
 export class TzDatePipe extends DatePipe {
     transform(value: any, format = 'mediumDate', timezone?: string, locale?: string): string {
-        return super.transform(value, format, moment.tz(timezone).format('z'), locale)
+        return super.transform(value, format, moment.tz(timezone).format('ZZ'), locale)
     }
 }

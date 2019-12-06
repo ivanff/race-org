@@ -163,7 +163,6 @@ export class CompetitionService implements OnDestroy {
                 if (doc.exists) {
                     this.zone.run(() => {
                         if (!id) {
-
                             Promise.all([
                                 firebase.firestore().collection("competitions").doc(parent_id).collection('stages').get().then((docs: firestore.QuerySnapshot) => {
                                     const stages: Array<Competition> = []
@@ -232,7 +231,10 @@ export class CompetitionService implements OnDestroy {
     }
 
     private setStartTime(): moment {
-        this.start_time = moment(this.selected_competition.start_date).add(this.selected_competition.start_time, 's')
+        this.start_time = moment.tz(
+            `${moment(this.selected_competition.start_date).format('YYYY-MM-DD')}T00:00:00`, this.selected_competition.timezone
+        ).add(this.selected_competition.start_time, 's')
+
         return this.start_time
     }
     private setFinishTime(): moment {

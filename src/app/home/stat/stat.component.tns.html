@@ -3,12 +3,12 @@
         <Label class="h1" [text]="competition.title" textWrap="true"></Label>
 
         <Label [text]="('Current timezone '|L) + current_timezone" class="font-weight-bold"></Label>
-        <Label [text]="('Start date: '|L) + (_competition.start_time|tzdate:'dd.MM.yy HH:mm:ss':competition.timezone)"></Label>
-        <Label [text]="('Finish date: '|L) + (_competition.finish_time|tzdate:'dd.MM.yy HH:mm:ss':competition.timezone)"></Label>
-
-        <Label [text]="('Timezone of the competition place'|L) + '\n' + competition.timezone" textWrap="true" class="font-weight-bold"></Label>
         <Label [text]="('Start date: '|L) + (_competition.start_time|date:'dd.MM.yy HH:mm:ss')"></Label>
         <Label [text]="('Finish date: '|L) + (_competition.finish_time|date:'dd.MM.yy HH:mm:ss')"></Label>
+
+        <Label [text]="('Timezone of the competition place'|L) + '\n' + competition.timezone" textWrap="true" class="font-weight-bold"></Label>
+        <Label [text]="('Start date: '|L) + (_competition.start_time|tzdate:'dd.MM.yy HH:mm:ss z':competition.timezone)"></Label>
+        <Label [text]="('Finish date: '|L) + (_competition.finish_time|tzdate:'dd.MM.yy HH:mm:ss z':competition.timezone)"></Label>
 
         <Label [text]="'Info'|L" class="font-weight-bold"></Label>
         <Label [text]="('Total registered athletes: '|L) + athlets_count"></Label>

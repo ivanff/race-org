@@ -39,11 +39,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
         })
     }
 
-    getFullDate(a: firebase.firestore.Timestamp, b: number | null): Date {
+    getFullDate(a: firebase.firestore.Timestamp, b: number | null, timezone?: string): Date {
         if (a && b) {
-            return new Date(
-                a.toMillis() + b * 1000
-            )
+            if (timezone) {
+                console.log(
+                    moment(a.toMillis()).add(b, 's').utc().format()
+                )
+                return moment(a.toMillis()).add(b, 's').utcOffset(moment.tz(timezone).format('ZZ'), true)
+            } else {
+                return new Date(
+                    a.toMillis() + b * 1000
+                )
+            }
         }
         return a.toDate()
     }

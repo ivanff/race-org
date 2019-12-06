@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <string name="About">"О нас"</string>
+  <string name="_Private_Policy_2ri4RH">"Политика конфиденциальности"</string>
   <string name="_Code___2o9Trm">"Код: "</string>
   <string name="_Secret_code_for__ZsOTFY">"Секретный код для "</string>
   <string name="_Competition_not_found_QjPsa">"Соревнование не найдено"</string>
