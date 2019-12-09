@@ -1,5 +1,4 @@
 @import 'variables';
-
 @import 'animations';
 @import 'modals';
 @import 'snackbars';
@@ -54,6 +53,7 @@
   background-color: #c75c5c;
   opacity: 1;
   transition: opacity .5s ease-in-out;
+
   h1 {
     letter-spacing: 0.1em;
   }
@@ -83,4 +83,27 @@
                   rgba(255, 255, 255, .05)
   );
   background-size: 60px 60px;
+}
+
+.matero-header-tns {
+  .matero-toolbar,
+  .matero-topmenu {
+    background-color: $topmenu;
+    color: white;
+  }
+  .matero-hamburger {
+    color: black;
+  }
+}
+
+ul {
+  &.one-row {
+    display: table;
+    text-align: center;
+
+    > li {
+      padding: 0 8px;
+      display: table-cell;
+    }
+  }
 }

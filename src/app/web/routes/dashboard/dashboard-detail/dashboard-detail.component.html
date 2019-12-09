@@ -148,7 +148,6 @@
         </div>
     </mat-tab>
 
-
     <mat-tab label="Добавить этап">
         <h2>Добавить следующий этап(день) соревнований</h2>
         <p>
@@ -161,6 +160,7 @@
                          [isLinear]="false"
                          (setActiveTabEvent)="setActiveTab($event)"></app-competition>
     </mat-tab>
+
     <mat-tab label="Атлеты">
         <mat-card style="overflow: hidden">
             <mat-card-header>
@@ -168,25 +168,27 @@
                 <mat-card-subtitle></mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
-                <p>
-                    <button (click)="onAddAthlet()" mat-fab aria-label="Добавить атлетаы" class="m-r-8">
-                        <mat-icon>add</mat-icon>
-                    </button>
-                    Добавить атлета
-                </p>
-                <p>
-                    <csv [data]="getCsvData(dataSource.filteredData)"
-                         [filename]="'athlets'"
-                         [options]="csv_export_options">
-                        <a mat-fab color="warn" class="m-r-8">
-                            <mat-icon>get_app</mat-icon>
-                        </a>
-                        Скачать таблицу в формате CSV
-                    </csv>
-                </p>
+                <ul class="one-row">
+                    <li>
+                        <button (click)="onAddAthlet()" mat-fab aria-label="Добавить атлетаы">
+                            <mat-icon>add</mat-icon>
+                        </button>
+                        Добавить атлета
+                    </li>
+                    <li>
+                        <csv [data]="getCsvData(dataSource.filteredData)"
+                             [filename]="'athlets'"
+                             [options]="csv_export_options">
+                            <a mat-fab class="bg-teal-400">
+                                <mat-icon>get_app</mat-icon>
+                            </a>
+                            Скачать таблицу в формате CSV
+                        </csv>
+                    </li>
+                </ul>
 
                 <form [formGroup]="filterAthlets" *ngIf="(athlets$ | async)">
-                    <mat-card class="m-20">
+                    <mat-card>
                         <mat-card-content fxLayout="row wrap">
                             <mat-form-field fxFlex="100" class="p-16">
                                 <input matInput formControlName="search" placeholder="Фильтр">
