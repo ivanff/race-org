@@ -4,7 +4,7 @@ import {Competition} from "@src/app/shared/interfaces/competition"
 import {ActivatedRoute} from "@angular/router"
 import {filter, switchMap, take, takeUntil, tap} from "rxjs/operators"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
-import {Observable, ReplaySubject} from "rxjs"
+import {interval, Observable, ReplaySubject} from "rxjs"
 import * as moment from 'moment-timezone'
 
 const firebase = require('nativescript-plugin-firebase/app')
@@ -15,20 +15,19 @@ const firebase = require('nativescript-plugin-firebase/app')
     styleUrls: ['./stat.component.scss']
 })
 export class StatComponent implements OnInit, OnDestroy {
+    private destroy = new ReplaySubject<any>(1)
+
     athlets_count: number = 0
     by_class_count: { [key: string]: number } = {}
     competition: Competition | null
     current_timezone = moment.tz.guess()
-    now = new Date()
-    private destroy = new ReplaySubject<any>(1)
+    timeElapsed = false
 
     constructor(private zone: NgZone,
-                private router: ActivatedRoute,
                 public _competition: CompetitionService) {
         console.log('>> StatComponent constructor')
 
         this._competition.selected_competition_id$.pipe(
-            takeUntil(this.destroy),
             tap((competition: Competition | null) => {
                 this.competition = competition
             }),
@@ -38,8 +37,17 @@ export class StatComponent implements OnInit, OnDestroy {
                     takeUntil(this.destroy),
                     take(1)
                 )
-            })
+            }),
+            takeUntil(this.destroy),
         ).subscribe()
+
+        interval(10000).pipe(
+            takeUntil(this.destroy),
+        ).subscribe((next) => {
+            if (this.competition) {
+                this.timeElapsed = moment(this.competition.end_date).add(this.competition.start_time + this.competition.duration, 's').toDate() < new Date()
+            }
+        })
     }
 
     ngOnInit() {

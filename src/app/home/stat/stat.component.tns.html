@@ -8,7 +8,7 @@
 
         <Label [text]="('Timezone of the competition place'|L) + '\n' + competition.timezone" textWrap="true" class="font-weight-bold"></Label>
         <Label [text]="('Start date: '|L) + (competition|tzdateStart:competition.timezone)" textWrap="true"></Label>
-        <Label [text]="('Finish date: '|L) + (competition|tzdateFinish:competition.timezone)" textWrap="true"></Label>
+        <Label [text]="('Finish date: '|L) + (competition|tzdateFinish:competition.timezone)" textWrap="true" [class.-warning]="timeElapsed"></Label>
 
         <Label [text]="'Info'|L" class="font-weight-bold"></Label>
         <Label [text]="('Total registered athletes: '|L) + athlets_count"></Label>
