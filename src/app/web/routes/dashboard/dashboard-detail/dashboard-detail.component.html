@@ -80,12 +80,12 @@
                 </mat-card-content>
             </mat-card>
 
-<!--            <mat-card fxFlex="0 0 200px">-->
-<!--                <mat-card-content>-->
-<!--                    <a mat-flat-button (click)="onAdmin('add_athlets')">Заполнить атлетов</a>-->
-<!--                    <a mat-flat-button (click)="onAdmin('remove_athlets')">Очистить</a>-->
-<!--                </mat-card-content>-->
-<!--            </mat-card>-->
+            <!--            <mat-card fxFlex="0 0 200px">-->
+            <!--                <mat-card-content>-->
+            <!--                    <a mat-flat-button (click)="onAdmin('add_athlets')">Заполнить атлетов</a>-->
+            <!--                    <a mat-flat-button (click)="onAdmin('remove_athlets')">Очистить</a>-->
+            <!--                </mat-card-content>-->
+            <!--            </mat-card>-->
 
         </div>
     </mat-tab>
@@ -149,90 +149,113 @@
     </mat-tab>
 
 
-        <mat-tab label="Добавить этап">
-            <h2>Добавить следующий этап(день) соревнований</h2>
-            <p>
-                Если соревнование многодневное / поэтапное, необходимо добавить следующий этап, при этому указать новые
-                установочные данные, например, дату начала, время или продолжительность.
-                При этом атлеты зарегистрированные для первого (основного) этапа будут перенесены
-                на все последующие этапы, БЕЗ перерегистрации.
-            </p>
-            <app-competition [clone_competition]="competition"
-                             [isLinear]="false"
-                             (setActiveTabEvent)="setActiveTab($event)"></app-competition>
-        </mat-tab>
+    <mat-tab label="Добавить этап">
+        <h2>Добавить следующий этап(день) соревнований</h2>
+        <p>
+            Если соревнование многодневное / поэтапное, необходимо добавить следующий этап, при этому указать новые
+            установочные данные, например, дату начала, время или продолжительность.
+            При этом атлеты зарегистрированные для первого (основного) этапа будут перенесены
+            на все последующие этапы, БЕЗ перерегистрации.
+        </p>
+        <app-competition [clone_competition]="competition"
+                         [isLinear]="false"
+                         (setActiveTabEvent)="setActiveTab($event)"></app-competition>
+    </mat-tab>
     <mat-tab label="Атлеты">
         <mat-card style="overflow: hidden">
-                <mat-card-header>
-                    <mat-card-title>Зарегистрированные спортсмены</mat-card-title>
-                    <mat-card-subtitle></mat-card-subtitle>
-                </mat-card-header>
-                <mat-card-content>
-                    <p>
-                        <button (click)="onAddAthlet()" mat-fab aria-label="Добавить атлетаы" class="m-r-8">
-                            <mat-icon>add</mat-icon>
-                        </button>
-                        Добавить атлета
-                    </p>
+            <mat-card-header>
+                <mat-card-title>Зарегистрированные спортсмены</mat-card-title>
+                <mat-card-subtitle></mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+                <p>
+                    <button (click)="onAddAthlet()" mat-fab aria-label="Добавить атлетаы" class="m-r-8">
+                        <mat-icon>add</mat-icon>
+                    </button>
+                    Добавить атлета
+                </p>
+                <p>
+                    <csv [data]="getCsvData(dataSource.filteredData)"
+                         [filename]="'athlets'"
+                         [options]="csv_export_options">
+                        <a mat-fab color="warn" class="m-r-8">
+                            <mat-icon>get_app</mat-icon>
+                        </a>
+                        Скачать таблицу в формате CSV
+                    </csv>
+                </p>
 
-                    <form [formGroup]="filterAthlets" *ngIf="(athlets$ | async)">
-                        <mat-card class="m-20">
-                            <mat-card-content fxLayout="row wrap">
-                                <mat-form-field fxFlex="100" class="p-16">
-                                    <input matInput formControlName="search" placeholder="Фильтр">
-                                    <mat-hint>По фамилии, номеру телефона или номеру участника</mat-hint>
-                                </mat-form-field>
-                                <div fxFlex="100" class="mat-form-field p-16">
-                                    <label id="competition_classes" class="p-r-16">
-                                        Классы участников
-                                    </label>
-                                    <mat-radio-group formControlName="class" aria-labelledby="competition_classes">
-                                        <mat-radio-button [value]="''"
-                                                          class="p-r-8">Все
-                                        </mat-radio-button>
-                                        <mat-radio-button *ngFor="let _class of competition.classes"
-                                                          [value]="_class"
-                                                          class="p-r-8">{{_class}}</mat-radio-button>
-                                    </mat-radio-group>
-                                </div>
-                            </mat-card-content>
-                        </mat-card>
-                    </form>
+                <form [formGroup]="filterAthlets" *ngIf="(athlets$ | async)">
+                    <mat-card class="m-20">
+                        <mat-card-content fxLayout="row wrap">
+                            <mat-form-field fxFlex="100" class="p-16">
+                                <input matInput formControlName="search" placeholder="Фильтр">
+                                <mat-hint>По фамилии, номеру телефона или номеру участника</mat-hint>
+                            </mat-form-field>
+                            <div fxFlex="100" class="mat-form-field p-16">
+                                <label id="competition_classes" class="p-r-16">
+                                    Классы участников
+                                </label>
+                                <mat-radio-group formControlName="class" aria-labelledby="competition_classes">
+                                    <mat-radio-button [value]="''"
+                                                      class="p-r-8">Все
+                                    </mat-radio-button>
+                                    <mat-radio-button *ngFor="let _class of competition.classes"
+                                                      [value]="_class"
+                                                      class="p-r-8">{{_class}}</mat-radio-button>
+                                </mat-radio-group>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                </form>
 
-                    <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
-                        <ng-container matColumnDef="number">
-                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Номер</th>
-                            <td mat-cell *matCellDef="let element"><b>{{element.number}}</b></td>
-                        </ng-container>
+                <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+                    <ng-container matColumnDef="number">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Номер</th>
+                        <td mat-cell *matCellDef="let element"><b>{{element.number}}</b></td>
+                    </ng-container>
 
-                        <ng-container matColumnDef="fio">
-                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Имя</th>
-                            <td mat-cell *matCellDef="let element">
-                                <a [routerLink]="['detail', element.id]">{{element.fio}}</a>
-                            </td>
-                        </ng-container>
+                    <ng-container matColumnDef="fio">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Имя</th>
+                        <td mat-cell *matCellDef="let element">
+                            <a [routerLink]="['detail', element.id]">{{element.fio}}</a>
+                        </td>
+                    </ng-container>
 
-                        <ng-container matColumnDef="phone">
-                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Телефон</th>
-                            <td mat-cell *matCellDef="let element">{{element.phone}}</td>
-                        </ng-container>
+                    <ng-container matColumnDef="phone">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Телефон</th>
+                        <td mat-cell *matCellDef="let element">{{element.phone}}</td>
+                    </ng-container>
 
-                        <ng-container matColumnDef="class">
-                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Класс</th>
-                            <td mat-cell *matCellDef="let element">{{element.class}}</td>
-                        </ng-container>
+                    <ng-container matColumnDef="class">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Класс</th>
+                        <td mat-cell *matCellDef="let element">{{element.class}}</td>
+                    </ng-container>
 
-                        <ng-container matColumnDef="created">
-                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Зарегистрировался</th>
-                            <td mat-cell *matCellDef="let element">
-                                {{ element.created?.toDate()|date:"dd.MM.yy" }}<br>
-                                {{ element.created?.toDate()|date:"HH:mm:ss" }}
-                        </ng-container>
+                    <ng-container matColumnDef="created">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Зарегистрировался</th>
+                        <td mat-cell *matCellDef="let element">
+                            {{ element.created?.toDate()|date:"dd.MM.yy" }}<br>
+                            {{ element.created?.toDate()|date:"HH:mm:ss" }}
+                        </td>
+                    </ng-container>
 
-                        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-                        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-                    </table>
-                </mat-card-content>
-</mat-card>
+                    <ng-container matColumnDef="actions">
+                        <th mat-header-cell *matHeaderCellDef> Действия</th>
+                        <td mat-cell *matCellDef="let element" class="table-actions">
+                            <mat-button-toggle-group appearance="legacy" aria-label="Actions"
+                                                     (change)="actions($event, element.id)">
+                                <mat-button-toggle value="delete" aria-label="Remove athlete">
+                                    <mat-icon>delete</mat-icon>
+                                </mat-button-toggle>
+                            </mat-button-toggle-group>
+                        </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+                </table>
+            </mat-card-content>
+        </mat-card>
     </mat-tab>
 </mat-tab-group>

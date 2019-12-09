@@ -9,12 +9,13 @@ import {Observable, ReplaySubject} from "rxjs"
 import {Athlet} from "@src/app/shared/interfaces/athlet"
 import {LocalStorageService} from "angular-2-local-storage"
 import {environment} from "@src/environments/environment.prod"
-import {MatDialog, MatSlideToggleChange, MatSort, MatTableDataSource} from "@angular/material"
+import {MatButtonToggleChange, MatDialog, MatSlideToggleChange, MatSort, MatTableDataSource} from "@angular/material"
 import {ChartOptions} from 'chart.js'
 import {Label} from "ng2-charts"
 import * as _ from "lodash"
 import {Mark} from "@src/app/shared/interfaces/mark"
 import {AddAthletDialogComponent} from "@src/app/web/routes/dashboard/dashboard-detail/add-athlet-dialog.component"
+import {ResultMark} from "@src/app/web/routes/results/results.component"
 
 
 @Component({
@@ -26,7 +27,7 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
 
     athlets$: Observable<Athlet[]>
     dataSource = new MatTableDataSource<Athlet>([])
-    displayedColumns: string[] = ['number', 'fio', 'phone', 'class', 'created']
+    displayedColumns: string[] = ['number', 'fio', 'phone', 'class', 'created', 'actions']
 
     competition: Competition
     edit_competition: Competition
@@ -63,6 +64,19 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
                 '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF']),
         },
     ]
+
+    csv_export_options = {
+        fieldSeparator: ',',
+        quoteStrings: '"',
+        decimalseparator: '.',
+        showLabels: true,
+        headers: this.displayedColumns,
+        showTitle: true,
+        title: 'Атлеты',
+        useBom: false,
+        removeNewLines: true,
+        keys: this.displayedColumns,
+    }
 
     @ViewChild(MatSort, {static: true}) sort: MatSort
 
@@ -277,5 +291,37 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
             number: athlet.number,
             competition_id: this.competition.parent_id || this.competition.id
         })
+    }
+
+    actions($event: MatButtonToggleChange, id): void {
+        //TODO confirm dialog
+        this.afs.collection<Athlet>(`athlets_${this.competition.id}`).doc(id).delete()
+    }
+
+    getCsvData(data: Array<any>) {
+        let rows: Array<any> = []
+
+        data.map((item) => {
+            let row = {}
+            for (let key of this.csv_export_options.keys) {
+                switch (key) {
+                    case 'created': {
+                        row['created'] = moment(item.created.toMillis()).format('YYYY-MM-DD hh:mm:ss z')
+                        break
+                    }
+                    case 'actions': {
+                        row['actions'] = ''
+                        break
+                    }
+                    default: {
+                        row[key] = item[key]
+                    }
+                }
+            }
+
+            rows.push(row)
+        })
+
+        return rows
     }
 }

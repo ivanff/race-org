@@ -78,14 +78,19 @@
 
                         </div>
                     </div>
-                    <p>
-                        <a [routerLink]="['public', 'competition', competition.id]">Список участников</a>
+                    <p class="text-center">
+                        <a [routerLink]="['/public', 'competition', competition.id]">Список зарегистрированных участников</a>
                     </p>
                 </div>
 
-                <h3 *ngSwitchCase="true" class="text-center text-red-400">
-                    Регистрация приостановлена
-                </h3>
+                <div *ngSwitchCase="true">
+                    <h3 class="text-center text-red-400">
+                        Регистрация приостановлена
+                    </h3>
+                    <p class="text-center">
+                        <a [routerLink]="['/public', 'competition', competition.id]">Список зарегистрированных участников</a>
+                    </p>
+                </div>
             </mat-card-content>
         </mat-card>
     </div>

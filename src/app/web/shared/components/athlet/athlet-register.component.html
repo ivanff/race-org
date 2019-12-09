@@ -68,7 +68,8 @@
                 {{registerForm.controls['code'].errors['code'].message}}
             </mat-error>
         </mat-form-field>
-        <div *ngIf="!registerForm.controls['code'].valid" class="mat-form-field full-width">
+        <div *ngIf="registerForm.controls['code'].invalid && registerForm.controls['phone'].valid"
+             class="mat-form-field full-width">
             <button mat-raised-button color="warn"
                     [disabled]="registerForm.controls['code'].status == 'DISABLED'"
                     (click)="onSendSms()" type="button">Выслать код подтверждения номера
