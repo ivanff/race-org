@@ -36,7 +36,7 @@ import {LocalLogComponent} from "@src/app/scan/local-log/local-log.component"
 import {CheckpointResolver} from "@src/app/shared/resolvers/checkpoint.resolver"
 import {EnterSecretComponent} from "@src/app/enter/enter-secret/enter-secret.component"
 import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
-import {TzDatePipe} from "@src/app/shared/pipes/tzdate.pipe"
+import {TzDateFinishPipe, TzDatePipe, TzDateStartPipe} from "@src/app/shared/pipes/tzdate.pipe"
 import {NfcService} from "@src/app/mobile/services/nfc.service"
 import {BarcodeService} from "@src/app/mobile/services/barcode.service"
 
@@ -77,6 +77,8 @@ import {NativeScriptHttpClientModule} from 'nativescript-angular/http-client'
         GetDevicePipe,
         JoinPipe,
         TzDatePipe,
+        TzDateStartPipe,
+        TzDateFinishPipe,
         // FoundDialogComponent
     ],
     imports: [

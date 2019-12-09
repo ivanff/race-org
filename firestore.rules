@@ -32,9 +32,6 @@ service cloud.firestore {
       allow update: if request.auth != null && athletMatch(collectionName) && (checkOwner(collectionName.replace('athlets_', '')) || checkMarshal(collectionName.replace('athlets_', ''), ['admin', 'marshal']) || checkOwnerAthlet(collectionName.replace('athlets_', '')));
       allow delete: if request.auth != null && athletMatch(collectionName) && checkOwner(collectionName.replace('athlets_', ''));
     }
-    match /{path=**}/test_secret/{code} {
-      allow read;
-    }
     match /competitions/{competitionId}/test_secret/{code} {
       allow read: if request.auth != null && checkOwner(competitionId);
       allow write: if request.auth != null && checkOwner(competitionId);

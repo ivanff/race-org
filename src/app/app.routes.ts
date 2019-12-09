@@ -91,7 +91,7 @@ const routes: Routes = [
         ],
     }, {
         path: 'public',
-        loadChildren: () => import('@src/app/web/routes/app-athlet-register/app-athlet-register.module').then(m => m.AppAthletRegisterModule),
+        loadChildren: () => import('@src/app/web/routes/public/public.module').then(m => m.PublicModule),
     },
     {
         path: 'private_policy',

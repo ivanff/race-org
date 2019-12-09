@@ -167,9 +167,9 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
             }
         }
 
-        if (moment() > this._competition.finish_time) {
-            this.onFound(this.last_athlet, L('The competition is over, time is up!'), true)
-        }
+        // if (moment() > this._competition.finish_time) {
+        //     this.onFound(this.last_athlet, L('The competition is over, time is up!'), true)
+        // }
 
         this.onFound(this.last_athlet, L('THE PASSAGE MARK RECORDED'))
 

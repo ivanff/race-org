@@ -1,0 +1,48 @@
+<div class="public-container p-32">
+    <form [formGroup]="filterAthlets">
+        <mat-card class="m-20">
+            <h1 class="text-center">{{getTitle()}}</h1>
+            <mat-card-content fxLayout="row wrap">
+                <mat-form-field fxFlex="100" class="p-16">
+                    <input matInput formControlName="search" placeholder="Фильтр">
+                    <mat-hint>По фамилии или номеру участника</mat-hint>
+                </mat-form-field>
+                <div fxFlex="100" class="mat-form-field p-16">
+                    <label id="competition_classes" class="p-r-16">
+                        Классы участников
+                    </label>
+                    <mat-radio-group formControlName="class" aria-labelledby="competition_classes">
+                        <mat-radio-button [value]="''"
+                                          class="p-r-8">Все
+                        </mat-radio-button>
+                        <mat-radio-button *ngFor="let _class of getClasses()"
+                                          [value]="_class"
+                                          class="p-r-8">{{_class}}</mat-radio-button>
+                    </mat-radio-group>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </form>
+
+    <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+        <ng-container matColumnDef="number">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Номер</th>
+            <td mat-cell *matCellDef="let element"><b>{{element.number}}</b></td>
+        </ng-container>
+
+        <ng-container matColumnDef="fio">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Имя</th>
+            <td mat-cell *matCellDef="let element">
+                {{element.fio}}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="class">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Класс</th>
+            <td mat-cell *matCellDef="let element">{{element.class}}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+</div>

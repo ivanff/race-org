@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core'
 import {ActivatedRouteSnapshot, Resolve, RouterStateSnapshot} from '@angular/router'
 import {AngularFirestore} from "@angular/fire/firestore"
-import {Observable} from "rxjs"
-import {first, map, switchMap} from "rxjs/operators"
+import {Observable, of} from "rxjs"
+import {catchError, first, map, switchMap} from "rxjs/operators"
 import {Competition} from "@src/app/shared/interfaces/competition"
 
 @Injectable()
@@ -30,7 +30,7 @@ export class CompetitionResolve implements Resolve<Competition> {
                             first()
                         )
                 }),
-                switchMap((doc): Observable<Competition> => {
+                switchMap((doc): Observable<Competition|null> => {
                     return this.afs.collection('competitions').doc(doc.id)
                         .collection('test_secret')
                         .valueChanges({idField: 'id'})
@@ -42,7 +42,10 @@ export class CompetitionResolve implements Resolve<Competition> {
                                 })
                                 return Object.assign(doc, {secret: secret})
                             }),
-                            first()
+                            first(),
+                            catchError((err) => {
+                                return of(doc)
+                            })
                         )
                 }),
             )

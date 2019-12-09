@@ -1,5 +1,5 @@
 import {Injectable, NgZone, OnDestroy} from '@angular/core'
-import {defer, Observable, of, ReplaySubject, Subject} from "rxjs"
+import {Observable, of, ReplaySubject, Subject} from "rxjs"
 import {Competition} from "@src/app/shared/interfaces/competition"
 import {AuthService} from "@src/app/mobile/services/auth.service"
 import {first, map, shareReplay, switchMap, takeUntil} from "rxjs/operators"
@@ -7,7 +7,6 @@ import {firestore} from "nativescript-plugin-firebase"
 import {setString, remove} from "tns-core-modules/application-settings"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 import {device} from "tns-core-modules/platform"
-import * as moment from 'moment-timezone'
 import {MobileDevice} from "@src/app/shared/interfaces/mobile-device"
 import {HttpClient} from "@angular/common/http"
 import {environment} from "@src/environments/environment"
@@ -23,8 +22,8 @@ export class CompetitionService implements OnDestroy {
     selected_competition: Competition
     current_checkpoint: Checkpoint
     selected_competition_id$: any
-    start_time: moment | null
-    finish_time: moment | null
+    // start_time: moment | null
+    // finish_time: moment | null
     isAdmin = false
     private roles = {}
     private destroy = new ReplaySubject<any>(1)
@@ -61,12 +60,12 @@ export class CompetitionService implements OnDestroy {
                 setString('selected_competition_id', `${competition.parent_id ? competition.parent_id + '_' : ''}${competition.id}`)
                 this.setCp()
                 this.setIsAdmin()
-                this.setFinishTime()
+                // this.setFinishTime()
             } else {
                 remove('selected_competition_id')
                 this.current_checkpoint = null
-                this.start_time = null
-                this.finish_time = null
+                // this.start_time = null
+                // this.finish_time = null
             }
         })
     }
@@ -230,16 +229,16 @@ export class CompetitionService implements OnDestroy {
         }
     }
 
-    private setStartTime(): moment {
-        this.start_time = moment.tz(
-            `${moment(this.selected_competition.start_date).format('YYYY-MM-DD')}T00:00:00`, this.selected_competition.timezone
-        ).add(this.selected_competition.start_time, 's')
-
-        return this.start_time
-    }
-    private setFinishTime(): moment {
-        this.finish_time = this.setStartTime().clone().add(this.selected_competition.duration, 's')
-        return this.finish_time
-    }
+    // private setStartTime(): moment {
+    //     this.start_time = moment.tz(
+    //         `${moment(this.selected_competition.start_date).format('YYYY-MM-DD')}T00:00:00`, this.selected_competition.timezone
+    //     ).add(this.selected_competition.start_time, 's')
+    //
+    //     return this.start_time
+    // }
+    // private setFinishTime(): moment {
+    //     this.finish_time = this.setStartTime().clone().add(this.selected_competition.duration, 's')
+    //     return this.finish_time
+    // }
 
 }

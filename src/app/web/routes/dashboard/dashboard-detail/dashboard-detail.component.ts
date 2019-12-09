@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Competition} from "@src/app/shared/interfaces/competition"
 import {ActivatedRoute, Router} from "@angular/router"
-import {FormControl, FormGroup} from "@angular/forms"
+import {FormControl, FormGroup, Validators} from "@angular/forms"
 import * as moment from 'moment-timezone'
 import {AngularFirestore, AngularFirestoreDocument} from "@angular/fire/firestore"
 import {debounceTime, first, shareReplay, takeUntil, tap} from "rxjs/operators"
@@ -9,13 +9,13 @@ import {Observable, ReplaySubject} from "rxjs"
 import {Athlet} from "@src/app/shared/interfaces/athlet"
 import {LocalStorageService} from "angular-2-local-storage"
 import {environment} from "@src/environments/environment.prod"
-import {MatDialog, MatDialogConfig, MatSlideToggleChange, MatSort, MatTableDataSource} from "@angular/material"
+import {MatDialog, MatSlideToggleChange, MatSort, MatTableDataSource} from "@angular/material"
 import {ChartOptions} from 'chart.js'
 import {Label} from "ng2-charts"
 import * as _ from "lodash"
 import {Mark} from "@src/app/shared/interfaces/mark"
 import {AddAthletDialogComponent} from "@src/app/web/routes/dashboard/dashboard-detail/add-athlet-dialog.component"
-import {SuccessDialogComponent} from "@src/app/web/routes/app-athlet-register/app-athlet-register.component"
+
 
 @Component({
     selector: 'app-dashboard-detail',
@@ -24,7 +24,7 @@ import {SuccessDialogComponent} from "@src/app/web/routes/app-athlet-register/ap
 export class DashboardDetailComponent implements OnInit, OnDestroy {
     protected _onDestroy = new ReplaySubject<any>(1)
 
-    athlets$: Observable<Array<Athlet>>
+    athlets$: Observable<Athlet[]>
     dataSource = new MatTableDataSource<Athlet>([])
     displayedColumns: string[] = ['number', 'fio', 'phone', 'class', 'created']
 
@@ -33,7 +33,6 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
     active_tab: number = 0
     selectCompetition: FormGroup
     filterAthlets: FormGroup
-    search = ''
 
     pieChartOptions: ChartOptions = {
         responsive: true,
@@ -82,17 +81,7 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
             )
             this.competition = this.route.snapshot.data.competition
             this.edit_competition = {...this.route.snapshot.data.competition}
-
             this.pieChartLabels = this.competition.classes
-
-            // this.afs.collection('competitions').doc(this.competition.id).collection('stages')
-            //     .valueChanges({idField: 'id'})
-            //     .pipe(
-            //         map((stages: Array<any>) => {
-            //             Object.assign(this.competition, {stages})
-            //             Object.assign(this.edit_competition, {stages})
-            //         })
-            //     ).subscribe()
 
             this.athlets$ = this.afs.collection<Athlet>(`athlets_${this.competition.id}`, (ref => ref.orderBy('created', 'desc')))
                 .valueChanges({idField: 'id'})
@@ -136,12 +125,12 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
                     if (parseInt(search).toString() == search) {
                         if (athlet.number.toString().indexOf(search) >= 0) {
                             result = true
-                        } else if (athlet.id.toString().indexOf(search) >= 0) {
+                        } else if (athlet.id.toString().indexOf(search) >= 0) { // phone
                             result = true
                         } else {
                             result = false
                         }
-                    } else if ((athlet.fio.toLowerCase().indexOf(search) >= 0) && (search.length >= 3)) {
+                    } else if (athlet.fio.toLowerCase().indexOf(search) >= 0) {
                         result = true
                     } else {
                         result = false
@@ -155,7 +144,6 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
             }
             return result
         }
-
 
         this.selectCompetition = new FormGroup({
             'competition_id': new FormControl(this.edit_competition.id, [])
@@ -172,7 +160,7 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
         })
 
         this.filterAthlets = new FormGroup({
-            'search': new FormControl('', []),
+            'search': new FormControl('', [Validators.minLength(3)]),
             'class': new FormControl('', [])
         })
 
@@ -183,11 +171,6 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
                 this.applyFilter(null)
             }
         })
-
-        // this.filterAthlets.controls['search'].valueChanges
-        //     .pipe(debounceTime(500))
-        //     .pipe(distinctUntilChanged())
-        //     .subscribe((next => this.search = next))
     }
 
     ngOnDestroy(): void {
@@ -201,7 +184,6 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
         } else {
             this.dataSource.filter = JSON.stringify(data)
         }
-
     }
 
     private getCollection(competition): AngularFirestoreDocument {

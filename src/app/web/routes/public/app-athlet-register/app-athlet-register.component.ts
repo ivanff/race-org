@@ -1,10 +1,10 @@
 import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {Competition} from "@src/app/shared/interfaces/competition"
-import {ActivatedRoute} from "@angular/router"
+import {ActivatedRoute, NavigationStart, Router, RouterEvent} from "@angular/router"
 import {Athlet} from "@src/app/shared/interfaces/athlet"
 import {MatDialog, MatDialogConfig, MatDialogRef, MatSnackBar} from "@angular/material"
 import {AngularFirestore, AngularFirestoreCollection} from "@angular/fire/firestore"
-import {catchError, first, map, skipWhile, switchMap, takeUntil} from "rxjs/operators"
+import {catchError, filter, first, map, skipWhile, switchMap, takeUntil} from "rxjs/operators"
 import {defer, of, ReplaySubject, throwError} from "rxjs"
 import {
     AbstractControl,
@@ -25,9 +25,25 @@ import {MAT_DIALOG_DATA} from '@angular/material/dialog'
     selector: 'success-dialog',
     templateUrl: './success-dialog.component.html',
 })
-export class SuccessDialogComponent {
+export class SuccessDialogComponent implements OnDestroy {
+    protected _onDestroy = new ReplaySubject<any>(1)
+
     constructor(public dialogRef: MatDialogRef<SuccessDialogComponent>,
-                @Inject(MAT_DIALOG_DATA) public data: any) {
+                @Inject(MAT_DIALOG_DATA) public data: any,
+                private route: Router) {
+        this.route.events.pipe(
+            filter((event: RouterEvent) => event instanceof NavigationStart),
+            filter(() => !!this.dialogRef),
+            takeUntil(this._onDestroy)
+        ).subscribe(() => {
+            this.closeDialog()
+        })
+    }
+
+    ngOnDestroy(): void {
+        console.log(123)
+        this._onDestroy.next(null)
+        this._onDestroy.complete()
     }
 
     closeDialog(): void {
@@ -38,7 +54,7 @@ export class SuccessDialogComponent {
 
 @Component({
     selector: 'app-app-athlet-register',
-    styleUrls: ['../../shared/components/athlet/athlet-register.component.scss'],
+    styleUrls: ['../../../shared/components/athlet/athlet-register.component.scss'],
     templateUrl: './app-athlet-register.component.html',
 })
 export class AppAthletRegisterComponent implements OnInit, OnDestroy {
@@ -119,27 +135,6 @@ export class AppAthletRegisterComponent implements OnInit, OnDestroy {
 
         setTimeout(() => this.formIsValid = () => this.getAthletForm.valid, 0);
 
-        // this.afs.collectionGroup(`test_secret`, (query => query.where('code', '==', 123456)))
-        //     .snapshotChanges()
-        //     .pipe(
-        //         switchMap((snapshot: Array<any>) => {
-        //             return combineLatest(
-        //                 snapshot.map((item) => {
-        //                     return this.afs.collection('/competitions/').doc(item.payload.doc.ref.parent.parent.id)
-        //                         .valueChanges()
-        //                         .pipe(
-        //                             first(),
-        //                             map((competition) => {
-        //                                 return {...competition,}
-        //                             })
-        //                         )
-        //                 })
-        //             )
-        //         })
-        //     ).subscribe((next) => {
-        //         console.log(next)
-        //     })
-
         this.afs.collection('competitions').doc(this.competition.id).valueChanges().pipe(
             takeUntil(this._onDestroy)
         ).subscribe((doc) => {
@@ -171,9 +166,10 @@ export class AppAthletRegisterComponent implements OnInit, OnDestroy {
         $event.form.resetForm()
         $event.form.form.reset()
         this.dialog.open(SuccessDialogComponent, {
+            closeOnNavigation: true,
             data: {
                 title: "Регистрация прошла успешно!",
-                start_date: this.competition.start_date
+                competition: this.competition,
             },
             panelClass: 'alert-success'
         } as MatDialogConfig)
@@ -181,9 +177,10 @@ export class AppAthletRegisterComponent implements OnInit, OnDestroy {
 
     onChange($event: { athlet: Athlet, form: FormGroupDirective }) {
         this.dialog.open(SuccessDialogComponent, {
+            closeOnNavigation: true,
             data: {
                 title: "Сохранено!",
-                start_date: this.competition.start_date
+                competition: this.competition,
             },
             panelClass: 'alert-success'
         } as MatDialogConfig)
