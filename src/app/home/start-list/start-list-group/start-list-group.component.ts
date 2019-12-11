@@ -19,7 +19,7 @@ export class StartListGroupComponent extends BaseComponent implements OnInit {
     constructor(public routerExtensions: RouterExtensions,
                 private router: ActivatedRoute) {
         super(routerExtensions)
-        this.athlets = this.router.snapshot.data['athlets']
+        this.athlets = this.router.snapshot.data['athlets'].sort((a: Athlet, b: Athlet) => a.number > b.number ? 1 : -1)
     }
     ngOnInit(): void {
     }

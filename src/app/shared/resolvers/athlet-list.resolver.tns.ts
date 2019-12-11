@@ -8,23 +8,22 @@ const firebase = require('nativescript-plugin-firebase/app')
 
 @Injectable()
 export class AthletListResolve implements Resolve<Array<Athlet>> {
-    constructor(private _competition: CompetitionService) {}
+    constructor(private _competition: CompetitionService) {
+    }
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<Array<Athlet>> {
-        return firebase.firestore().collection(this._competition.getAthletsCollectionPath())
-            .get().then((snapshot: firestore.QuerySnapshot) => {
-                const athlets: Array<Athlet> = []
-                snapshot.forEach((doc: firestore.DocumentSnapshot ) => {
-                    const id = doc.id
-                    const athlet = {
-                        id, ...doc.data()
-                    } as Athlet
-
-                    if ([athlet.group, athlet.class].indexOf(route.params['group']) > -1) {
-                        athlets.push(athlet)
-                    }
+        if (route.params.hasOwnProperty('group')) {
+            return firebase.firestore().collection(this._competition.getAthletsCollectionPath())
+                .where(`group.${this._competition.selected_competition.id}.id`, '==', route.params['group'])
+                .get().then((snapshot: firestore.QuerySnapshot) => {
+                    const athlets: Array<Athlet> = []
+                    snapshot.forEach((doc: firestore.DocumentSnapshot) => {
+                        const id = doc.id
+                        athlets.push({id, ...doc.data()} as Athlet)
+                    })
+                    return athlets
                 })
-                return athlets
-            })
+        }
+
     }
 }

@@ -34,6 +34,8 @@ import {BehaviorSubject, Observable, ReplaySubject} from "rxjs"
 import {map, takeUntil} from "rxjs/operators"
 import {getNumber, setNumber} from "tns-core-modules/application-settings"
 import {StartListAddDialogComponent} from "@src/app/home/start-list/start-list-add-dialog/start-list-add-dialog.component"
+import {rejects} from "assert"
+import {StartListGroup} from "@src/app/shared/interfaces/start-list"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
@@ -47,6 +49,7 @@ export class StartListTabComponent implements OnInit, OnDestroy {
     athlets: Array<Athlet> = []
 
     constructor(private _params: ModalDialogParams,
+                private _competition: CompetitionService,
                 private modalService: ModalDialogService,
                 private vcRef: ViewContainerRef,
                 private activeRoute: ActivatedRoute,
@@ -61,14 +64,25 @@ export class StartListTabComponent implements OnInit, OnDestroy {
             this.athlets = athlets
             const groupsDict = {}
 
-            athlets.map((athlet: Athlet) => {
-                const group = athlet.group ? athlet.group : this._class
-
-                if (!groupsDict.hasOwnProperty(group)) {
-                    groupsDict[group] = [athlet]
+            athlets.sort((a: Athlet, b: Athlet): number => {
+                if (a.group && b.group) {
+                    if (a.group[this._competition.selected_competition.id] && b.group[this._competition.selected_competition.id]) {
+                        return a.group[this._competition.selected_competition.id].order > b.group[this._competition.selected_competition.id].order ? -1 : 1
+                    }
+                }
+                return 0
+            }).map((athlet: Athlet) => {
+                const blank_group: StartListGroup = {
+                    id: this._class,
+                    order: -1,
+                    start_time: null
+                }
+                const group: StartListGroup = athlet.group ? (athlet.group.hasOwnProperty(this._competition.selected_competition.id) ? athlet.group[this._competition.selected_competition.id] : blank_group) : blank_group
+                if (!groupsDict.hasOwnProperty(group.id)) {
+                    groupsDict[group.id] = [athlet]
 
                 } else {
-                    groupsDict[group].push(athlet)
+                    groupsDict[group.id].push(athlet)
                 }
             })
 
@@ -87,13 +101,8 @@ export class StartListTabComponent implements OnInit, OnDestroy {
         this.destroy.complete()
     }
 
-    getKeys(obj: any): Array<string> {
-        return Object.keys(obj).sort((a: string, b: string) => {
-            if (a == this._class) {
-                return 1
-            }
-            return 0
-        })
+    getNumbers(athlets: Array<Athlet>): string {
+        return athlets.map((athlet: Athlet) => athlet.number).sort((a, b) => a > b ? 1 : -1).join(';')
     }
 
     onSplit(): Promise<any> {
@@ -101,36 +110,67 @@ export class StartListTabComponent implements OnInit, OnDestroy {
             viewContainerRef: this.vcRef,
             fullscreen: false
         }
-        return this.modalService.showModal(StartListAddDialogComponent, options);
 
-        // let batch = firebase.firestore().batch()
-        // const collection = firebase.firestore().collection(this._params.context['athlet_path'])
-        // _.chunk(this.athlets, 5).forEach((group: Array<Athlet>, index: number) => {
-        //     group.forEach((athlet: Athlet) => {
-        //         batch = batch.update(collection.doc(athlet.id), {group: `${this._class}_${index}`})
-        //     })
-        // })
-        // batch.commit().then(() => {
-        //     alert("Split success")
-        // })
+        return this.modalService.showModal(StartListAddDialogComponent, options).then((resp: {action: string, size: number | null} | null) => {
+            if (resp) {
+                switch (resp.action) {
+                    case 'size':
+                        return this.splitAthlet(_.shuffle(this.athlets), resp.size)
+                    case 'stage':
+                        alert("#TODO need stage results fixed")
+                        return null
+                    default:
+                        return null
+                }
+            }
+        });
     }
 
     onRemoveGroup(): void {
         let batch = firebase.firestore().batch()
-        const collection = firebase.firestore().collection(this._params.context['athlet_path'])
-        _.chunk(this.athlets, 5).forEach((group: Array<Athlet>) => {
-            group.forEach((athlet: Athlet) => {
-                batch = batch.update(collection.doc(athlet.id), {group: null})
-            })
+        const collection = firebase.firestore().collection(this._competition.getAthletsCollectionPath())
+        this.athlets.forEach((athlet: Athlet) => {
+            batch = batch.update(collection.doc(athlet.id), {group: null})
         })
         batch.commit().then(() => {
-            alert("Split success")
+            alert(`Remove Group '${this._class}' success`)
         })
     }
 
     onItemTap($event): void {
-        this.routerExtensions.navigate([`./${$event.object.items[$event.index]}`], {
+        const item = $event.object.items[$event.index]
+        this.routerExtensions.navigate([`./${item.key}`], {
             relativeTo: this.activeRoute
+        })
+    }
+
+    private splitAthlet(athlets: Array<Athlet>, size: number): Promise<any> {
+        return new Promise((resolve, reject) => {
+            if (athlets.length < size) {
+                reject()
+            } else {
+                let batch = firebase.firestore().batch()
+                const collection = firebase.firestore().collection(this._competition.getAthletsCollectionPath())
+                _.chunk(athlets, size).forEach((group: Array<Athlet>, index: number) => {
+                    group.forEach((athlet: Athlet) => {
+                        const athlet_group = athlet.group || {}
+
+                        athlet_group[this._competition.selected_competition.id] = {
+                            id: `${this._class}_${index}`,
+                            order: index,
+                            start_time: null
+                        } as StartListGroup
+
+                        batch = batch.update(collection.doc(athlet.id), {
+                            group: athlet_group
+                        })
+                    })
+                })
+                return batch.commit().then(() => {
+                    resolve()
+                }, reject)
+
+            }
         })
     }
 }
@@ -241,8 +281,7 @@ export class StartListComponent extends BaseComponent implements OnInit, AfterVi
 
         const modalParams = new ModalDialogParams({
             '_class': _class,
-            'athletsBehavior$': this.athletsBehavior$,
-            'athlet_path': this._competition.getAthletsCollectionPath()
+            'athletsBehavior$': this.athletsBehavior$
         }, closeCallback);
 
         const childInjector = Injector.create({

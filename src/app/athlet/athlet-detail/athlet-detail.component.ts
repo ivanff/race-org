@@ -75,7 +75,9 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
 
         athlets.then((snapshot: firestore.QuerySnapshot) => {
             snapshot.forEach((doc: firestore.DocumentSnapshot) => {
-                batch = batch.update(this.collection.doc(doc.id), {nfc_id: null})
+                batch = batch.update(this.collection.doc(doc.id), {
+                    nfc_id: null
+                })
             })
             batch.update(this.collection.doc(this.athlet.id), {
                 nfc_id: data.id

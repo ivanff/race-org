@@ -33,11 +33,17 @@ export class StartListAddDialogComponent implements OnInit {
     }
 
     onSplitBySize(): void {
-
+        this._params.closeCallback({
+            action: 'size',
+            size: this.size
+        });
     }
 
     onSplitByStage(): void {
-
+        this._params.closeCallback({
+            action: 'stage',
+            size: this.size
+        });
     }
 
     onAddGroup(): void {
