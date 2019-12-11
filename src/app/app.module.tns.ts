@@ -10,6 +10,9 @@ import {NativeScriptUIListViewModule} from "nativescript-ui-listview/angular"
 import {FilterPipe} from "@src/app/shared/pipes/filter.pipe"
 import {RootComponent} from "@src/app/root/root.component"
 import {CompetitionComponent} from "@src/app/home/competition/competition.component"
+import {StartListComponent, StartListTabComponent} from "@src/app/home/start-list/start-list.component"
+import {StartListGroupComponent} from "@src/app/home/start-list/start-list-group/start-list-group.component"
+import {StartListAddDialogComponent} from "@src/app/home/start-list/start-list-add-dialog/start-list-add-dialog.component"
 import {StatComponent} from "@src/app/home/stat/stat.component"
 import {OrderModule} from "ngx-order-pipe"
 import {AdminResolve} from "@src/app/shared/admin.resolver"
@@ -46,12 +49,15 @@ import {BarcodeService} from "@src/app/mobile/services/barcode.service"
 
 // Uncomment and add to NgModule imports  if you need to use the HTTP wrapper
 import {NativeScriptHttpClientModule} from 'nativescript-angular/http-client'
+import {AthletListResolve} from "@src/app/shared/resolvers/athlet-list.resolver"
+
 
 @NgModule({
     entryComponents: [
         RootComponent,
-        // FoundDialogComponent,
         CompetitionDetailQrComponent,
+        StartListTabComponent,
+        StartListAddDialogComponent,
     ],
     declarations: [
         BaseComponent,
@@ -60,17 +66,25 @@ import {NativeScriptHttpClientModule} from 'nativescript-angular/http-client'
 
         EnterComponent,
         EnterSecretComponent,
+
         HomeComponent,
         StatComponent,
         AboutComponent,
 
         AthletComponent,
         AthletDetailComponent,
+
         ScanComponent,
         LocalLogComponent,
+
         CompetitionComponent,
         CompetitionDetailComponent,
         CompetitionDetailQrComponent,
+
+        StartListComponent,
+        StartListTabComponent,
+        StartListGroupComponent,
+        StartListAddDialogComponent,
 
         FilterPipe,
         DeviceNamePipe,
@@ -94,6 +108,7 @@ import {NativeScriptHttpClientModule} from 'nativescript-angular/http-client'
     providers: [
         CompetitionResolve,
         AthletResolve,
+        AthletListResolve,
         AdminResolve,
         AuthResolve,
         CheckpointResolver,

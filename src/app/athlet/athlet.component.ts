@@ -13,6 +13,7 @@ import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
 import {BarcodeService} from "@src/app/mobile/services/barcode.service"
 import {Qr} from "@src/app/shared/interfaces/qr"
 import {localize as L} from "nativescript-localize"
+import {ListView} from "tns-core-modules/ui/list-view"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
@@ -83,7 +84,9 @@ export class AthletComponent extends BaseComponent implements OnInit, OnDestroy 
         })
     }
 
-    onItemTap(athlet: Athlet): void {
+    onItemTap($event): void {
+        const athlet = (<ListView>$event.object).items[$event.index] as Athlet
+
         this.searchBarRef.nativeElement.dismissSoftInput()
         if (isAndroid) {
             this.searchBarRef.nativeElement.android.clearFocus()

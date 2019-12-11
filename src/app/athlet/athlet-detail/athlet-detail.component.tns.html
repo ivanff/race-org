@@ -1,4 +1,4 @@
-<ActionBar [title]="'Athletes'|L">
+<ActionBar [title]="('Athlete: '|L) + athlet.number">
     <NavigationButton icon="res://round_menu_black_24"
                       (tap)="onDrawerButtonTap()"></NavigationButton>
     <ActionItem [text]="'Call'|L"
@@ -12,14 +12,19 @@
 </ActionBar>
 <GridLayout rows="auto, auto, *" columns="*" class="p-l-10 p-r-10">
     <StackLayout row="0" col="0">
+        <Label [text]="'NFC: ' + (athlet.nfc_id ? athlet.nfc_id : ('not assigned'|L))"
+               [class.-warning]="!athlet.nfc_id"
+               class="font-weight-bold"></Label>
+
+        <Label [text]="'Start group: ' + (athlet.group ? athlet.group : ('not assigned'|L))"
+               [class.-warning]="!athlet.group"
+               class="font-weight-bold"></Label>
+
         <Label [text]="('Name: '|L) + athlet.fio"></Label>
         <Label [text]="('Class: '|L) + athlet.class"></Label>
         <Label [text]="('Phone no.: +7 '|L) + athlet.phone" col="0" verticalAlignment="center"></Label>
         <Label *ngFor="let field of _competition.selected_competition.athlet_extra_fields" [text]="(field|titlecase) + ': ' + athlet[field]"></Label>
 
-        <Label [text]="'NFC: ' + (athlet.nfc_id ? athlet.nfc_id : ('not assigned'|L))"
-               [class.-warning]="!athlet.nfc_id"
-               class="font-weight-bold"></Label>
         <Button *ngIf="athlet.nfc_id"
                 [text]="'Clear NFC tag'|L"
                 (tap)="onClearNfc()"

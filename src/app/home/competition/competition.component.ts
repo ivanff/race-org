@@ -16,8 +16,7 @@ const firebase = require('nativescript-plugin-firebase/app')
 
 @Component({
     selector: 'app-competition',
-    templateUrl: './competition.component.html',
-    styleUrls: ['./competition.component.scss']
+    templateUrl: './competition.component.html'
 })
 export class CompetitionComponent extends BaseComponent implements OnInit, OnDestroy {
     competitions: Competition[] = []

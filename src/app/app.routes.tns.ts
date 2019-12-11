@@ -13,7 +13,9 @@ import {AuthGuard} from "@src/app/web/core/guard/auth.guard"
 import {ScanComponent} from "@src/app/scan/scan.component"
 import {LocalLogComponent} from "@src/app/scan/local-log/local-log.component"
 import {CheckpointResolver} from "@src/app/shared/resolvers/checkpoint.resolver"
-import {CompetitionDetailQrComponent} from "@src/app/home/competition/competition-detail/competition-detail-qr/competition-detail-qr.component"
+import {StartListComponent} from "@src/app/home/start-list/start-list.component"
+import {StartListGroupComponent} from "@src/app/home/start-list/start-list-group/start-list-group.component"
+import {AthletListResolve} from "@src/app/shared/resolvers/athlet-list.resolver"
 
 export const routes: Routes = [
     {
@@ -53,7 +55,22 @@ export const routes: Routes = [
                 path: "competitions/:parent_competition_id/:competition_id",
                 component: CompetitionDetailComponent,
                 resolve: {
+                    competition: CompetitionResolve,
+                }
+            },
+            {
+                path: "start-list",
+                component: StartListComponent,
+                resolve: {
                     competition: CompetitionResolve
+                },
+            },
+            {
+                path: "start-list/:group",
+                component: StartListGroupComponent,
+                resolve: {
+                    competition: CompetitionResolve,
+                    athlets: AthletListResolve,
                 }
             },
         ]

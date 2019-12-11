@@ -83,7 +83,7 @@
 }
 
 .odd {
-  background-color: #dcdcdc
+  background-color: rgba($grey-background, 0.5);
 }
 
 .label-detail {
@@ -104,15 +104,22 @@
 
   &:active, &.-active {
     color: white;
+
     at-root {
       @keyframes -hightlight-light {
-        0%   { background-color: $facebook; }
-        100% { background-color: darken($facebook, 5%); }
+        0% {
+          background-color: $facebook;
+        }
+        100% {
+          background-color: darken($facebook, 5%);
+        }
       }
     }
+
     animation: -hightlight-light .3s ease-out forwards;
     background-color: darken($facebook, 5%);
   }
+
   color: white;
 }
 
@@ -124,19 +131,45 @@
 
   &:active, &.-active {
     color: #5f6368;
+
     at-root {
       @keyframes -hightlight-light {
-        0%   { background-color: white; }
-        100% { background-color: darken(white, 5%); }
+        0% {
+          background-color: white;
+        }
+        100% {
+          background-color: darken(white, 5%);
+        }
       }
     }
+
     animation: -hightlight-light .3s ease-out forwards;
     background-color: darken(white, 5%);
   }
+
   color: #5f6368;
 }
 
 .help {
   font-size: 12;
   color: #5f6368;
+}
+
+Tabs TabStrip {
+  highlight-color: #3f51b5;
+}
+
+TabStripItem {
+  &:active,
+  &:active Label {
+    font-weight: bold;
+    color: #3f51b5
+  }
+}
+
+
+.font-small {
+  Button {
+    font-size: 14;
+  }
 }

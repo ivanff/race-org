@@ -57,7 +57,7 @@ export class CompetitionResolve implements Resolve<Competition | null> {
             )
         } else if (hasKey('selected_competition_id')) {
             const selected_competition_ids: Array<string> = getString('selected_competition_id').split('_')
-            this._competition.selected_competition_id$.next(selected_competition_ids.length == 1 ? selected_competition_ids[0]: selected_competition_ids)
+            this._competition.selected_competition_id$.next(selected_competition_ids[0])
             return this._competition.selected_competition_id$.pipe(
                 first()
             )

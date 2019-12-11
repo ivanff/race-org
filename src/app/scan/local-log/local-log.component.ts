@@ -10,8 +10,7 @@ import {localize as L} from "nativescript-localize"
 
 @Component({
     selector: 'app-local-log',
-    templateUrl: './local-log.component.html',
-    styleUrls: ['./local-log.component.scss']
+    templateUrl: './local-log.component.html'
 })
 export class LocalLogComponent extends BaseComponent implements OnInit {
     items: Array<SqlRow> = []

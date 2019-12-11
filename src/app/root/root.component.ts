@@ -4,8 +4,7 @@ import {ActivatedRoute} from "@angular/router"
 
 @Component({
     selector: 'app-root',
-    templateUrl: './root.component.html',
-    styleUrls: ['./root.component.scss']
+    templateUrl: './root.component.html'
 })
 export class RootComponent implements OnInit {
     constructor(private _routerExtensions: RouterExtensions,

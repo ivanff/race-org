@@ -6,8 +6,7 @@ import {openUrl} from "tns-core-modules/utils/utils"
 
 @Component({
     selector: 'app-home',
-    templateUrl: './home.component.html',
-    styleUrls: ['./home.component.scss'],
+    templateUrl: './home.component.html'
 })
 export class HomeComponent extends BaseComponent implements OnInit, OnDestroy {
     pending: boolean = false

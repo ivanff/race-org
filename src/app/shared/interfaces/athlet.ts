@@ -8,8 +8,10 @@ export interface Athlet {
     class: string
     fio: string
     number: number
+    group?: string
     marks?: Array<Mark>
     [key: string]: any
+    start_time?: firebase.firestore.Timestamp
     created: firebase.firestore.Timestamp
 }
 

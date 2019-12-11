@@ -35,6 +35,15 @@
                 </GridLayout>
 
                 <GridLayout *ngIf="_competition.selected_competition"
+                            [class.active]="_activatedUrl.indexOf('/home/start-list') == 0"
+                            (tap)="navigateTo('/home/start-list')"
+                            columns="auto, *"
+                            class="side-label">
+                    <Label col="0" text="&#xf0ca;" class="fas"></Label>
+                    <Label [text]="'Start lists'|L" col="1"></Label>
+                </GridLayout>
+
+                <GridLayout *ngIf="_competition.selected_competition"
                             [class.active]="_activatedUrl.indexOf('/athlets') == 0"
                             (tap)="navigateTo('/athlets')"
                             columns="auto, *"

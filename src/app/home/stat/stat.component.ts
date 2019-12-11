@@ -1,8 +1,7 @@
 import {Component, NgZone, OnDestroy, OnInit} from '@angular/core'
 import {firestore} from "nativescript-plugin-firebase"
 import {Competition} from "@src/app/shared/interfaces/competition"
-import {ActivatedRoute} from "@angular/router"
-import {filter, switchMap, take, takeUntil, tap} from "rxjs/operators"
+import {filter, startWith, switchMap, take, takeUntil, tap} from "rxjs/operators"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
 import {interval, Observable, ReplaySubject} from "rxjs"
 import * as moment from 'moment-timezone'
@@ -19,7 +18,7 @@ export class StatComponent implements OnInit, OnDestroy {
 
     athlets_count: number = 0
     by_class_count: { [key: string]: number } = {}
-    competition: Competition | null
+    competition: Competition
     current_timezone = moment.tz.guess()
     timeElapsed = false
 
@@ -42,6 +41,7 @@ export class StatComponent implements OnInit, OnDestroy {
         ).subscribe()
 
         interval(10000).pipe(
+            startWith(0),
             takeUntil(this.destroy),
         ).subscribe((next) => {
             if (this.competition) {

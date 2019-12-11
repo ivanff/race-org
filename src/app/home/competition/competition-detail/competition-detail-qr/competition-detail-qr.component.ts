@@ -26,7 +26,7 @@ export class CompetitionDetailQrComponent implements OnInit, OnDestroy {
     private basePassed(args: any): void {
         args.cancel = true
         args.stopEvent = true
-        this._params.closeCallback()
+        this.onClose()
     }
 
     ngOnInit() {

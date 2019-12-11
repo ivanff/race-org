@@ -1,0 +1,21 @@
+<StackLayout>
+    <GridLayout columns="*" rows="auto,auto">
+
+        <StackLayout row="0">
+            <Label [text]="'Split athlets'|L" class="h2 text-center p-t-12 p-b-12"></Label>
+            <TextField (textChange)="onSizeChange($event)"
+                       [hint]="'Group size'|L"
+                       autocorrect="false"
+                       keyboardType="number"></TextField>
+        </StackLayout>
+
+        <StackLayout row="1" sdkToggleNavButton class="font-small">
+            <Button class="btn -active" [text]="'Split athletes by\nspecific group size'|L"
+                    (tap)="onSplitBySize()"></Button>
+            <Button class="btn -active" [text]="'Create groups by\nresults of previous stage'|L"
+                    (tap)="onSplitByStage()"></Button>
+            <Button class="btn -active" [text]="'Create group'|L" (tap)="onAddGroup()"></Button>
+        </StackLayout>
+    </GridLayout>
+
+</StackLayout>
