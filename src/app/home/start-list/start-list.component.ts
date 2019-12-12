@@ -107,17 +107,25 @@ export class StartListTabComponent implements OnInit, OnDestroy {
 
     onSplit(): Promise<any> {
         const options: ModalDialogOptions = {
+            context: {
+                _class: this._class
+            },
             viewContainerRef: this.vcRef,
             fullscreen: false
         }
 
-        return this.modalService.showModal(StartListAddDialogComponent, options).then((resp: {action: string, size: number | null} | null) => {
+        return this.modalService.showModal(StartListAddDialogComponent, options).then((resp: {action: string, value?: any} | null) => {
             if (resp) {
                 switch (resp.action) {
                     case 'size':
-                        return this.splitAthlet(_.shuffle(this.athlets), resp.size)
+                        return this.splitAthlet(_.shuffle(this.athlets), resp.value)
                     case 'stage':
                         alert("#TODO need stage results fixed")
+                        return null
+                    case 'navigate':
+                        setTimeout(() => {
+                            this.routerExtensions.navigate(resp.value, {relativeTo: this.activeRoute})
+                        }, 100)
                         return null
                     default:
                         return null
@@ -177,7 +185,7 @@ export class StartListTabComponent implements OnInit, OnDestroy {
 
 @Component({
     selector: 'app-start-list',
-    templateUrl: './start-list.component.html',
+    templateUrl: './start-list.component.tns.html',
     styleUrls: ['./start-list.component.scss']
 })
 export class StartListComponent extends BaseComponent implements OnInit, AfterViewInit, OnDestroy {

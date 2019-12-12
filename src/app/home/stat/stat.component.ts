@@ -33,8 +33,8 @@ export class StatComponent implements OnInit, OnDestroy {
             filter((competition: Competition | null) => !!competition),
             switchMap((competition: Competition) => {
                 return this.firestoreCollectionObservable(competition).pipe(
+                    take(1),
                     takeUntil(this.destroy),
-                    take(1)
                 )
             }),
             takeUntil(this.destroy),

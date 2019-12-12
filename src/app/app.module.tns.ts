@@ -50,6 +50,7 @@ import {BarcodeService} from "@src/app/mobile/services/barcode.service"
 // Uncomment and add to NgModule imports  if you need to use the HTTP wrapper
 import {NativeScriptHttpClientModule} from 'nativescript-angular/http-client'
 import {AthletListResolve} from "@src/app/shared/resolvers/athlet-list.resolver"
+import {StartListAddComponent} from "@src/app/home/start-list/start-list-add/start-list-add.component"
 
 
 @NgModule({
@@ -85,6 +86,7 @@ import {AthletListResolve} from "@src/app/shared/resolvers/athlet-list.resolver"
         StartListTabComponent,
         StartListGroupComponent,
         StartListAddDialogComponent,
+        StartListAddComponent,
 
         FilterPipe,
         DeviceNamePipe,

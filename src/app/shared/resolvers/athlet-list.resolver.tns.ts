@@ -12,9 +12,19 @@ export class AthletListResolve implements Resolve<Array<Athlet>> {
     }
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<Array<Athlet>> {
-        if (route.params.hasOwnProperty('group')) {
-            return firebase.firestore().collection(this._competition.getAthletsCollectionPath())
-                .where(`group.${this._competition.selected_competition.id}.id`, '==', route.params['group'])
+        const colRef: firestore.CollectionReference =firebase.firestore().collection(this._competition.getAthletsCollectionPath())
+        if (route.params.hasOwnProperty('class')) {
+            return colRef.where('class', '==', route.params['class'])
+                .get().then((snapshot: firestore.QuerySnapshot) => {
+                    const athlets: Array<Athlet> = []
+                    snapshot.forEach((doc: firestore.DocumentSnapshot) => {
+                        const id = doc.id
+                        athlets.push({id, ...doc.data()} as Athlet)
+                    })
+                    return athlets
+                })
+        } else if (route.params.hasOwnProperty('group')) {
+            return colRef.where(`group.${this._competition.selected_competition.id}.id`, '==', route.params['group'])
                 .get().then((snapshot: firestore.QuerySnapshot) => {
                     const athlets: Array<Athlet> = []
                     snapshot.forEach((doc: firestore.DocumentSnapshot) => {

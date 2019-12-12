@@ -3,6 +3,9 @@
   <string name="_app_name_1k3Sbz">"RaceOrg"</string>
   <string name="app_name">"RaceOrg"</string>
   <string name="title_activity_kimera">"RaceOrg"</string>
+  <string name="_Athlete___ZfJs5e">"Athlete: "</string>
+  <string name="_Start_group___1hJ7A5">"Start group: "</string>
+  <string name="_Start_lists_Z1XjT8X">"Start lists"</string>
   <string name="About">"About"</string>
   <string name="_Private_Policy_2ri4RH">"Private Policy"</string>
   <string name="_Code___2o9Trm">"Code: "</string>
@@ -113,6 +116,4 @@
   <string name="assigned">"assigned"</string>
   <string name="_Search_shop_1giToM">"Search shop"</string>
   <string name="Scan">"Scan"</string>
-  <string name="_Start_group___1hJ7A5">"Start group: "</string>
-  <string name="_Start_lists_Z1XjT8X">"Start lists"</string>
 </resources>

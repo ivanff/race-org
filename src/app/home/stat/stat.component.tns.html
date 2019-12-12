@@ -14,6 +14,9 @@
         <Label [text]="('Total registered athletes: '|L) + athlets_count"></Label>
         <Label *ngFor="let _class of competition.classes" [text]="('Class: '|L) + _class + ' ' + (by_class_count.hasOwnProperty(_class) ? by_class_count[_class] : ('wait'|L))"></Label>
         <Button class="btn -primary scan" [text]="'Scan'|L" [nsRouterLink]="['/scan']"></Button>
+        <Button [text]="'Start lists'|L"
+                [nsRouterLink]="['start-list']"
+                class="btn"></Button>
     </StackLayout>
     <StackLayout *ngSwitchCase="null">
         <Button [text]="'Select\ncompetition'|L"

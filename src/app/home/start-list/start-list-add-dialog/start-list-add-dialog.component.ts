@@ -13,7 +13,7 @@ import * as application from "tns-core-modules/application"
     styleUrls: ['./start-list-add-dialog.component.scss']
 })
 export class StartListAddDialogComponent implements OnInit {
-    private size: number
+    size: number
     constructor(private _params: ModalDialogParams) {
     }
 
@@ -35,19 +35,22 @@ export class StartListAddDialogComponent implements OnInit {
     onSplitBySize(): void {
         this._params.closeCallback({
             action: 'size',
-            size: this.size
+            value: this.size
         });
     }
 
     onSplitByStage(): void {
         this._params.closeCallback({
             action: 'stage',
-            size: this.size
+            value: this.size
         });
     }
 
     onAddGroup(): void {
-
+        this._params.closeCallback({
+            action: 'navigate',
+            value: ['add', this._params.context['_class']]
+        })
     }
 
     private basePassed(args: any): void {
