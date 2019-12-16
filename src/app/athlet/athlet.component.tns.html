@@ -54,7 +54,7 @@
                        horizontalAlignment="center" class="number"></Label>
                 <Label [text]="athlet.class" col="0" row="3" class="option" horizontalAlignment="center"></Label>
 
-                <Label [text]="('Name: '|L) + athlet.fio" col="1" row="0" class="option"></Label>
+                <Label [text]="athlet.fio" col="1" row="0" class="option"></Label>
                 <Label [text]="'NFC: ' + (athlet.nfc_id ? ('assigned'|L) : ('not assigned'|L))" col="1" row="1"
                        [class.-warning]="!athlet.nfc_id" class="option font-weight-bold"></Label>
                 <Label [text]="('Passed marks: '|L) + athlet.marks.length" col="1" row="2"

@@ -3,10 +3,12 @@
     <Button (tap)="onRemoveGroup()" row="0" col="1" [text]="'Remove all groups'"></Button>
     <ListView row="2" colSpan="2" [items]="groupsDict|keyvalue" (itemTap)="onItemTap($event)">
         <ng-template let-group="item" let-i="index" let-odd="odd" let-even="even">
-            <GridLayout columns="auto, *" [ngSwitch]="group.key" [class.odd]="odd" [class.even]="even">
+            <GridLayout columns="auto, *" rows="*,*" [ngSwitch]="group.key" [class.odd]="odd" [class.even]="even" [class.-warning]="group.key == _class">
                 <Label *ngSwitchCase="_class" [text]="('Athletes not in group: '|L) + (group.value.length)" col="0"></Label>
                 <Label *ngSwitchDefault [text]="('Athletes in group: '|L) + (group.value.length)" col="0"></Label>
-                <Label [text]="getNumbers(group.value)" textWrap="true" col="1"></Label>
+                <Label [text]="getNumbers(group.value)" textWrap="true" col="1" rowSpan="2" verticalAlignment="top"></Label>
+
+                <Label [text]="group.key" col="" row="1"></Label>
             </GridLayout>
         </ng-template>
     </ListView>

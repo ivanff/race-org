@@ -86,6 +86,11 @@
   background-color: rgba($grey-background, 0.5);
 }
 
+.rad-list {
+  padding: 5 0;
+  background-color: white;
+}
+
 .label-detail {
   border-left-color: $grey-background;
   border-left-width: 1;
@@ -167,6 +172,29 @@ TabStripItem {
   }
 }
 
+.gridTabs {
+  text-transform: uppercase;
+  padding: 0;
+  margin: 0;
+  background-color: #f2f2f2;
+  .barItemBottomBorder {
+    height: 2;
+    vertical-align: bottom;
+  }
+  .active {
+    font-weight: bold;
+    color: #3f51b5;
+    .barItemBottomBorder {
+      background-color: #3f51b5;
+    }
+  }
+  Button {
+    background-color: transparent;
+    border-width: 0;
+    z-index: 0;
+    margin: 0;
+  }
+}
 
 .font-small {
   Button {
@@ -180,9 +208,46 @@ TabStripItem {
   font-size: 24px;
 }
 
-.subaction {
+.subAction {
   background-color: #3f51b5;
-  color: white;
-  padding: 20px;
-  font-size: 18px;
+  color: #fff;
+  Label {
+    padding: 20px;
+    font-size: 18px;
+  }
 }
+
+
+RadListView {
+  .checking {
+    font-size: 18px;
+    color: gray;
+  }
+
+  .active {
+    background-color: #d7f283;
+    .checking {
+      color: black;
+    }
+  }
+
+  .gridLayoutSwipe {
+    padding: 0;
+    margin: 0;
+
+    .gridLayoutSwipeItem {
+      &.left {
+        background-color: #aee400;
+      }
+      &.right {
+        background-color: #ff5e21;
+      }
+      height: 100%;
+      .checking {
+        color: white;
+      }
+    }
+  }
+}
+
+

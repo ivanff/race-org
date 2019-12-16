@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <string name="_Size_of_group_is_more_than_athletes_count___s__in_class_gNSUF">"Размер группы больше кол-ва атлетов (%1$s) в классе"</string>
   <string name="_Athlete___ZfJs5e">"Атлет: "</string>
   <string name="_Start_group___1hJ7A5">"Старотовая группа"</string>
   <string name="_Start_lists_Z1XjT8X">"Стартовые листы"</string>

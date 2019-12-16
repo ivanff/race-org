@@ -1,0 +1,94 @@
+<GridLayout rows="auto, auto, *">
+    <GridLayout row="0" columns="auto, *" rows="*,*" class="subAction">
+        <Label [text]="('Group: '|L) + group" row="0" col="0"></Label>
+        <Label [text]="('Selected: '|L) + (activeTab == 'IN_GROUP' ? radItems.length : backupSelected) " row="1" col="0"></Label>
+
+        <GridLayout col="1" rowSpan="2" columns="auto, auto" verticalAlignment="center" horizontalAlignment="right" orientation="vertical">
+            <Button [text]="'Delete'|L" (tap)="onDelete()" col="0" class="btn -warning"></Button>
+            <Button [text]="'Save'|L" (tap)="onSave()" col="1" class="btn -primary"></Button>
+        </GridLayout>
+    </GridLayout>
+
+    <GridLayout row="1" columns="*, *" rows="*" class="gridTabs"
+                androidElevation="3"
+                android:backgroundColor="white">
+        <StackLayout col="0" [class.active]="activeTab == 'IN_GROUP'">
+            <Button [text]="'In group'"
+                    (tap)="onActiveTab('IN_GROUP')"></Button>
+            <GridLayout class="barItemBottomBorder"></GridLayout>
+        </StackLayout>
+
+
+        <StackLayout col="1" [class.active]="activeTab == 'OUT_OF_GROUP'">
+            <Button [text]="'Out of group'"
+                    (tap)="onActiveTab('OUT_OF_GROUP')"></Button>
+            <GridLayout class="barItemBottomBorder"></GridLayout>
+        </StackLayout>
+    </GridLayout>
+
+    <GridLayout row="2" rows="auto, *">
+        <GridLayout [visibility]="activeTab == 'IN_GROUP' ? 'collapse' : 'visible'"
+                    row="0" columns="100, *" rows="40"
+                    androidElevation="3"
+                    android:backgroundColor="white">
+            <Switch col="0" [checked]="checked" (checkedChange)="onCheckedChange($event)"
+                    horizontalAlignment="center" verticalAlignment="center">
+            </Switch>
+            <Label col="1" [text]="'Show athlete in other group'" verticalAlignment="center"></Label>
+        </GridLayout>
+
+        <RadListView #radListRef
+                     row="1"
+                     [items]="radItems"
+                     selectionBehavior="None"
+                     (loaded)="radListLoaded($event)"
+                     (itemSwipeProgressEnded)="onSwipeCellFinished($event)"
+                     (itemSwipeProgressStarted)="onSwipeCellStarted($event)"
+                     (itemSwipeProgressChanged)="onCellSwiping($event)"
+                     scrollBarIndicatorVisible="true"
+                     swipeActions="true">
+
+            <ng-template tkListItemTemplate let-athlet="item" let-i="index" let-odd="odd" let-even="even">
+
+                <GridLayout columns="auto, *, auto" class="rad-list">
+                    <Label col="0" text="&#xf053;" class="fas checking"></Label>
+                    <GridLayout col="1" columns="60, *" rows="*, *, *" [class.odd]="odd">
+
+                        <Label [text]="athlet.number" col="0" row="0" rowSpan="2" class="number" verticalAlignment="center" horizontalAlignment="center"></Label>
+
+                        <Label [text]="athlet.class" col="0" row="2" class="option p-r-4 p-l-4"></Label>
+
+                        <Label [text]="athlet.fio" col="1" row="0" class="option"></Label>
+
+                        <Label [text]="'NFC: ' + (athlet.nfc_id ? ('assigned'|L) : ('not assigned'|L))"
+                               [class.-warning]="!athlet.nfc_id"
+                               col="1" row="1" class="option"></Label>
+                        <Label [text]="'Group: ' + athlet.group[_competition.selected_competition.id].id"
+                               col="1" row="2" class="option"></Label>
+
+                    </GridLayout>
+                    <Label col="2" text="&#xf054;" class="fas checking"></Label>
+                </GridLayout>
+
+            </ng-template>
+
+            <GridLayout *tkListItemSwipeTemplate columns="60, *, 60" rows="auto" class="gridLayoutSwipe"
+                        verticalAlignment="center" horizontalAlignment="center">
+                <GridLayout id="mark-view" col="0"
+                            (tap)="onLeftSwipeClick($event)"
+                            class="gridLayoutSwipeItem left">
+                    <Label [text]="activeTab =='IN_GROUP' ? '&#xf503;' : '&#xf4fc;'"
+                           class="fas checking" verticalAlignment="center" horizontalAlignment="center"></Label>
+                </GridLayout>
+                <GridLayout id="delete-view" col="2" (tap)="onRightSwipeClick($event)" class="gridLayoutSwipeItem right">
+                    <Label text="&#xf05a;" class="fas checking" verticalAlignment="center" horizontalAlignment="center"></Label>
+                </GridLayout>
+            </GridLayout>
+
+        </RadListView>
+
+    </GridLayout>
+
+</GridLayout>
+
+

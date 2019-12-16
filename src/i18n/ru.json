@@ -112,5 +112,6 @@
   "About": "О нас",
   "Start lists": "Стартовые листы",
   "Start group: ": "Старотовая группа",
-  "Athlete: ": "Атлет: "
+  "Athlete: ": "Атлет: ",
+  "Size of group is more than athletes count (%s) in class": "Размер группы больше кол-ва атлетов (%s) в классе"
 }

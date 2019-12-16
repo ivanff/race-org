@@ -49,7 +49,7 @@ export class StartListAddDialogComponent implements OnInit {
     onAddGroup(): void {
         this._params.closeCallback({
             action: 'navigate',
-            value: ['add', this._params.context['_class']]
+            value: ['add', this._params.context['_class'], `${this._params.context['_class']}_${this._params.context['groupsCount']}`]
         })
     }
 

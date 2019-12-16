@@ -13,10 +13,10 @@ import {AuthGuard} from "@src/app/web/core/guard/auth.guard"
 import {ScanComponent} from "@src/app/scan/scan.component"
 import {LocalLogComponent} from "@src/app/scan/local-log/local-log.component"
 import {CheckpointResolver} from "@src/app/shared/resolvers/checkpoint.resolver"
-import {StartListComponent} from "@src/app/home/start-list/start-list.component"
-import {StartListGroupComponent} from "@src/app/home/start-list/start-list-group/start-list-group.component"
+import {StartListGroupComponent} from "@src/app/start-list/start-list-group/start-list-group.component"
+import {StartListTabsComponent} from "@src/app/start-list/start-list-tabs.component"
+import {StartListComponent} from "@src/app/start-list/start-list.component"
 import {AthletListResolve} from "@src/app/shared/resolvers/athlet-list.resolver"
-import {StartListAddComponent} from "@src/app/home/start-list/start-list-add/start-list-add.component"
 
 export const routes: Routes = [
     {
@@ -59,35 +59,36 @@ export const routes: Routes = [
                     competition: CompetitionResolve,
                 }
             },
+        ]
+    },
+    {
+        path: "start-list",
+        component: StartListComponent,
+        canActivate: [
+            AuthGuard
+        ],
+        data: {
+            strict: true
+        },
+        resolve: {
+            competition: CompetitionResolve
+        },
+        children: [
             {
-                path: "start-list",
-                component: StartListComponent,
-                data: {
-                    strict: true
-                },
-                resolve: {
-                    competition: CompetitionResolve
-                },
+                path: "",
+                component: StartListTabsComponent
             },
             {
-                path: "start-list/add/:class",
-                component: StartListAddComponent,
-                data: {
-                    strict: true
-                },
+                path: "add/:class/:group",
+                component: StartListGroupComponent,
                 resolve: {
-                    competition: CompetitionResolve,
                     athlets: AthletListResolve,
                 },
             },
             {
-                path: "start-list/:group",
+                path: "list/:class/:group",
                 component: StartListGroupComponent,
-                data: {
-                    strict: true
-                },
                 resolve: {
-                    competition: CompetitionResolve,
                     athlets: AthletListResolve,
                 }
             },

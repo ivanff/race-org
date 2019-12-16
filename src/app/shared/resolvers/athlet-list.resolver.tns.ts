@@ -3,37 +3,49 @@ import {ActivatedRouteSnapshot, Resolve, RouterStateSnapshot} from '@angular/rou
 import {firestore} from 'nativescript-plugin-firebase'
 import {Athlet} from "@src/app/shared/interfaces/athlet"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
+import {StartListGroup} from "@src/app/shared/interfaces/start-list"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
 @Injectable()
-export class AthletListResolve implements Resolve<Array<Athlet>> {
+export class AthletListResolve implements Resolve<Athlet[]> {
     constructor(private _competition: CompetitionService) {
     }
 
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<Array<Athlet>> {
-        const colRef: firestore.CollectionReference =firebase.firestore().collection(this._competition.getAthletsCollectionPath())
+    private hasGroup(athlet: Athlet): boolean {
+        if (athlet.hasOwnProperty('group')) {
+            return athlet.group ? athlet.group.hasOwnProperty(this._competition.selected_competition.id) : false
+        } else {
+            return false
+        }
+    }
+
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<Athlet[]> {
+        let colRef: firestore.CollectionReference | firestore.Query =firebase.firestore().collection(this._competition.getAthletsCollectionPath())
+
         if (route.params.hasOwnProperty('class')) {
-            return colRef.where('class', '==', route.params['class'])
-                .get().then((snapshot: firestore.QuerySnapshot) => {
-                    const athlets: Array<Athlet> = []
-                    snapshot.forEach((doc: firestore.DocumentSnapshot) => {
-                        const id = doc.id
-                        athlets.push({id, ...doc.data()} as Athlet)
-                    })
-                    return athlets
-                })
-        } else if (route.params.hasOwnProperty('group')) {
-            return colRef.where(`group.${this._competition.selected_competition.id}.id`, '==', route.params['group'])
-                .get().then((snapshot: firestore.QuerySnapshot) => {
-                    const athlets: Array<Athlet> = []
-                    snapshot.forEach((doc: firestore.DocumentSnapshot) => {
-                        const id = doc.id
-                        athlets.push({id, ...doc.data()} as Athlet)
-                    })
-                    return athlets
-                })
+            colRef = colRef.where('class', '==', route.params['class'])
         }
 
+        return colRef.get().then((snapshot: firestore.QuerySnapshot): Athlet[] => {
+            const athlets: Array<Athlet> = []
+
+            snapshot.forEach((doc: firestore.DocumentSnapshot) => {
+                const id = doc.id
+                const athlet = {id, ...doc.data()} as Athlet
+
+                if (!this.hasGroup(athlet)) {
+                    athlet.group = athlet.group || {}
+                    athlet.group[this._competition.selected_competition.id] = {
+                        id: athlet.class,
+                        order: -1,
+                        start_time: null
+                    } as StartListGroup
+                }
+                athlets.push(athlet)
+            })
+
+            return athlets
+        })
     }
 }

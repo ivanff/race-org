@@ -10,9 +10,8 @@ import {NativeScriptUIListViewModule} from "nativescript-ui-listview/angular"
 import {FilterPipe} from "@src/app/shared/pipes/filter.pipe"
 import {RootComponent} from "@src/app/root/root.component"
 import {CompetitionComponent} from "@src/app/home/competition/competition.component"
-import {StartListComponent, StartListTabComponent} from "@src/app/home/start-list/start-list.component"
-import {StartListGroupComponent} from "@src/app/home/start-list/start-list-group/start-list-group.component"
-import {StartListAddDialogComponent} from "@src/app/home/start-list/start-list-add-dialog/start-list-add-dialog.component"
+import {StartListGroupComponent} from "@src/app/start-list/start-list-group/start-list-group.component"
+import {StartListAddDialogComponent} from "@src/app/start-list/start-list-add-dialog/start-list-add-dialog.component"
 import {StatComponent} from "@src/app/home/stat/stat.component"
 import {OrderModule} from "ngx-order-pipe"
 import {AdminResolve} from "@src/app/shared/admin.resolver"
@@ -49,19 +48,24 @@ import {BarcodeService} from "@src/app/mobile/services/barcode.service"
 
 // Uncomment and add to NgModule imports  if you need to use the HTTP wrapper
 import {NativeScriptHttpClientModule} from 'nativescript-angular/http-client'
+import {StartListTabItemComponent} from "@src/app/start-list/start-list-tab-item.component"
+import {StartListComponent} from "@src/app/start-list/start-list.component"
+import {StartListTabsComponent} from "@src/app/start-list/start-list-tabs.component"
+import {HasGroupPipe} from "@src/app/shared/pipes/hasGroup.pipe"
+import {RadListSwipeComponent} from "@src/app/shared/rad-list-swipe.component"
 import {AthletListResolve} from "@src/app/shared/resolvers/athlet-list.resolver"
-import {StartListAddComponent} from "@src/app/home/start-list/start-list-add/start-list-add.component"
 
 
 @NgModule({
     entryComponents: [
         RootComponent,
         CompetitionDetailQrComponent,
-        StartListTabComponent,
+        StartListTabItemComponent,
         StartListAddDialogComponent,
     ],
     declarations: [
         BaseComponent,
+        RadListSwipeComponent,
         AppComponent,
         RootComponent,
 
@@ -83,14 +87,15 @@ import {StartListAddComponent} from "@src/app/home/start-list/start-list-add/sta
         CompetitionDetailQrComponent,
 
         StartListComponent,
-        StartListTabComponent,
+        StartListTabsComponent,
+        StartListTabItemComponent,
         StartListGroupComponent,
         StartListAddDialogComponent,
-        StartListAddComponent,
 
         FilterPipe,
         DeviceNamePipe,
         GetDevicePipe,
+        HasGroupPipe,
         JoinPipe,
         TzDatePipe,
         TzDateStartPipe,
