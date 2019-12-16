@@ -54,6 +54,7 @@ import {StartListTabsComponent} from "@src/app/start-list/start-list-tabs.compon
 import {HasGroupPipe} from "@src/app/shared/pipes/hasGroup.pipe"
 import {RadListSwipeComponent} from "@src/app/shared/rad-list-swipe.component"
 import {AthletListResolve} from "@src/app/shared/resolvers/athlet-list.resolver"
+import {StartListGoDialogComponent} from "@src/app/start-list/start-list-go-dialog/start-list-go-dialog.component"
 
 
 @NgModule({
@@ -62,6 +63,7 @@ import {AthletListResolve} from "@src/app/shared/resolvers/athlet-list.resolver"
         CompetitionDetailQrComponent,
         StartListTabItemComponent,
         StartListAddDialogComponent,
+        StartListGoDialogComponent,
     ],
     declarations: [
         BaseComponent,
@@ -91,6 +93,7 @@ import {AthletListResolve} from "@src/app/shared/resolvers/athlet-list.resolver"
         StartListTabItemComponent,
         StartListGroupComponent,
         StartListAddDialogComponent,
+        StartListGoDialogComponent,
 
         FilterPipe,
         DeviceNamePipe,

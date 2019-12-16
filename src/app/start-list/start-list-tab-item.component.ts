@@ -10,12 +10,14 @@ import {StartListAddDialogComponent} from "@src/app/start-list/start-list-add-di
 import * as _ from "lodash"
 import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
 import {localize as L} from "nativescript-localize"
+import {DatePipe} from "@angular/common"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
 
 @Component({
-    templateUrl: './start-list-tab-item.component.tns.html'
+    templateUrl: './start-list-tab-item.component.tns.html',
+    providers: [DatePipe]
 })
 export class StartListTabItemComponent implements OnInit, OnDestroy {
     private destroy = new ReplaySubject<any>(1)
@@ -27,6 +29,7 @@ export class StartListTabItemComponent implements OnInit, OnDestroy {
                 private _competition: CompetitionService,
                 private modalService: ModalDialogService,
                 private vcRef: ViewContainerRef,
+                private datePipe: DatePipe,
                 private activeRoute: ActivatedRoute,
                 private routerExtensions: RouterExtensions,
                 private snackbar: SnackbarService) {
@@ -79,6 +82,16 @@ export class StartListTabItemComponent implements OnInit, OnDestroy {
 
     getNumbers(athlets: Array<Athlet>): string {
         return athlets.map((athlet: Athlet) => athlet.number).sort((a, b) => a > b ? 1 : -1).join(';')
+    }
+
+    getStartTime(athlets: Array<Athlet>): string {
+        if (athlets) {
+            const start_time: Date | null = athlets[0].group[this._competition.selected_competition.id].start_time
+            if (start_time) {
+                return this.datePipe.transform(start_time, 'dd.MM HH:mm:ss')
+            }
+        }
+        return L("Not started")
     }
 
     onSplit(): Promise<any> {

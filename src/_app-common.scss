@@ -89,6 +89,9 @@
 .rad-list {
   padding: 5 0;
   background-color: white;
+  &.odd {
+    background-color: $grey-background;
+  }
 }
 
 .label-detail {

@@ -32,6 +32,7 @@ import {BehaviorSubject, Observable, ReplaySubject} from "rxjs"
 import {takeUntil} from "rxjs/operators"
 import {getNumber, setNumber} from "tns-core-modules/application-settings"
 import {StartListTabItemComponent} from "@src/app/start-list/start-list-tab-item.component"
+import {localize as L} from "nativescript-localize"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
