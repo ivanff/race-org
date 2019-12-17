@@ -56,7 +56,17 @@ export class StartListTabItemComponent implements OnInit, OnDestroy {
                     order: -1,
                     start_time: null
                 }
-                const group: StartListGroup = athlet.group ? (athlet.group.hasOwnProperty(this._competition.selected_competition.id) ? athlet.group[this._competition.selected_competition.id] : blank_group) : blank_group
+
+                if (athlet.group) {
+                    if (!athlet.group.hasOwnProperty(this._competition.selected_competition.id)) {
+                        athlet.group[this._competition.selected_competition.id] = blank_group
+                    }
+                } else {
+                    athlet.group = {}
+                    athlet.group[this._competition.selected_competition.id] = blank_group
+                }
+
+                const group: StartListGroup = athlet.group[this._competition.selected_competition.id]
                 if (!groupsDict.hasOwnProperty(group.id)) {
                     groupsDict[group.id] = [athlet]
 

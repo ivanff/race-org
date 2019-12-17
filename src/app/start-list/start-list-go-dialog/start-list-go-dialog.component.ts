@@ -46,6 +46,9 @@ export class StartListGoDialogComponent extends DialogComponent {
 
     onStart(): void {
         this.pause$.next(false)
+        if (this.unsubscriber) {
+            this.unsubscriber.unsubscribe()
+        }
         this.unsubscriber = this.timer$.subscribe((next) => {
             if (!next) {
                 this.start_time = new Date()

@@ -1,12 +1,15 @@
 <GridLayout columns="*, *" rows="auto,*" class="font-small">
-    <Button (tap)="onSplit()" row="0" col="0" [text]="'Split athletes by group'"></Button>
-    <Button (tap)="onRemoveGroup()" row="0" col="1" [text]="'Remove all groups'"></Button>
+    <Button (tap)="onSplit()" row="0" col="0" [text]="'Split athletes by group'|L"></Button>
+    <Button (tap)="onRemoveGroup()" row="0" col="1" [text]="'Remove all groups'|L"></Button>
     <ListView row="2" colSpan="2" [items]="groupsDict|keyvalue" (itemTap)="onItemTap($event)">
         <ng-template let-group="item" let-i="index" let-odd="odd" let-even="even">
-            <GridLayout columns="auto, *" rows="*,*,*" [ngSwitch]="group.key" [class.odd]="odd" [class.even]="even" [class.-warning]="group.key == _class">
+            <GridLayout columns="auto, *" rows="*,*,*"
+                        [ngSwitch]="group.key"
+                        [class.odd]="odd"
+                        [class.-warning]="group.key == _class">
                 <Label *ngSwitchCase="_class" [text]="('Athletes not in group: '|L) + (group.value.length)" col="0" row="0" class="option"></Label>
                 <Label *ngSwitchDefault [text]="('Athletes in group: '|L) + (group.value.length)" col="0" row="0" class="option"></Label>
-                <Label [text]="getNumbers(group.value)" textWrap="true" col="1" rowSpan="3" verticalAlignment="top" class="option"></Label>
+                <Label [text]="getNumbers(group.value)" textWrap="true" col="1" rowSpan="3" verticalAlignment="top" class="option p-l-5"></Label>
                 <Label [text]="group.key" col="0" row="1" class="option"></Label>
                 <Label [text]="getStartTime(group.value)" col="0" row="2" class="option font-weight-bold"></Label>
             </GridLayout>
