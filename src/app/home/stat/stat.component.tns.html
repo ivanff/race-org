@@ -14,12 +14,12 @@
         <Label [text]="('Total registered athletes: '|L) + athlets_count"></Label>
         <Label *ngFor="let _class of competition.classes" [text]="('Class: '|L) + _class + ' ' + (by_class_count.hasOwnProperty(_class) ? by_class_count[_class] : ('wait'|L))"></Label>
         <Button class="btn -primary scan" [text]="'Scan'|L" [nsRouterLink]="['/scan']"></Button>
-        <Button [text]="'1'|L"
-                [nsRouterLink]="['/start-list', 'list', 'hobby', 'hobby_3']"
-                class="btn"></Button>
-        <Button [text]="'2'|L"
-                [nsRouterLink]="['/start-list', 'add', 'hobby']"
-                class="btn"></Button>
+<!--        <Button [text]="'1'|L"-->
+<!--                [nsRouterLink]="['/start-list', 'list', 'hobby', 'hobby_3']"-->
+<!--                class="btn"></Button>-->
+<!--        <Button [text]="'2'|L"-->
+<!--                [nsRouterLink]="['/start-list', 'add', 'hobby']"-->
+<!--                class="btn"></Button>-->
     </StackLayout>
     <StackLayout *ngSwitchCase="null">
         <Button [text]="'Select\ncompetition'|L"

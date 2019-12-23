@@ -111,6 +111,8 @@
   <string name="Back">"Назад"</string>
   <string name="Exit">"Закрыть и выйти"</string>
   <string name="home">"домой"</string>
+  <string name="_The_group__s_will_not_be_deleted__2dmi2b">"Группа %1$s будет удалена!"</string>
+  <string name="_All_groups_of_this_class_will_be_deleted__1zqki5">"Все группы этого класса будут удалены!"</string>
   <string name="_Drop_Local_log_2440Ao">"Удалить локальный лог"</string>
   <string name="_Upload_to_server_LkhLW">"Загрузи данные на сервер"</string>
   <string name="_Local_log_VzeW7">"Локальный лог"</string>

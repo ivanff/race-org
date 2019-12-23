@@ -114,6 +114,10 @@
   <string name="Back">"Back"</string>
   <string name="Exit">"Exit"</string>
   <string name="home">"home"</string>
+  <string name="_The_group__s_will_not_be_deleted__2dmi2b">"The group %1$s will not be deleted!"</string>
+  <string name="_All_groups_of_this_class_will_be_deleted__1zqki5">"All groups of this class will be deleted!"</string>
+  <string name="_Drop_Local_log_2440Ao">"Drop Local log"</string>
+  <string name="_Upload_to_server_LkhLW">"Upload to server"</string>
   <string name="_Local_log_VzeW7">"Local log"</string>
   <string name="Join">"Join"</string>
   <string name="visible">"visible"</string>
@@ -143,6 +147,4 @@
   <string name="assigned">"assigned"</string>
   <string name="_Search_shop_1giToM">"Search shop"</string>
   <string name="Scan">"Scan"</string>
-  <string name="_Drop_Local_log_2440Ao">"Drop Local log"</string>
-  <string name="_Upload_to_server_LkhLW">"Upload to server"</string>
 </resources>
