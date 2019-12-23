@@ -1,30 +1,20 @@
 import {
-    Component,
-    OnInit,
+    Component
 } from '@angular/core'
 import {ModalDialogParams} from "nativescript-angular"
-import {TextField} from "tns-core-modules/ui/text-field"
-import * as application from "tns-core-modules/application"
+import {TextField} from "@nativescript/core/ui/text-field"
+import {DialogComponent} from "@src/app/shared/dialog.component"
 
 
 @Component({
     selector: 'app-start-list-add-dialog',
-    templateUrl: './start-list-add-dialog.component.html',
-    styleUrls: ['./start-list-add-dialog.component.scss']
+    templateUrl: './start-list-add-dialog.component.html'
 })
-export class StartListAddDialogComponent implements OnInit {
+export class StartListAddDialogComponent extends DialogComponent {
     size: number
-    constructor(private _params: ModalDialogParams) {
-    }
 
-    ngOnInit() {
-        console.log('>> StartListAddDialogComponent ngOnInit')
-        application.android.on(application.AndroidApplication.activityBackPressedEvent, this.basePassed, this)
-    }
-
-    ngOnDestroy(): void {
-        console.log('>> StartListAddDialogComponent ngOnDestroy')
-        application.android.off(application.AndroidApplication.activityBackPressedEvent, this.basePassed, this)
+    constructor(public _params: ModalDialogParams) {
+        super(_params)
     }
 
     onSizeChange($event): void {
@@ -33,33 +23,23 @@ export class StartListAddDialogComponent implements OnInit {
     }
 
     onSplitBySize(): void {
-        this._params.closeCallback({
+        this.onClose({
             action: 'size',
             value: this.size
-        });
-    }
-
-    onSplitByStage(): void {
-        this._params.closeCallback({
-            action: 'stage',
-            value: this.size
-        });
-    }
-
-    onAddGroup(): void {
-        this._params.closeCallback({
-            action: 'navigate',
-            value: ['add', this._params.context['_class'], `${this._params.context['_class']}_${this._params.context['groupsCount']}`]
         })
     }
 
-    private basePassed(args: any): void {
-        args.cancel = true
-        args.stopEvent = true
-        this.onClose()
+    onSplitByStage(): void {
+        this.onClose({
+            action: 'stage',
+            value: this.size
+        })
     }
 
-    onClose(): void {
-        this._params.closeCallback();
+    onAddGroup(): void {
+        this.onClose({
+            action: 'navigate',
+            value: ['add', this._params.context['_class'], `${this._params.context['_class']}_${this._params.context['groupsCount']}`]
+        })
     }
 }

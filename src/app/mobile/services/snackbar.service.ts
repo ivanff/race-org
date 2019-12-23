@@ -3,7 +3,8 @@ import {SnackBar, SnackBarOptions} from "@nstudio/nativescript-snackbar"
 import {defer, Subject} from "rxjs"
 import {concatMap} from "rxjs/operators"
 import {Msg} from "@src/app/shared/interfaces/msg"
-
+import {localize as L} from "nativescript-localize"
+import {confirm as confirm_dialog} from "@nativescript/core/ui/dialogs"
 
 @Injectable({
     providedIn: 'root'
@@ -70,6 +71,16 @@ export class SnackbarService implements OnDestroy {
             } as SnackBarOptions)
         }
         return null
+    }
+
+    confirm(msg: string, title?: string): Promise<boolean> {
+        const options = {
+            title: title ? title : L("Are you sure?"),
+            message: msg,
+            okButtonText: L('Yes'),
+            cancelButtonText: L('No'),
+        }
+        return confirm_dialog(options)
     }
 
 }

@@ -8,7 +8,7 @@ import {
 } from "nativescript-plugin-firebase"
 import {RouterExtensions} from "nativescript-angular"
 import {BehaviorSubject} from "rxjs"
-import {EventData} from "tns-core-modules/data/observable"
+import {EventData} from "@nativescript/core/data/observable"
 import {VerificationObservableModel} from "@src/app/mobile/observable/verification-custom-observable"
 import * as _ from "lodash"
 const firebase = require("nativescript-plugin-firebase")

@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core'
-import {Page} from "tns-core-modules/ui/page"
+import {Page} from "@nativescript/core/ui/page"
 import {AuthService, verificationObservable} from "@src/app/mobile/services/auth.service"
-import {TextField} from "tns-core-modules/ui/text-field"
+import {TextField} from "@nativescript/core/ui/text-field"
 import * as firebase from 'nativescript-plugin-firebase'
 
 firebase["requestPhoneAuthVerificationCode"] = onRequestPhoneAuthVerificationCode

@@ -4,14 +4,14 @@ import {Competition} from "@src/app/shared/interfaces/competition"
 import {AuthService} from "@src/app/mobile/services/auth.service"
 import {first, map, shareReplay, switchMap, takeUntil} from "rxjs/operators"
 import {firestore} from "nativescript-plugin-firebase"
-import {setString, remove} from "tns-core-modules/application-settings"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
-import {device} from "tns-core-modules/platform"
+import {device} from "@nativescript/core/platform"
 import {MobileDevice} from "@src/app/shared/interfaces/mobile-device"
 import {HttpClient} from "@angular/common/http"
 import {environment} from "@src/environments/environment"
 import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
 import {localize as L} from "nativescript-localize"
+import {remove, setString} from "@nativescript/core/application-settings"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
@@ -22,8 +22,6 @@ export class CompetitionService implements OnDestroy {
     selected_competition: Competition
     current_checkpoint: Checkpoint
     selected_competition_id$: any
-    // start_time: moment | null
-    // finish_time: moment | null
     isAdmin = false
     private roles = {}
     private destroy = new ReplaySubject<any>(1)

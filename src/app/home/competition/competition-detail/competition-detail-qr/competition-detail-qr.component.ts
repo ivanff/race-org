@@ -1,8 +1,8 @@
 import {Component, OnDestroy, OnInit} from '@angular/core'
 import {ModalDialogParams} from "nativescript-angular"
-import {fromBase64} from "tns-core-modules/image-source"
+import {fromBase64} from "@nativescript/core/image-source"
 import {QRCode} from "qrcode-generator-ts"
-import * as application from "tns-core-modules/application"
+import * as application from "@nativescript/core/application"
 
 @Component({
     selector: 'app-competition-detail-qr',

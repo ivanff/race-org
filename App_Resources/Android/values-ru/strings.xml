@@ -1,5 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <string name="_Athletes_in_group___J6bg8">"Атлеты в группе: "</string>
+  <string name="_Athletes_not_in_groups___22MRRO">"Атлеты не в группах: "</string>
+  <string name="_Remove_all_groups_ZDzH3N">"Удалить все группы"</string>
+  <string name="_Split_athletes_by_group_PzkM6">"Разделить атлетов на группы"</string>
+  <string name="_Group__s_is_started_at__d_Z6FXcw">"Группа %1$s стартовала в %2$s"</string>
+  <string name="_Removed__s_athlete_s__1be1Hr">"Удалено %1$s атлета(ов)"</string>
+  <string name="_Modified__s_athlete_s__Z14GWR">"Изменено %1$s атлета(ов)"</string>
+  <string name="_Start_time___8MSoX">"Время старта: "</string>
+  <string name="_Show_athlete_in_other_group_1u0Jp3">"Показывать алтетов в других группах"</string>
+  <string name="_Out_of_group_1eUuP">"Вне группы"</string>
+  <string name="_In_group_Z25FWmU">"В группе"</string>
+  <string name="Save">"Сохранить"</string>
+  <string name="Delete">"Удалить"</string>
+  <string name="_Selected___op9aV">"Выбрано: "</string>
+  <string name="_Group___2jpCnW">"Группа:"</string>
+  <string name="_Create_group_gszrR">"Создать группу"</string>
+  <string name="_Create_groups_by_results_of_previous_stage_ZpaAam">"Создать группы на основе\nрезультатов предыдущего этапа"</string>
+  <string name="_Split_athletes_by_specific_group_size_ZpGGzh">"Разделить атлетов на\nгруппы выбранного размера"</string>
+  <string name="_Group_size_Z1gMQsh">"Размер группы"</string>
+  <string name="_Split_athletes_Qakea">"Разделить атлетов"</string>
+  <string name="_Not_started_4m6Uk">"Не стартовал"</string>
+  <string name="Reset">"Сброс"</string>
+  <string name="Pause">"Пауза"</string>
+  <string name="Resume">"Продолжить"</string>
+  <string name="Start">"Старт"</string>
   <string name="_Size_of_group_is_more_than_athletes_count___s__in_class_gNSUF">"Размер группы больше кол-ва атлетов (%1$s) в классе"</string>
   <string name="_Athlete___ZfJs5e">"Атлет: "</string>
   <string name="_Start_group___1hJ7A5">"Старотовая группа"</string>
@@ -86,6 +111,8 @@
   <string name="Back">"Назад"</string>
   <string name="Exit">"Закрыть и выйти"</string>
   <string name="home">"домой"</string>
+  <string name="_Drop_Local_log_2440Ao">"Удалить локальный лог"</string>
+  <string name="_Upload_to_server_LkhLW">"Загрузи данные на сервер"</string>
   <string name="_Local_log_VzeW7">"Локальный лог"</string>
   <string name="Join">"Присоединиться"</string>
   <string name="visible">""</string>
@@ -103,7 +130,8 @@
   <string name="_Enter_with_Social_account_1FNIa3">"Вход через социальные сети"</string>
   <string name="_Set_this_device_to_admin_zj7DQ">"Установить это устройство как административное"</string>
   <string name="_Scan_QR_code_Z1UmHjW">"Сканировать QR код"</string>
-  <string name="Cancel">"Отметить"</string>
+  <string name="Mark">"Отметить"</string>
+  <string name="Cancel">"Отменить"</string>
   <string name="_Athlete_number_1qzOcS">"Номер атлета"</string>
   <string name="Close">"Закрыть"</string>
   <string name="Open">"Открыть"</string>

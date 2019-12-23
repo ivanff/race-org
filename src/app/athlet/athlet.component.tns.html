@@ -43,8 +43,7 @@
 
     <ListView row="2" col="0"
               [items]="athlets|filter:['fio', 'number', 'phone']:{search: searchPhrase}"
-              (itemTap)="onItemTap($event)"
-              class="items">
+              (itemTap)="onItemTap($event)">
         <ng-template let-athlet="item" let-i="index" let-odd="odd" let-even="even">
             <GridLayout columns="60, *" rows="*, *, *"
                         [class.odd]="odd"

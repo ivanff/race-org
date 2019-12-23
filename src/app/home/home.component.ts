@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core'
 import {BaseComponent} from "@src/app/shared/base.component"
 import {RouterExtensions} from "nativescript-angular"
 import * as appversion from "nativescript-appversion"
-import {openUrl} from "tns-core-modules/utils/utils"
+import {openUrl} from "@nativescript/core/utils/utils"
 
 @Component({
     selector: 'app-home',

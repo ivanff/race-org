@@ -6,20 +6,19 @@ import {
     OnDestroy,
     AfterViewInit,
     NgZone,
-    ChangeDetectorRef
+    ChangeDetectorRef, ElementRef
 } from "@angular/core";
 import {ModalDialogOptions, ModalDialogService} from "nativescript-angular/modal-dialog";
 import {RouterExtensions} from "nativescript-angular/router";
-import {RadSideDrawerComponent} from "nativescript-ui-sidedrawer/angular";
-import * as application from "tns-core-modules/application"
-import {confirm} from "tns-core-modules/ui/dialogs"
+import * as application from "@nativescript/core/application"
+import {confirm} from "@nativescript/core/ui/dialogs"
 import {exit} from "nativescript-exit"
 import {RootComponent} from "./root/root.component"
 import {NavigationEnd} from "@angular/router"
 import {filter} from "rxjs/operators"
 import {AuthService} from "./mobile/services/auth.service"
 import {CompetitionService} from "./mobile/services/competition.service"
-import {openUrl} from "tns-core-modules/utils/utils"
+import {openUrl} from "@nativescript/core/utils/utils"
 import {RadSideDrawer} from "nativescript-ui-sidedrawer"
 import {localize as L} from "nativescript-localize"
 
@@ -30,10 +29,12 @@ const firebase = require('nativescript-plugin-firebase')
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss']
 })
+// @ts-ignore
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     _activatedUrl: string = '/'
     private drawer: RadSideDrawer
-    @ViewChild("sideDrawerId", {static: false}) drawerComponent: RadSideDrawerComponent
+    // @ts-ignore
+    @ViewChild("sideDrawerId", {static: false}) drawerComponent: ElementRef
 
     constructor(private routerExtensions: RouterExtensions,
                 private modalService: ModalDialogService,
@@ -58,7 +59,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     ngAfterViewInit(): void {
         //check ngDestroy
-        this.drawer = this.drawerComponent.sideDrawer
+        this.drawer = this.drawerComponent.nativeElement as RadSideDrawer
         this.routerExtensions.router.events
             .pipe(
                 filter((event: any) => event instanceof NavigationEnd),

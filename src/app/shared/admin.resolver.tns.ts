@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core'
 import {ActivatedRouteSnapshot, Resolve, RouterStateSnapshot} from '@angular/router'
-import {prompt, PromptResult} from "tns-core-modules/ui/dialogs"
+import {prompt, PromptResult} from "@nativescript/core/ui/dialogs"
 
 
 @Injectable()

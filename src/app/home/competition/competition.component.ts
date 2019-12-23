@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core'
 import {RouterExtensions} from "nativescript-angular"
-import {device} from "tns-core-modules/platform"
+import {device} from "@nativescript/core/platform"
 import {firestore} from "nativescript-plugin-firebase"
 import {Competition} from "@src/app/shared/interfaces/competition"
 import {AuthService} from "@src/app/mobile/services/auth.service"
@@ -40,7 +40,7 @@ export class CompetitionComponent extends BaseComponent implements OnInit, OnDes
         this._competition.selected_competition_id$.pipe(
             takeUntil(this.destroy)
         ).subscribe((competition: Competition) => {
-            console.log('>> CompetitionComponent constructor', competition ? competition.title: null)
+            console.log('>> CompetitionComponent constructor subscribe', competition ? competition.title: null)
             this.selected_competition = competition
 
             const ids: Array<string> = this.competitions.map((item: Competition) => item.id)

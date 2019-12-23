@@ -1,13 +1,15 @@
 <StackLayout>
 
-    <GridLayout rows="auto, auto">
+    <GridLayout rows="auto, auto, auto">
+        <Label [text]="'Countdown'|L" class="text-center h2"></Label>
+        <Label [text]="timer ? timer : 'Go!'"
+               [class.-warning]="!timer"
+               row="1" class="start-timer text-center p-t-12 p-b-12"></Label>
 
-        <Label [text]="timer ? timer : 'Go!'" row="0" class="start-timer text-center p-t-12 p-b-12" [class.-warning]="!timer"></Label>
-
-        <GridLayout columns="*, *, *" row="1" class="font-small">
-            <Button class="btn -active" col="0" [text]="'Start'|L" (tap)="onStart()"></Button>
-            <Button class="btn -active" col="1" [text]="stop ? ('Resume'|L) : ('Pause'|L)" (tap)="onPause()"></Button>
-            <Button class="btn -active" col="2" [text]="'Reset'|L" (tap)="onReset()"></Button>
+        <GridLayout columns="*, *, *" row="2" class="font-small">
+            <Button class="btn -primary" col="0" [text]="'Start'|L" (tap)="onStart()"></Button>
+            <Button class="btn" col="1" [text]="stop ? ('Resume'|L) : ('Pause'|L)" (tap)="onPause()"></Button>
+            <Button class="btn" col="2" [text]="'Reset'|L" (tap)="onReset()"></Button>
         </GridLayout>
 
     </GridLayout>

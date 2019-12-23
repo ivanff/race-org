@@ -1,5 +1,8 @@
 <StackLayout>
-    <Tabs [selectedIndex]="tabIndex"
-          (selectedIndexChanged)="onSelectedIndexChanged($event)" #tabs>
+
+<!--    <Button [nsRouterLink]="['list', 'hobby', 'hobby_0']" row="0" col="1" [text]="'dsfdsfdsf'|L"></Button>-->
+<!--    <Button [nsRouterLink]="['/start-list', 'list', 'hobby', 'hobby_0']" row="0" col="1" [text]="'dsfdsfdsf'|L"></Button>-->
+<!--    <Label *ngFor="let athlet of (athlets$|async)" [text]="athlet.fio"></Label>-->
+    <Tabs (selectedIndexChanged)="onSelectedIndexChanged($event)" #tabs>
     </Tabs>
 </StackLayout>

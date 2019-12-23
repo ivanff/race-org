@@ -41,7 +41,7 @@ import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
 import {TzDateFinishPipe, TzDatePipe, TzDateStartPipe} from "@src/app/shared/pipes/tzdate.pipe"
 import {NfcService} from "@src/app/mobile/services/nfc.service"
 import {BarcodeService} from "@src/app/mobile/services/barcode.service"
-
+import {registerLocaleData} from "@angular/common"
 
 // Uncomment and add to NgModule imports if you need to use two-way binding
 // import { NativeScriptFormsModule } from 'nativescript-angular/forms'
@@ -56,6 +56,9 @@ import {RadListSwipeComponent} from "@src/app/shared/rad-list-swipe.component"
 import {AthletListResolve} from "@src/app/shared/resolvers/athlet-list.resolver"
 import {StartListGoDialogComponent} from "@src/app/start-list/start-list-go-dialog/start-list-go-dialog.component"
 
+import localeRu from "@angular/common/locales/ru"
+
+registerLocaleData(localeRu)
 
 @NgModule({
     entryComponents: [

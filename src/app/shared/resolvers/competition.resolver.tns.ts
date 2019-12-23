@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core'
 import {ActivatedRouteSnapshot, Resolve, RouterStateSnapshot} from '@angular/router'
-import {getString, hasKey} from "tns-core-modules/application-settings"
+import {getString, hasKey} from "@nativescript/core/application-settings"
 import {Competition} from "@src/app/shared/interfaces/competition"
 import {AuthService} from "@src/app/mobile/services/auth.service"
 import {MobileDevice} from "@src/app/shared/interfaces/mobile-device"
-import {device} from "tns-core-modules/platform"
+import {device} from "@nativescript/core/platform"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
 import {catchError, first, tap} from "rxjs/operators"
 import {Observable, of} from "rxjs"
@@ -56,8 +56,12 @@ export class CompetitionResolve implements Resolve<Competition | null> {
                 })
             )
         } else if (hasKey('selected_competition_id')) {
+            console.log(
+                'selected_competition_id',
+                getString('selected_competition_id')
+            )
             const selected_competition_ids: Array<string> = getString('selected_competition_id').split('_')
-            this._competition.selected_competition_id$.next(selected_competition_ids[0])
+            this._competition.selected_competition_id$.next(selected_competition_ids)
             return this._competition.selected_competition_id$.pipe(
                 first()
             )

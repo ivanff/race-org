@@ -1,5 +1,6 @@
 <GridLayout rows="auto, auto, *">
     <GridLayout rows="auto, auto" columns="*, *, *" row="0" class="subAction">
+
         <Label row="0" col="0" colSpan="3">
             <FormattedString editable="false">
                 <Span [text]="('Group: '|L) + group"></Span>
@@ -24,48 +25,33 @@
 
     </GridLayout>
 
-
-<!--    <GridLayout row="0" columns="auto, *" rows="*,*" class="subAction">-->
-<!--        <Label [text]="('Group: '|L) + group" row="0" col="0"></Label>-->
-<!--        <Label [text]="('Selected: '|L) + (activeTab == 'IN_GROUP' ? radItems.length : backupSelected) " row="1" col="0"></Label>-->
-
-<!--        <GridLayout col="1" rowSpan="2" columns="auto, auto"-->
-<!--                    verticalAlignment="center"-->
-<!--                    horizontalAlignment="right">-->
-<!--            <Button *ngIf="group != _class"-->
-<!--                    [text]="'Delete'|L"-->
-<!--                    (tap)="onDelete()" col="0"-->
-<!--                    class="btn -warning"></Button>-->
-<!--            <Button [text]="'Save'|L" (tap)="onSave()" col="1" class="btn -primary"></Button>-->
-<!--        </GridLayout>-->
-<!--    </GridLayout>-->
-
-    <GridLayout row="1" columns="*, *" rows="*" class="gridTabs"
-                androidElevation="3"
-                android:backgroundColor="white">
+    <GridLayout row="1" columns="*, *" rows="*" class="gridTabs">
         <StackLayout col="0" [class.active]="activeTab == 'IN_GROUP'">
             <Button [text]="'In group'|L"
+                    [isEnabled]="!pending"
                     (tap)="onActiveTab('IN_GROUP')"></Button>
-            <GridLayout class="barItemBottomBorder"></GridLayout>
         </StackLayout>
 
 
         <StackLayout col="1" [class.active]="activeTab == 'OUT_OF_GROUP'">
             <Button [text]="'Out of group'|L"
+                    [isEnabled]="!pending"
                     (tap)="onActiveTab('OUT_OF_GROUP')"></Button>
-            <GridLayout class="barItemBottomBorder"></GridLayout>
         </StackLayout>
     </GridLayout>
 
     <GridLayout row="2" rows="auto, *">
         <GridLayout [visibility]="activeTab == 'IN_GROUP' ? 'collapse' : 'visible'"
+                    visibility="collapse"
                     row="0" columns="100, *" rows="40"
                     androidElevation="3"
                     android:backgroundColor="white">
-            <Switch col="0" [checked]="checked" (checkedChange)="onCheckedChange($event)"
+            <Switch col="0"
+                    [checked]="checked"
+                    (checkedChange)="onCheckedChange($event)"
                     horizontalAlignment="center" verticalAlignment="center">
             </Switch>
-            <Label col="1" [text]="'Show athlete in other group'" verticalAlignment="center"></Label>
+            <Label col="1" [text]="'Show athlete in other group'|L" verticalAlignment="center"></Label>
         </GridLayout>
 
         <RadListView #radListRef
@@ -76,7 +62,6 @@
                      (itemSwipeProgressEnded)="onSwipeCellFinished($event)"
                      (itemSwipeProgressStarted)="onSwipeCellStarted($event)"
                      (itemSwipeProgressChanged)="onCellSwiping($event)"
-                     scrollBarIndicatorVisible="true"
                      swipeActions="true">
 
             <ng-template tkListItemTemplate let-athlet="item" let-i="index" let-odd="odd" let-even="even">
@@ -88,16 +73,16 @@
                             <Label [text]="athlet.number" col="0" row="0" rowSpan="3" class="number"
                                    verticalAlignment="center" horizontalAlignment="center"></Label>
 
-                            <Label [text]="athlet.class" col="0" row="3" class="option p-r-4 p-l-4"></Label>
+                            <Label [text]="athlet.class" col="0" row="3" class="option p-r-4 p-l-4" horizontalAlignment="center"></Label>
 
                             <Label [text]="athlet.fio" col="1" row="0" class="option"></Label>
 
                             <Label [text]="'NFC: ' + (athlet.nfc_id ? ('assigned'|L) : ('not assigned'|L))"
                                    [class.-warning]="!athlet.nfc_id"
                                    col="1" row="1" class="option"></Label>
-                            <Label [text]="'Group: ' + athlet.group[_competition.selected_competition.id].id"
+                            <Label [text]="('Group: '|L) + athlet.group[_competition.selected_competition.id].id"
                                    col="1" row="2" class="option"></Label>
-                            <Label [text]="'Start time: ' + getStartTime(athlet)"
+                            <Label [text]="('Start time: '|L) + getStartTime(athlet)"
                                    col="1" row="3" class="option font-weight-bold"></Label>
 
                         </GridLayout>
@@ -114,6 +99,7 @@
                     <Label [text]="activeTab =='IN_GROUP' ? '&#xf503;' : '&#xf4fc;'"
                            class="fas checking" verticalAlignment="center" horizontalAlignment="center"></Label>
                 </GridLayout>
+
                 <GridLayout id="delete-view" col="2" (tap)="onRightSwipeClick($event)"
                             class="gridLayoutSwipeItem right">
                     <Label text="&#xf05a;" class="fas checking" verticalAlignment="center"

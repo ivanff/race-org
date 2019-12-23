@@ -1,9 +1,9 @@
 import {Injectable, OnDestroy, OnInit} from '@angular/core'
 import {ReplaySubject} from "rxjs"
-import {Folder, File} from "tns-core-modules/file-system"
+import {Folder, File} from "@nativescript/core/file-system"
 import {Request} from "nativescript-background-http"
 import {environment} from "@src/environments/environment"
-import {device} from "tns-core-modules/platform"
+import {device} from "@nativescript/core/platform"
 import * as moment from 'moment'
 import {Mark} from "@src/app/shared/interfaces/mark"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
@@ -93,7 +93,7 @@ export class SqliteService implements OnInit, OnDestroy {
                     }).catch((err) => {
                         this.snackbar.snackbar$.next({
                             level: 'alert',
-                            msg: L(`Create index error: %s`, _.truncate(err.message, {length: 150}))
+                            msg: L('Create index error: %s', _.truncate(err.message, {length: 150}))
                         })
                     })
                 })

@@ -1,9 +1,9 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core'
 import {AuthService} from "@src/app/mobile/services/auth.service"
-import {TextField} from "tns-core-modules/ui/text-field"
+import {TextField} from "@nativescript/core/ui/text-field"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
 import {Competition} from "@src/app/shared/interfaces/competition"
-import {getNumber, setNumber} from "tns-core-modules/application-settings"
+import {getNumber, setNumber} from "@nativescript/core/application-settings"
 import {BarcodeService} from "@src/app/mobile/services/barcode.service"
 import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
 import {localize as L} from "nativescript-localize"

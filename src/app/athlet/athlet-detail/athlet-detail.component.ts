@@ -3,7 +3,6 @@ import {NfcTagData} from 'nativescript-nfc'
 import {RouterExtensions} from 'nativescript-angular'
 import {firestore} from 'nativescript-plugin-firebase'
 import {ActivatedRoute} from '@angular/router'
-import {confirm} from 'tns-core-modules/ui/dialogs'
 import {BaseComponent} from "@src/app/shared/base.component"
 import {NfcService} from "@src/app/mobile/services/nfc.service"
 import {Mark} from "@src/app/shared/interfaces/mark"
@@ -98,13 +97,7 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
     }
 
     onClearNfc() {
-        const options = {
-            title: '',
-            message: L('Clear NFC tag'),
-            okButtonText: L('Yes'),
-            cancelButtonText: L('No'),
-        }
-        confirm(options).then((result: boolean) => {
+        this.snackbar.confirm(L('Clear NFC tag')).then((result: boolean) => {
             if (result) {
                 this.collection.doc(this.athlet.id).update({
                     nfc_id: null
@@ -127,13 +120,7 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
             return
         } else {
             if (mark.order == this.current_checkpoint.order) {
-                const options = {
-                    title: '',
-                    message: L('Delete the passage of the mark %s', this.current_checkpoint.title),
-                    okButtonText: L('Yes'),
-                    cancelButtonText: L('No'),
-                }
-                confirm(options).then((result: boolean) => {
+                this.snackbar.confirm(L('Delete the passage of the mark %s', this.current_checkpoint.title)).then((result: boolean) => {
                     if (result) {
                         const marks: Array<Mark> = this.athlet.marks.filter((item: Mark) => {
                             return item.created != mark.created

@@ -29,7 +29,7 @@
                        col="0"
                        row="0"
                        class="big-input"></TextField>
-            <Button [text]="'Отметить'|L"
+            <Button [text]="'Mark'|L"
                     (tap)="setNumberMark(textField)"
                     [isEnabled]="last_athlet ? true : false" col="1" row="0"></Button>
         </GridLayout>
@@ -41,7 +41,7 @@
             row="2"
             col="0"
             class="btn"></Button>
-    <Button [text]="'Сканировать QR код'|L"
+    <Button [text]="'Scan QR code'|L"
             (tap)="onScan()"
             *ngIf="_competition.selected_competition.checking.indexOf('barcode') > -1"
             row="3"
@@ -54,7 +54,7 @@
                        verticalAlignment="center"
                        horizontalAlignment="center"
                        #activityIndicator
-                       busy="true"
+                       busy="false"
                        (busyChange)="onBusyChanged($event)"
                        class="activity-indicator"></ActivityIndicator>
 

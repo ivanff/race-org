@@ -76,7 +76,8 @@ export const routes: Routes = [
         children: [
             {
                 path: "",
-                component: StartListTabsComponent
+                component: StartListTabsComponent,
+                pathMatch: "full"
             },
             {
                 path: "add/:class/:group",

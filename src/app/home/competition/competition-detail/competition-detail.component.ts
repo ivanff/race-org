@@ -1,12 +1,12 @@
 import {Component, OnDestroy, OnInit, ViewContainerRef} from '@angular/core'
 import {ModalDialogOptions, ModalDialogService, RouterExtensions} from "nativescript-angular"
-import {device} from "tns-core-modules/platform"
+import {device} from "@nativescript/core/platform"
 import {Competition} from "@src/app/shared/interfaces/competition"
 import {BaseComponent} from "@src/app/shared/base.component"
 import {ActivatedRoute} from "@angular/router"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 import * as _ from "lodash"
-import {confirm} from "tns-core-modules/ui/dialogs"
+import {confirm} from "@nativescript/core/ui/dialogs"
 import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
 import {localize as L} from "nativescript-localize"
@@ -45,13 +45,9 @@ export class CompetitionDetailComponent extends BaseComponent implements OnInit,
 
     onItemTap($event) {
         const checkpoint = this.competition.checkpoints[$event.index]
-        const options = {
-            title: '',
-            message: checkpoint.devices.indexOf(device.uuid) == -1 ? L('Assign this device as a reader for the checkpoint %s', checkpoint.title) : L('Remove assignment'),
-            okButtonText: L('Yes'),
-            cancelButtonText: L('No'),
-        }
-        confirm(options).then((result: boolean) => {
+        this.snackbar.confirm(
+            checkpoint.devices.indexOf(device.uuid) == -1 ? L('Assign this device as a reader for the checkpoint %s', checkpoint.title) : L('Remove assignment')
+        ).then((result: boolean) => {
             if (result) {
                 this.competition.checkpoints.forEach((item: Checkpoint, index: number) => {
                     if (index == $event.index) {

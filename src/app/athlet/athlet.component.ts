@@ -2,8 +2,8 @@ import {Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild} from '@angu
 import {NfcTagData} from 'nativescript-nfc'
 import {RouterExtensions} from 'nativescript-angular'
 import {firestore} from 'nativescript-plugin-firebase'
-import {SearchBar} from 'tns-core-modules/ui/search-bar'
-import {isAndroid} from 'tns-core-modules/platform'
+import {SearchBar} from '@nativescript/core/ui/search-bar'
+import {isAndroid} from '@nativescript/core/platform'
 import {BaseComponent} from "@src/app/shared/base.component"
 import {NfcService} from "@src/app/mobile/services/nfc.service"
 import {ActivatedRoute} from "@angular/router"
@@ -13,7 +13,7 @@ import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
 import {BarcodeService} from "@src/app/mobile/services/barcode.service"
 import {Qr} from "@src/app/shared/interfaces/qr"
 import {localize as L} from "nativescript-localize"
-import {ListView} from "tns-core-modules/ui/list-view"
+import {ListView} from "@nativescript/core/ui/list-view"
 
 const firebase = require('nativescript-plugin-firebase/app')
 

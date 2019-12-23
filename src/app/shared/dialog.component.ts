@@ -1,5 +1,5 @@
 import {ModalDialogParams} from "nativescript-angular"
-import * as application from "tns-core-modules/application"
+import * as application from "@nativescript/core/application"
 import {OnDestroy, OnInit} from "@angular/core"
 
 export class DialogComponent implements OnInit, OnDestroy {
@@ -7,12 +7,12 @@ export class DialogComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        console.log('>> StartListAddDialogComponent ngOnInit')
+        console.log('>> DialogComponent ngOnInit')
         application.android.on(application.AndroidApplication.activityBackPressedEvent, this.basePassed, this)
     }
 
     ngOnDestroy(): void {
-        console.log('>> StartListAddDialogComponent ngOnDestroy')
+        console.log('>> DialogComponent ngOnDestroy')
         application.android.off(application.AndroidApplication.activityBackPressedEvent, this.basePassed, this)
     }
 
@@ -23,6 +23,6 @@ export class DialogComponent implements OnInit, OnDestroy {
     }
 
     onClose(args?:any): void {
-        this._params.closeCallback(args);
+        this._params.closeCallback(args)
     }
 }

@@ -16,5 +16,4 @@ export class StartListComponent extends BaseComponent implements OnInit, OnDestr
 
     ngOnDestroy(): void {
     }
-
 }

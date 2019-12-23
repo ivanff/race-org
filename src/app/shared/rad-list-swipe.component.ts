@@ -2,7 +2,7 @@ import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core'
 import {ListViewEventData, RadListView} from "nativescript-ui-listview"
 import {BaseComponent} from "@src/app/shared/base.component"
 import {RouterExtensions} from "nativescript-angular"
-import {layout, View} from "tns-core-modules/ui/core/view"
+import {layout, View} from "@nativescript/core/ui/core/view"
 
 @Component({
     selector: 'app-rad-list-swipe',
@@ -30,7 +30,7 @@ export class RadListSwipeComponent extends BaseComponent implements AfterViewIni
     onSwipeCellStarted(args: ListViewEventData) {
         this._isSwipeEnded = false
         const swipeLimits = args.data.swipeLimits;
-        const swipeView = args['object'];
+        const swipeView = args['object']
         if (swipeView) {
             const leftItem = swipeView.getViewById<View>('mark-view');
             const rightItem = swipeView.getViewById<View>('delete-view');
@@ -54,7 +54,7 @@ export class RadListSwipeComponent extends BaseComponent implements AfterViewIni
         this.rightThresholdPassed = false;
     }
 
-    onLeftSwipeClick(args: ListViewEventData) {
+    onLeftSwipeClick(args: ListViewEventData): void {
         this.listView.notifySwipeToExecuteFinished()
     }
 

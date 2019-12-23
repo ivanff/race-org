@@ -1,7 +1,7 @@
 import {Component} from '@angular/core'
 import {RouterExtensions} from 'nativescript-angular'
 import {RadSideDrawer} from "nativescript-ui-sidedrawer"
-import {getRootView} from "tns-core-modules/application"
+import {getRootView} from "@nativescript/core/application"
 
 @Component({
     selector: 'app-base',

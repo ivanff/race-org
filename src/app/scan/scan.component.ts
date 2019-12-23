@@ -14,10 +14,10 @@ import {NfcTagData} from 'nativescript-nfc'
 import {BaseComponent} from "@src/app/shared/base.component"
 import {NfcService} from "@src/app/mobile/services/nfc.service"
 import {Mark} from "@src/app/shared/interfaces/mark"
-import {isAndroid} from "tns-core-modules/platform"
+import {isAndroid} from "@nativescript/core/platform"
 import {ActivatedRoute} from "@angular/router"
 import * as moment from 'moment'
-import {TextField} from "tns-core-modules/ui/text-field"
+import {TextField} from "@nativescript/core/ui/text-field"
 import {BehaviorSubject, defer, EMPTY, ReplaySubject} from "rxjs"
 import {debounceTime, map, switchMap, takeUntil} from "rxjs/operators"
 import {Athlet} from "@src/app/shared/interfaces/athlet"
@@ -29,6 +29,7 @@ import {Msg} from "@src/app/shared/interfaces/msg"
 import {keepAwake, allowSleepAgain} from "nativescript-insomnia";
 import {BarcodeService} from "@src/app/mobile/services/barcode.service"
 import {Qr} from "@src/app/shared/interfaces/qr"
+import {Button} from "@nativescript/core/ui/button"
 import {localize as L} from "nativescript-localize"
 
 const firebase = require('nativescript-plugin-firebase/app')
@@ -48,7 +49,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
     private destroy = new ReplaySubject<any>(1)
 
     @ViewChild('activityIndicator', {static: false}) activityIndicatorRef: ElementRef
-    @ViewChild('textField', {static: false}) textFieldRef: TextField
+    @ViewChild('textField', {static: false}) textFieldRef: ElementRef
 
     constructor(public routerExtensions: RouterExtensions,
                 public nfc: NfcService,
@@ -76,12 +77,12 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
             this.snackbar.success(L("Disable device sleeping"))
         })
         this.number$.pipe(
-            debounceTime(2000),
+            debounceTime(500),
             switchMap((value) => {
                 const number: number = parseInt(value)
                 if (number) {
                     return defer(() => {
-                        return this.collection.where('number', '==', number).get().then((item) => {
+                        return this.collection.where('number', '==', number).get({source: 'cache'}).then((item) => {
                             return item
                         })
                     }).pipe(

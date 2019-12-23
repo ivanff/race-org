@@ -3,6 +3,31 @@
   <string name="_app_name_1k3Sbz">"RaceOrg"</string>
   <string name="app_name">"RaceOrg"</string>
   <string name="title_activity_kimera">"RaceOrg"</string>
+  <string name="_Athletes_in_group___J6bg8">"Athletes in group: "</string>
+  <string name="_Athletes_not_in_groups___22MRRO">"Athletes not in groups: "</string>
+  <string name="_Remove_all_groups_ZDzH3N">"Remove all groups"</string>
+  <string name="_Split_athletes_by_group_PzkM6">"Split athletes by group"</string>
+  <string name="_Group__s_is_started_at__d_Z6FXcw">"Group %1$s is started\nat %2$d"</string>
+  <string name="_Removed__s_athlete_s__1be1Hr">"Removed %1$s athlete(s)"</string>
+  <string name="_Modified__s_athlete_s__Z14GWR">"Modified %1$s athlete(s)"</string>
+  <string name="_Start_time___8MSoX">"Start time: "</string>
+  <string name="_Show_athlete_in_other_group_1u0Jp3">"Show athlete in other group"</string>
+  <string name="_Out_of_group_1eUuP">"Out of group"</string>
+  <string name="_In_group_Z25FWmU">"In group"</string>
+  <string name="Save">"Save"</string>
+  <string name="Delete">"Delete"</string>
+  <string name="_Selected___op9aV">"Selected: "</string>
+  <string name="_Group___2jpCnW">"Group: "</string>
+  <string name="_Create_group_gszrR">"Create group"</string>
+  <string name="_Create_groups_by_results_of_previous_stage_ZpaAam">"Create groups by\nresults of previous stage"</string>
+  <string name="_Split_athletes_by_specific_group_size_ZpGGzh">"Split athletes by\nspecific group size"</string>
+  <string name="_Group_size_Z1gMQsh">"Group size"</string>
+  <string name="_Split_athletes_Qakea">"Split athletes"</string>
+  <string name="_Not_started_4m6Uk">"Not started"</string>
+  <string name="Reset">"Reset"</string>
+  <string name="Pause">"Pause"</string>
+  <string name="Resume">"Resume"</string>
+  <string name="Start">"Start"</string>
   <string name="_Size_of_group_is_more_than_athletes_count___s__in_class_gNSUF">"Size of group is more than athletes count (%1$s) in class"</string>
   <string name="_Athlete___ZfJs5e">"Athlete: "</string>
   <string name="_Start_group___1hJ7A5">"Start group: "</string>
@@ -106,6 +131,7 @@
   <string name="_Enter_with_Social_account_1FNIa3">"Enter with Social account"</string>
   <string name="_Set_this_device_to_admin_zj7DQ">"Set this device to admin"</string>
   <string name="_Scan_QR_code_Z1UmHjW">"Scan QR code"</string>
+  <string name="Mark">"Mark"</string>
   <string name="Cancel">"Cancel"</string>
   <string name="_Athlete_number_1qzOcS">"Athlete number"</string>
   <string name="Close">"Close"</string>
@@ -117,4 +143,6 @@
   <string name="assigned">"assigned"</string>
   <string name="_Search_shop_1giToM">"Search shop"</string>
   <string name="Scan">"Scan"</string>
+  <string name="_Drop_Local_log_2440Ao">"Drop Local log"</string>
+  <string name="_Upload_to_server_LkhLW">"Upload to server"</string>
 </resources>

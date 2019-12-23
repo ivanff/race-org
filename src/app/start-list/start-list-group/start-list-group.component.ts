@@ -9,20 +9,21 @@ import {
 } from "nativescript-angular"
 import {Athlet} from "@src/app/shared/interfaces/athlet"
 import {ActivatedRoute} from "@angular/router"
-import {Switch} from "tns-core-modules/ui/switch"
+import {Switch} from "@nativescript/core/ui/switch"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
 import {RadListSwipeComponent} from "@src/app/shared/rad-list-swipe.component"
-import {ListViewEventData} from "nativescript-ui-listview"
-import {Page} from "tns-core-modules/ui/page"
+import {ListViewEventData,} from "nativescript-ui-listview"
+import {Page} from "@nativescript/core/ui/page"
 import * as _ from "lodash"
 import {StartListGroup} from "@src/app/shared/interfaces/start-list"
 import {BehaviorSubject, of} from "rxjs"
 import {debounceTime, filter, map, switchMap} from "rxjs/operators"
-import {ObservableArray} from "tns-core-modules/data/observable-array"
+import {ObservableArray} from "@nativescript/core/data/observable-array"
 import {firestore} from "nativescript-plugin-firebase"
 import {StartListGoDialogComponent} from "@src/app/start-list/start-list-go-dialog/start-list-go-dialog.component"
 import {DatePipe} from "@angular/common"
 import {localize as L} from "nativescript-localize"
+import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
@@ -34,12 +35,13 @@ const firebase = require('nativescript-plugin-firebase/app')
 export class StartListGroupComponent extends RadListSwipeComponent implements OnInit {
     private classAthlets: Athlet[] = []
     private backupClassAthlet: Athlet[] = []
-
-    activeTab: string
     private activeTab$ = new BehaviorSubject<string>('IN_GROUP')
+    private order = -1
 
+    pending = false
+    activeTab = this.activeTab$.getValue()
     backupSelected: number
-    radItems = new ObservableArray<Athlet>()
+    radItems = new ObservableArray<Athlet>([])
     group: string
     _class: string
     checked = true
@@ -50,10 +52,16 @@ export class StartListGroupComponent extends RadListSwipeComponent implements On
                 private datePipe: DatePipe,
                 private _competition: CompetitionService,
                 private modalService: ModalDialogService,
-                private router: ActivatedRoute) {
+                private router: ActivatedRoute,
+                private snackbar: SnackbarService) {
         super(routerExtensions)
         this.group = this.router.snapshot.params['group']
         this._class = this.router.snapshot.params['class']
+
+        const orderMatch = (new RegExp('\_(\d+)$')).exec(this.group)
+        if (orderMatch) {
+            this.order = parseInt(orderMatch[1])
+        }
 
         this.classAthlets = this.router.snapshot.data['athlets'].sort((a: Athlet, b: Athlet) => a.number > b.number ? 1 : -1)
         this.backupClassAthlet = _.cloneDeep(this.classAthlets)
@@ -74,6 +82,8 @@ export class StartListGroupComponent extends RadListSwipeComponent implements On
     }
 
     private updateRadItems(): void {
+        this.radItems.splice(0, this.radItems.length)
+
         let tmpRadList: Athlet[] = []
 
         if (this.activeTab == 'IN_GROUP') {
@@ -82,17 +92,15 @@ export class StartListGroupComponent extends RadListSwipeComponent implements On
             if (this.checked) {
                 tmpRadList = this.classAthlets.filter((athlet: Athlet) => athlet.group[this._competition.selected_competition.id].id != this.group)
             } else {
-                tmpRadList = this.classAthlets.filter((athlet: Athlet) => {
-                    return athlet.group[this._competition.selected_competition.id].id == athlet.class
-                })
+                tmpRadList = this.classAthlets.filter((athlet: Athlet) => athlet.group[this._competition.selected_competition.id].id == athlet.class)
             }
         }
-        this.radItems.splice(0, this.radItems.length)
         tmpRadList.forEach((item) => {
             this.radItems.push(
                 item
             )
         })
+        // this.listView.refresh()
     }
 
     ngOnInit(): void {
@@ -109,18 +117,17 @@ export class StartListGroupComponent extends RadListSwipeComponent implements On
     onLeftSwipeClick(args: ListViewEventData): void {
         const athlet = args.object.bindingContext as Athlet
 
-        this.radItems.splice(
-            this.radItems.indexOf(athlet)
-            , 1)
+        this.radItems.splice(this.radItems.indexOf(athlet), 1)
 
         const tmpIndex = this.classAthlets.indexOf(athlet)
-        const tmpAthlet = (this.classAthlets[tmpIndex] as Athlet)
+        const tmpAthlet: Athlet = this.classAthlets[tmpIndex]
 
         if (this.activeTab == 'OUT_OF_GROUP') {
             this.backupSelected += 1
+
             tmpAthlet.group[this._competition.selected_competition.id] = {
                 id: this.group,
-                order: 0,
+                order: this.order,
                 start_time: null
             }
         } else {
@@ -129,7 +136,7 @@ export class StartListGroupComponent extends RadListSwipeComponent implements On
                     if (tmpAthlet.group == athlet.group) {
                         tmpAthlet.group[this._competition.selected_competition.id] = {
                             id: tmpAthlet.class,
-                            order: -1,
+                            order: this.order,
                             start_time: null
                         } as StartListGroup
                     } else {
@@ -139,7 +146,7 @@ export class StartListGroupComponent extends RadListSwipeComponent implements On
             }
 
         }
-
+        this.listView.refresh()
         super.onLeftSwipeClick(args)
     }
 
@@ -167,15 +174,16 @@ export class StartListGroupComponent extends RadListSwipeComponent implements On
 
     onSave(): void {
         this._onSave().then((athlets: Athlet[]) => {
-            alert(`Modified ${athlets.length}`)
+            return this.snackbar.success(L('Modified %s athlete(s)', athlets.length.toString()))
         })
     }
 
     private _onSave(): Promise<any> {
+        this.pending = true
+
         let batch = firebase.firestore().batch()
         const collection = firebase.firestore().collection(this._competition.getAthletsCollectionPath())
         const athlets: Athlet[] = []
-
 
         this.classAthlets.forEach((item: Athlet) => {
             for (const athlet of this.backupClassAthlet) {
@@ -192,39 +200,58 @@ export class StartListGroupComponent extends RadListSwipeComponent implements On
         })
 
         return batch.commit().then(() => {
+            this.backupClassAthlet = _.cloneDeep(this.classAthlets)
             return athlets
+        }).finally(() => {
+            this.updateRadItems()
+            this.pending = false
         })
     }
 
     onDelete(): Promise<any> {
-        return new Promise<any>((resolve, reject) => {
-            this._onSave().then(() => {
-                const athlets: Athlet[] = []
-                let batch = firebase.firestore().batch()
-                const collection: firestore.CollectionReference = firebase.firestore().collection(this._competition.getAthletsCollectionPath())
-                collection.where(`group.${this._competition.selected_competition.id}.id`, '==', this.group)
-                    .get().then((snapshot: firestore.QuerySnapshot) => {
-                    snapshot.forEach((doc: firestore.DocumentSnapshot) => {
-                        const group = doc.data().group
-                        const id = doc.id
-                        delete group[this._competition.selected_competition.id]
-                        batch.update(collection.doc(id), {
-                            group: group
-                        })
-                        athlets.push({
-                            id, ...doc.data(), ...group
-                        } as Athlet)
-                    })
-                    batch.commit().then(() => {
-                        alert(`Delete ${athlets.length}`)
-                        resolve()
-                        this.routerExtensions.navigate(['/start-list'], {
-                            replaceUrl: true
-                        })
-                    }, reject)
-                })
+        this.pending = true
 
+        return new Promise<any>((resolve, reject) => {
+            this.snackbar.confirm(L("The group %s will not be deleted!", this.group)).then((result: boolean) => {
+                if (result) {
+                    this._onSave().then(() => {
+                        const athlets: Athlet[] = []
+                        let batch = firebase.firestore().batch()
+                        const collection: firestore.CollectionReference = firebase.firestore().collection(this._competition.getAthletsCollectionPath())
+                        collection.where(`group.${this._competition.selected_competition.id}.id`, '==', this.group)
+                            .get().then((snapshot: firestore.QuerySnapshot) => {
+                            snapshot.forEach((doc: firestore.DocumentSnapshot) => {
+                                const group = doc.data().group
+                                const id = doc.id
+                                delete group[this._competition.selected_competition.id]
+                                batch.update(collection.doc(id), {
+                                    group: group
+                                })
+                                athlets.push({
+                                    id, ...doc.data(), ...group
+                                } as Athlet)
+                            })
+                            batch.commit().then(() => {
+                                this.snackbar.success(L('Removed %s athlete(s)', athlets.length.toString())).then(() => {
+                                    resolve()
+                                    this.routerExtensions.navigate(['/start-list'], {
+                                        replaceUrl: true
+                                    })
+                                })
+                            }, (err) => {
+                                this.snackbar.alert(err).then(() => {
+                                    reject(err)
+                                })
+                            })
+                        })
+
+                    })
+                } else {
+                    reject()
+                }
             })
+        }).finally(() => {
+            this.pending = false
         })
 
     }
@@ -250,9 +277,14 @@ export class StartListGroupComponent extends RadListSwipeComponent implements On
                         })
 
                         batch.commit().then(() => {
-                            resolve(groupAthlets)
-                            alert(`Group is started! ${groupAthlets.length}`)
-                        }, reject)
+                            this.snackbar.success(L('Group %s is started\nat %s', this.group, result.start_time.toISOString())).then(() => {
+                                resolve(groupAthlets)
+                            })
+                        }, (err) => {
+                            this.snackbar.alert(err).then(() => {
+                                reject(err)
+                            })
+                        })
                     })
                 }
             })

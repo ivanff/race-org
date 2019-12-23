@@ -82,15 +82,24 @@
   }
 }
 
-.odd {
-  background-color: rgba($grey-background, 0.5);
+ListView {
+  .option {
+    font-size: small;
+  }
+  .odd {
+    background-color: rgba($grey-background, 0.5);
+  }
 }
+
 
 .rad-list {
   padding: 5 0;
   background-color: white;
-  &.odd {
-    background-color: $grey-background;
+  &.odd, .odd {
+    background-color: #dcdcdc;
+  }
+  .option {
+    font-size: small;
   }
 }
 
@@ -180,20 +189,19 @@ TabStripItem {
   padding: 0;
   margin: 0;
   background-color: #f2f2f2;
-  .barItemBottomBorder {
-    height: 2;
-    vertical-align: bottom;
-  }
+  android-elevation: 3;
   .active {
-    font-weight: bold;
-    color: #3f51b5;
-    .barItemBottomBorder {
-      background-color: #3f51b5;
+    Button {
+      font-weight: bold;
+      color: #3f51b5;
+      border-bottom-color: #3f51b5;
     }
   }
   Button {
     background-color: transparent;
     border-width: 0;
+    border-bottom-width: 3;
+    border-bottom-color: transparent;
     z-index: 0;
     margin: 0;
   }

@@ -2,20 +2,32 @@ import {Pipe} from '@angular/core'
 import * as moment from "moment-timezone"
 import {DatePipe} from "@angular/common"
 import {Competition} from "@src/app/shared/interfaces/competition"
-import {device} from "tns-core-modules/platform"
+import {device} from "@nativescript/core/platform"
 
-const postSolietLangs = [
+const postSovietLangs = [
     'ru',
     'be',
     'uk',
 ]
+
+function getLocale(locale?) {
+    if (locale) {
+        return postSovietLangs.indexOf(locale) > -1 ? 'ru' : null
+    } else {
+        if (device.language == 'ru') {
+            return 'ru'
+        }
+    }
+    return null
+}
+
 
 @Pipe({
     name: 'tzdate'
 })
 export class TzDatePipe extends DatePipe {
     transform(value: any, format = 'mediumDate', timezone?: string, locale?: string): string {
-        return super.transform(value, format, timezone ? moment.tz(timezone).format('ZZ') : null, locale ? locale : device.language)
+        return super.transform(value, format, timezone ? moment.tz(timezone).format('ZZ') : null, getLocale(locale))
     }
 }
 
@@ -30,11 +42,11 @@ export class TzDateStartPipe extends DatePipe {
 
         let format = "yyyy-MM-dd HH:mm:ss z"
 
-        if (postSolietLangs.indexOf(device.language) > -1) {
+        if (postSovietLangs.indexOf(device.language) > -1) {
             format = "dd.MM.yyyy HH:mm:ss z"
         }
 
-        return super.transform(date.toDate(), format,timezone ? moment.tz(timezone).format('ZZ') : null, locale)
+        return super.transform(date.toDate(), format,timezone ? moment.tz(timezone).format('ZZ') : null, getLocale(locale))
     }
 }
 
@@ -49,10 +61,10 @@ export class TzDateFinishPipe extends DatePipe {
 
         let format = "yyyy-MM-dd HH:mm:ss z"
 
-        if (postSolietLangs.indexOf(device.language) > -1) {
+        if (postSovietLangs.indexOf(device.language) > -1) {
             format = "dd.MM.yyyy HH:mm:ss z"
         }
 
-        return super.transform(date.toDate(), format, timezone ? moment.tz(timezone).format('ZZ') : null, locale)
+        return super.transform(date.toDate(), format, timezone ? moment.tz(timezone).format('ZZ') : null, getLocale(locale))
     }
 }
