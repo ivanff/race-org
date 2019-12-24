@@ -24,6 +24,7 @@ import {StartListGoDialogComponent} from "@src/app/start-list/start-list-go-dial
 import {DatePipe} from "@angular/common"
 import {localize as L} from "nativescript-localize"
 import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
+import {groupNumberMatch} from "@src/app/shared/helpers"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
@@ -36,7 +37,7 @@ export class StartListGroupComponent extends RadListSwipeComponent implements On
     private classAthlets: Athlet[] = []
     private backupClassAthlet: Athlet[] = []
     private activeTab$ = new BehaviorSubject<string>('IN_GROUP')
-    private order = -1
+    private order: number
 
     pending = false
     activeTab = this.activeTab$.getValue()
@@ -57,12 +58,7 @@ export class StartListGroupComponent extends RadListSwipeComponent implements On
         super(routerExtensions)
         this.group = this.router.snapshot.params['group']
         this._class = this.router.snapshot.params['class']
-
-        const orderMatch = (new RegExp('\_(\d+)$')).exec(this.group)
-        if (orderMatch) {
-            this.order = parseInt(orderMatch[1])
-        }
-
+        this.order = groupNumberMatch(this.group)
         this.classAthlets = this.router.snapshot.data['athlets'].sort((a: Athlet, b: Athlet) => a.number > b.number ? 1 : -1)
         this.backupClassAthlet = _.cloneDeep(this.classAthlets)
 

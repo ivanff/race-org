@@ -8,3 +8,14 @@ export function hasGroup(athlet: Athlet, competition: Competition): boolean {
         return false
     }
 }
+
+const groupNumberRegexp = new RegExp('\_([0-9]+)$')
+
+export function groupNumberMatch(group_name: string) {
+    const numberMatch = groupNumberRegexp.exec(group_name)
+    return numberMatch ? parseInt(numberMatch[1]) : -1
+}
+
+export function sortNumber(a: number, b: number) {
+    return a > b ? 1 : -1
+}

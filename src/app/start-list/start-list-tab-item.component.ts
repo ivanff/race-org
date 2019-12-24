@@ -11,7 +11,7 @@ import * as _ from "lodash"
 import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
 import {localize as L} from "nativescript-localize"
 import {DatePipe} from "@angular/common"
-import {hasGroup} from "@src/app/shared/helpers"
+import {groupNumberMatch, hasGroup, sortNumber} from "@src/app/shared/helpers"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
@@ -89,7 +89,9 @@ export class StartListTabItemComponent implements OnInit, OnDestroy {
 
             this.groupsArray.splice(0, this.groupsArray.length)
 
-            for (let [key, value] of Object.entries(groupsDict)) {
+            for (let [key, value] of Object.entries(groupsDict).sort((a, b) => {
+                return sortNumber(groupNumberMatch(a[0]), groupNumberMatch(b[0]))
+            })) {
                 this.groupsArray.push({
                     key: key,
                     value: value
@@ -107,7 +109,7 @@ export class StartListTabItemComponent implements OnInit, OnDestroy {
     }
 
     getNumbers(athlets: Array<Athlet>): string {
-        return athlets.map((athlet: Athlet) => athlet.number).sort((a, b) => a > b ? 1 : -1).join(';')
+        return athlets.map((athlet: Athlet) => athlet.number).sort(sortNumber).join(';')
     }
 
     getStartTime(athlets: Array<Athlet>): string {
@@ -124,7 +126,7 @@ export class StartListTabItemComponent implements OnInit, OnDestroy {
         const options: ModalDialogOptions = {
             context: {
                 _class: this._class,
-                groupsCount: this.groupsArray.length
+                groupsKeys: this.groupsArray.map((item) => item.key)
             },
             viewContainerRef: this.vcRef,
             fullscreen: false

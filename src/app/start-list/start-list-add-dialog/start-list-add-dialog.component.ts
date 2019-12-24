@@ -4,6 +4,7 @@ import {
 import {ModalDialogParams} from "nativescript-angular"
 import {TextField} from "@nativescript/core/ui/text-field"
 import {DialogComponent} from "@src/app/shared/dialog.component"
+import {groupNumberMatch, sortNumber} from "@src/app/shared/helpers"
 
 
 @Component({
@@ -37,9 +38,19 @@ export class StartListAddDialogComponent extends DialogComponent {
     }
 
     onAddGroup(): void {
+        const groupsKeys: Array<string> = this._params.context['groupsKeys']
+        const groupNumbers: Array<number> = groupsKeys.map((item: string) => groupNumberMatch(item)).filter((item) => item > -1).sort(sortNumber)
+
+
+        let next = 0
+
+        if (groupNumbers.length) {
+            next = groupNumbers[groupNumbers.length-1] + 1
+        }
+
         this.onClose({
             action: 'navigate',
-            value: ['add', this._params.context['_class'], `${this._params.context['_class']}_${this._params.context['groupsCount']}`]
+            value: ['add', this._params.context['_class'], `${this._params.context['_class']}_${next}`]
         })
     }
 }
