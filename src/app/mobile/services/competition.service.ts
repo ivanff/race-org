@@ -3,7 +3,7 @@ import {Observable, of, ReplaySubject, Subject} from "rxjs"
 import {Competition} from "@src/app/shared/interfaces/competition"
 import {AuthService} from "@src/app/mobile/services/auth.service"
 import {first, map, shareReplay, switchMap, takeUntil} from "rxjs/operators"
-import {firestore} from "nativescript-plugin-firebase"
+import {firestore, User} from "nativescript-plugin-firebase"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 import {device} from "@nativescript/core/platform"
 import {MobileDevice} from "@src/app/shared/interfaces/mobile-device"
@@ -11,7 +11,8 @@ import {HttpClient} from "@angular/common/http"
 import {environment} from "@src/environments/environment"
 import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
 import {localize as L} from "nativescript-localize"
-import {remove, setString} from "@nativescript/core/application-settings"
+import {getString, remove, setString} from "@nativescript/core/application-settings"
+import {Secret} from "@src/app/shared/interfaces/secret"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
@@ -23,7 +24,7 @@ export class CompetitionService implements OnDestroy {
     current_checkpoint: Checkpoint
     selected_competition_id$: any
     isAdmin = false
-    private roles = {}
+    private test_secret: {role: string, secret: Secret}
     private destroy = new ReplaySubject<any>(1)
 
     constructor(private auth: AuthService,
@@ -31,6 +32,12 @@ export class CompetitionService implements OnDestroy {
                 private zone: NgZone,
                 private snackbar: SnackbarService,) {
         console.log('>>> CompetitionService constructor')
+
+        this.auth.user$.subscribe((user: User | null) => {
+            if (!user) {
+                remove(`test_secret_${this.selected_competition.parent_id}`)
+            }
+        })
 
         this.selected_competition_id$ = (new Subject).pipe(
             switchMap((value: string | null | Competition | Array<string>) => {
@@ -62,6 +69,7 @@ export class CompetitionService implements OnDestroy {
             } else {
                 remove('selected_competition_id')
                 this.current_checkpoint = null
+                this.test_secret = null
                 // this.start_time = null
                 // this.finish_time = null
             }
@@ -74,7 +82,7 @@ export class CompetitionService implements OnDestroy {
     }
 
     getByCode(code: number): Observable<Competition> {
-        return this.http.post<{competitionId: string, role: string}>(environment.google_gateway + '/set_permissions_new', {
+        return this.http.post<{competitionId: string, role: string, secret?: any}>(environment.google_gateway + '/set_permissions_new', {
             user: this.auth.user ? this.auth.user.uid: null,
             secret: code
         }).pipe(
@@ -82,8 +90,18 @@ export class CompetitionService implements OnDestroy {
                 return this.firestoreCollectionObservable(resp.competitionId).pipe(
                     first(),
                     map((competition: Competition) => {
-                       this.roles[competition.id] = resp.role
-                       return competition
+                        if (!competition.secret) {
+                            competition.secret = resp.secret
+                        }
+
+                        this.test_secret = {
+                            role: resp.role,
+                            secret: competition.secret
+                        }
+
+                        setString(`test_secret_${competition.id}`, JSON.stringify(this.test_secret))
+
+                        return competition
                     })
                 )
             })
@@ -107,6 +125,10 @@ export class CompetitionService implements OnDestroy {
     }
 
     updateMobileDevices(competition, role: string): Promise<Competition> {
+        console.log(
+            'updateMobileDevices',
+            role
+        )
         const joined: Array<MobileDevice> = (competition.mobile_devices || []).filter((item: MobileDevice) => item.uuid == device.uuid)
         let mobile_device: MobileDevice
 
@@ -171,18 +193,25 @@ export class CompetitionService implements OnDestroy {
                                     return stages
                                 }),
                                 firebase.firestore().collection("competitions").doc(parent_id).collection('test_secret').get().then((docs: firestore.QuerySnapshot) => {
-                                    const secret = {}
+                                    const secret: {[key: string]: number} = {}
                                     docs.forEach((doc: firestore.QueryDocumentSnapshot) => {
                                         secret[doc.id] = doc.data().code
                                     })
-
-                                    return secret
+                                    return secret as Secret
+                                }).catch(() => {
+                                    return this.test_secret ? this.test_secret : JSON.parse(getString(`test_secret_${parent_id}`, 'null'))
                                 })
                             ]).then((result) => {
                                 const stages = result[0]
                                 const secret = result[1]
                                 const id = doc.id
                                 const competition = {id, ...doc.data(), stages, secret} as Competition
+                                if (secret) {
+                                    this.test_secret = {
+                                        role: 'admin',
+                                        secret: secret
+                                    }
+                                }
                                 subscriber.next(competition)
                             })
 
@@ -198,16 +227,11 @@ export class CompetitionService implements OnDestroy {
     }
 
     private setCp(silent=true): void {
-        let role = 'marshal'
-        if (this.roles.hasOwnProperty(this.selected_competition.id)) {
-            role = this.roles[this.selected_competition.id]
-        } else {
-            if (this.selected_competition.user == this.auth.user.uid) {
-                role = 'admin'
-            }
+
+        if (this.test_secret) {
+            this.updateMobileDevices(this.selected_competition, this.test_secret.role)
         }
 
-        this.updateMobileDevices(this.selected_competition, role)
 
         const checkpoints = this.selected_competition.checkpoints.filter((item: Checkpoint) => item.devices.indexOf(device.uuid) > -1)
         if (!silent) {

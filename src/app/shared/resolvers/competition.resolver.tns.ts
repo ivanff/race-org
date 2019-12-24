@@ -52,7 +52,7 @@ export class CompetitionResolve implements Resolve<Competition | null> {
                 }),
                 catchError((error) => {
                     this.snackbar.alert(error)
-                    return of([null])
+                    return of(null)
                 })
             )
         } else if (hasKey('selected_competition_id')) {

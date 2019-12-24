@@ -32,9 +32,15 @@ export class CompetitionDetailComponent extends BaseComponent implements OnInit,
                 private snackbar: SnackbarService,
                 private auth: AuthService) {
         super(routerExtensions)
+
         this.competition = this.router.snapshot.data['competition']
-        this.isAdmin = this.competition.mobile_devices.filter((item: MobileDevice) => item.isAdmin && (item.uuid == device.uuid)).length > 0 ||
-            this.competition.user == this.auth.user.uid
+
+        if (this.competition) {
+            this.isAdmin = this.competition.mobile_devices.filter((item: MobileDevice) => item.isAdmin && (item.uuid == device.uuid)).length > 0 ||
+                this.competition.user == this.auth.user.uid
+        } else {
+            this.routerExtensions.navigate(['../'], {relativeTo: this.router})
+        }
     }
 
     ngOnInit() {
@@ -81,7 +87,6 @@ export class CompetitionDetailComponent extends BaseComponent implements OnInit,
     }
 
     onTapQr(role: string): void {
-        console.log(this.competition.secret)
         const options: ModalDialogOptions = {
             viewContainerRef: this._vcRef,
             context: {

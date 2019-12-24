@@ -23,3 +23,5 @@ adb devices | tail -n +2 | cut -sf 1 | grep  -v -E emu | xargs -iX adb -s X inst
 
 #gsutil cp race_org.latest.apk gs://race-org.appspot.com/android_builds/
 cp race_org.latest.apk ./src/assets/data/
+
+#ng build --prod && firebase deploy --only hosting

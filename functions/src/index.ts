@@ -10,20 +10,7 @@ admin.initializeApp(
     functions.config().firebase
 )
 
-interface Secret {
-    admin: number,
-    marshal: number,
-    client: number,
-}
-
-interface Competition {
-    id?: string,
-    parent_id?: string,
-    user: string,
-    secret?: Secret
-    stages: Array<Competition>,
-    [key: string]: any
-}
+type Secret = { [key in "admin" | "marshal" | "client"]: number}
 
 const firestore = admin.firestore()
 
@@ -80,15 +67,26 @@ app.post('/api/set_permissions_new', async (req, resp) => {
             message: "Недостаточно данных"
         })
     }
-    const secrets: QuerySnapshot = await firestore.collectionGroup("test_secret").where('code', '==', req.body.secret).get()
+    const role_secret_snapshot: QuerySnapshot = await firestore.collectionGroup("test_secret").where('code', '==', req.body.secret).get()
 
-    if (!secrets.empty) {
-        const secret: QueryDocumentSnapshot = secrets.docs[0]
-        const competitionId = secret.ref.parent.parent.id
+    if (!role_secret_snapshot.empty) {
+        const role_secret_doc: QueryDocumentSnapshot = role_secret_snapshot.docs[0]
+        const competitionId = role_secret_doc.ref.parent.parent.id
+
+        const secrets: {[key: string]: number} = {}
+        const secrets_snapshot: QuerySnapshot = await firestore.collection("competitions").doc(role_secret_doc.ref.parent.parent.id).collection("test_secret").get()
+
+        secrets_snapshot.forEach((item: QueryDocumentSnapshot) => {
+            const role = item.id.toString()
+            if (['admin', 'marshal', 'client'].indexOf(role) > -1) {
+                secrets[role] = item.data().code
+            }
+        })
 
         const permission = {
             competitionId: competitionId,
-            role: secret.id,
+            role: role_secret_doc.id,
+            secret: role_secret_doc.id === 'admin' ? secrets as Secret: null
         }
 
         await firestore.doc(`/permissions/${req.body.user}`).set(permission).then(() => {
@@ -105,6 +103,19 @@ app.post('/api/set_permissions_new', async (req, resp) => {
     }
 
 })
+
+
+/*
+
+interface Competition {
+    id?: string,
+    parent_id?: string,
+    user: string,
+    secret?: Secret
+    stages: Array<Competition>,
+    [key: string]: any
+}
+
 
 app.post('/api/set_permissions', async (req, resp) => {
     const results: Array<QuerySnapshot> = await Promise.all([
@@ -145,5 +156,5 @@ app.post('/api/set_permissions', async (req, resp) => {
         })
     }
 })
-
+*/
 export const v1 = functions.https.onRequest(app)

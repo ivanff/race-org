@@ -1,5 +1,5 @@
 <GridLayout columns="*, *" rows="auto, auto, *">
-    <GridLayout *ngIf="isAdmin" col="0" colSpan="2" row="0" columns="*, *" rows="auto">
+    <GridLayout *ngIf="isAdmin && competition.secret" col="0" colSpan="2" row="0" columns="*, *" rows="auto">
         <Button col="0" row="0" [text]="'Admin QR code'|L" (tap)="onTapQr('admin')"></Button>
         <Button col="1" row="0" [text]="'Marshal QR code'|L" (tap)="onTapQr('marshal')"></Button>
     </GridLayout>

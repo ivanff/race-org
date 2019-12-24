@@ -14,7 +14,6 @@ import {StartListGroupComponent} from "@src/app/start-list/start-list-group/star
 import {StartListAddDialogComponent} from "@src/app/start-list/start-list-add-dialog/start-list-add-dialog.component"
 import {StatComponent} from "@src/app/home/stat/stat.component"
 import {OrderModule} from "ngx-order-pipe"
-import {AdminResolve} from "@src/app/shared/admin.resolver"
 import {BaseComponent} from "@src/app/shared/base.component"
 import {AboutComponent} from "@src/app/home/about/about.component"
 import {ReactiveFormsModule} from "@angular/forms";
@@ -122,7 +121,6 @@ registerLocaleData(localeRu)
         CompetitionResolve,
         AthletResolve,
         AthletListResolve,
-        AdminResolve,
         AuthResolve,
         CheckpointResolver,
 

@@ -1,5 +1,6 @@
 import * as firebase from 'firebase/app'
 import {Checkpoint} from '@src/app/shared/interfaces/checkpoint'
+import {Secret} from '@src/app/shared/interfaces/secret'
 import {MobileDevice} from '@src/app/shared/interfaces/mobile-device'
 
 export interface Competition {
@@ -7,7 +8,7 @@ export interface Competition {
     parent_id?: string,
     user: string,
     //TODO replace any
-    secret?: any
+    secret?: Secret
     title: string,
     timezone: string,
 
