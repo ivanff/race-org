@@ -59,7 +59,9 @@ const routes: Routes = [
                 component: ResultsAdminComponent,
                 data: {
                     title: 'Результат',
-                    titleI18n: 'Result'
+                    titleI18n: 'Result',
+                    //TODO
+                    is_admin: true,
                 },
                 resolve: {
                     competition: CompetitionResolve,

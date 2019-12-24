@@ -236,10 +236,10 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         if (this.competition.result_by_full_circle) {
             for (let row of rows) {
                 const [credit_circle, credit_cp] = this.getCreditCircle(row.marks)
-                console.log(
-                    row.athlet.fio,
-                    [credit_circle, credit_cp]
-                )
+                // console.log(
+                //     row.athlet.fio,
+                //     [credit_circle, credit_cp]
+                // )
                 if (credit_circle.length) {
                     row.last_created = credit_circle.pop().created
                     row.last_cp = credit_cp

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core'
-import {ActivatedRoute} from "@angular/router"
+import {ActivatedRoute, Router} from "@angular/router"
 import {Competition} from "@src/app/shared/interfaces/competition"
 
 @Component({
@@ -11,10 +11,9 @@ export class ResultsAdminComponent implements OnInit {
   hasChildren: boolean
   competition: Competition
 
-  constructor(private route: ActivatedRoute) {
-    this.route.params.subscribe(() => {
-      this.competition = this.route.snapshot.data['competition'] as Competition
-    })
+  constructor(private route: ActivatedRoute, private router: Router) {
+    this.competition = this.route.snapshot.data['competition'] as Competition
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
     this.hasChildren = Boolean(route.children.length)
   }
 

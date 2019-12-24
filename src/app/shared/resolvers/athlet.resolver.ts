@@ -16,13 +16,17 @@ export class AthletResolve implements Resolve<Athlet> {
             competition_id = route.params.id
         }
 
+        console.log(
+            `athlets_${competition_id}/${route.params.athlet_id}`
+        )
+
         return this.afs.doc<Athlet>(`athlets_${competition_id}/${route.params.athlet_id}`)
             .valueChanges()
             .pipe(
                 first(),
                 map((doc: Athlet) => {
                     doc.id = route.params.athlet_id
-                    return doc as Athlet
+                    return doc
                 }))
     }
 }

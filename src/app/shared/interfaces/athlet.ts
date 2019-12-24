@@ -24,7 +24,8 @@ export const athletBuiltInKeys: string[] = [
     'id',
     'created',
     'number',
-    'checkpoints',
+    'marks',
+    'group',
     'fio',
     'class'
 ]
