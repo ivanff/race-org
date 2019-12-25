@@ -1,8 +1,59 @@
 <GridLayout columns="*" rows="auto, auto, *">
     <Label [text]="'Use secret code'|L" row="0" col="0" horizontalAlignment="center" class="h2 p-10"></Label>
-    <StackLayout col="0" row="1">
+    <StackLayout col="0" row="1"
+                 androidElevation="3"
+                 android:backgroundColor="white">
         <app-enter-secret></app-enter-secret>
     </StackLayout>
+
+    <RadListView #radListRef
+                 row="2"
+                 [items]="competitions"
+                 selectionBehavior="None"
+                 (itemSwipeProgressEnded)="onSwipeCellFinished($event)"
+                 (itemSwipeProgressStarted)="onSwipeCellStarted($event)"
+                 (itemSwipeProgressChanged)="onCellSwiping($event)"
+                 swipeActions="true">
+
+        <ng-template tkListItemTemplate let-competition="item" let-i="index" let-odd="odd" let-even="even">
+            <StackLayout class="p-0 m-0">
+                <GridLayout columns="auto, 45, *, auto" class="rad-list" [class.odd]="odd" [class.active]="selected_competition?.id == competition.id">
+                    <Label col="0" text="&#xf053;" class="fas checking"></Label>
+                    <Label col="1" [text]="isReader(competition.checkpoints) ? '&#xf5a0;' : ''" class="fas reader" horizontalAlignment="center"></Label>
+
+                    <GridLayout col="2" rows="*, *, *" [class.p-l-24]="competition.parent_id">
+                        <Label row="0" [text]="competition.title" class="option"></Label>
+                        <Label row="1" [text]="('Connected devices: '|L) + competition.mobile_devices.length" class="option"></Label>
+                        <Label row="2" [text]="('Start date: '|L) + competition|tzdateStart" class="option"></Label>
+                    </GridLayout>
+
+                    <Label col="3" text="&#xf054;" class="fas checking"></Label>
+                </GridLayout>
+            </StackLayout>
+        </ng-template>
+
+        <GridLayout *tkListItemSwipeTemplate columns="60, *, 60"
+                    rows="auto"
+                    class="gridLayoutSwipe"
+                    [class.active]="selected_competition?.id == swiped_competition?.id"
+                    verticalAlignment="center"
+                    horizontalAlignment="center">
+            <GridLayout id="mark-view" col="0"
+                        (tap)="onLeftSwipeClick($event)"
+                        class="gridLayoutSwipeItem left">
+                <Label [text]="'&#xf00c;'" class="fas checking" verticalAlignment="center" horizontalAlignment="center"></Label>
+            </GridLayout>
+
+            <GridLayout id="delete-view" col="2" (tap)="onRightSwipeClick($event)"
+                        class="gridLayoutSwipeItem right">
+                <Label text="&#xf05a;" class="fas checking" verticalAlignment="center"
+                       horizontalAlignment="center"></Label>
+            </GridLayout>
+        </GridLayout>
+
+    </RadListView>
+
+    <!--
     <ListView col="0" row="2"
               [items]="competitions"
               (itemTap)="onItemTap($event)">
@@ -10,18 +61,19 @@
             <GridLayout columns="*, auto, auto" rows="*" [class.active]="selected_competition?.id == competition.id"
                         class="p-0 m-0">
                 <Label col="0" [text]="competition.title" horizontalAlignment="left"></Label>
-                <Label col="1" text="&#xf3cd;" *ngIf="isReader(competition.checkpoints)" class="fas"></Label>
+                <Label col="1" text="&#xf5a0;" *ngIf="isReader(competition.checkpoints)" class="fas"></Label>
 
                 <Label col="2"
                        [nsRouterLink]="competition.parent_id ? [competition.parent_id, competition.id] : [competition.id]"
                        class="label-detail">
                     <FormattedString>
                         <Span [text]="'Detail'|L"></Span>
-                        <Span text="&nbsp;&nbsp;&#xf101;" class="fas"></Span>
+                        <Span text="&nbsp;&nbsp;&#xf5a0f101;" class="fas"></Span>
                     </FormattedString>
                 </Label>
             </GridLayout>
         </ng-template>
     </ListView>
+    -->
 </GridLayout>
 

@@ -34,7 +34,7 @@ export class CompetitionService implements OnDestroy {
         console.log('>>> CompetitionService constructor')
 
         this.auth.user$.subscribe((user: User | null) => {
-            if (!user) {
+            if (!user && this.selected_competition) {
                 remove(`test_secret_${this.selected_competition.parent_id}`)
             }
         })

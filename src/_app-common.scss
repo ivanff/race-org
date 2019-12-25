@@ -236,15 +236,25 @@ RadListView {
   }
 
   .active {
-    background-color: #d7f283;
-    .checking {
-      color: black;
+    font-weight: bold;
+    .reader {
+      color: #ff5e21
     }
   }
 
   .gridLayoutSwipe {
     padding: 0;
     margin: 0;
+    &.active {
+      .gridLayoutSwipeItem {
+        &.left {
+          background-color: white;
+          .checking {
+            color: lightgray;
+          }
+        }
+      }
+    }
 
     .gridLayoutSwipeItem {
       &.left {

@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core'
-import {ListViewEventData, RadListView} from "nativescript-ui-listview"
+import {ListViewEventData, RadListView, SwipeActionsEventData} from "nativescript-ui-listview"
 import {BaseComponent} from "@src/app/shared/base.component"
 import {RouterExtensions} from "nativescript-angular"
 import {layout, View} from "@nativescript/core/ui/core/view"
@@ -27,7 +27,7 @@ export class RadListSwipeComponent extends BaseComponent implements AfterViewIni
         this.listView = this.listViewRef.nativeElement
     }
 
-    onSwipeCellStarted(args: ListViewEventData) {
+    onSwipeCellStarted(args: SwipeActionsEventData) {
         this._isSwipeEnded = false
         const swipeLimits = args.data.swipeLimits;
         const swipeView = args['object']
@@ -41,59 +41,61 @@ export class RadListSwipeComponent extends BaseComponent implements AfterViewIni
         }
     }
 
-    onSwipeCellFinished(args: ListViewEventData) {
+    onSwipeCellFinished(args: SwipeActionsEventData) {
         const swipeView = args['object'];
-        const leftItem = swipeView.getViewById('mark-view');
-        const rightItem = swipeView.getViewById('delete-view');
-        if (this.leftThresholdPassed) {
-            console.log("Perform left action");
-        } else if (this.rightThresholdPassed) {
-            console.log("Perform right action");
+        if (swipeView) {
+            const leftItem = swipeView.getViewById('mark-view');
+            const rightItem = swipeView.getViewById('delete-view');
+            if (this.leftThresholdPassed) {
+                console.log("Perform left action");
+            } else if (this.rightThresholdPassed) {
+                console.log("Perform right action");
+            }
+            this.leftThresholdPassed = false;
+            this.rightThresholdPassed = false;
         }
-        this.leftThresholdPassed = false;
-        this.rightThresholdPassed = false;
     }
 
-    onLeftSwipeClick(args: ListViewEventData): void {
+    onLeftSwipeClick(args: SwipeActionsEventData): void {
         this.listView.notifySwipeToExecuteFinished()
     }
 
-    onRightSwipeClick(args: ListViewEventData): void {
+    onRightSwipeClick(args: SwipeActionsEventData): void {
         this.listView.notifySwipeToExecuteFinished()
     }
 
-    onCellSwiping(args: ListViewEventData) {
+    onCellSwiping(args: SwipeActionsEventData) {
         const swipeLimits = args.data.swipeLimits;
         const swipeView = args['swipeView'];
         if (swipeView) {
             const mainView = args['mainView'];
-            const leftItem = swipeView.getViewById('mark-view');
-            const rightItem = swipeView.getViewById('delete-view');
+            const leftItem = swipeView.getViewById<View>('mark-view');
+            const rightItem = swipeView.getViewById<View>('delete-view');
 
             if (args.data.x > swipeView.getMeasuredWidth() / 4 && !this.leftThresholdPassed) {
                 console.log("Notify perform left action");
-                const markLabel = leftItem.getViewById('mark-text');
+                // const markLabel = leftItem.getViewById('mark-text');
                 this.leftThresholdPassed = true;
             } else if (args.data.x < -swipeView.getMeasuredWidth() / 4 && !this.rightThresholdPassed) {
-                const deleteLabel = rightItem.getViewById('delete-text');
+                // const deleteLabel = rightItem.getViewById('delete-text');
                 console.log("Notify perform right action");
                 this.rightThresholdPassed = true;
             }
             if (args.data.x > 0) {
                 const leftDimensions = View.measureChild(
-                    leftItem.parent,
+                    leftItem.parent as View,
                     leftItem,
                     layout.makeMeasureSpec(Math.abs(args.data.x), layout.EXACTLY),
                     layout.makeMeasureSpec(mainView.getMeasuredHeight(), layout.EXACTLY));
-                View.layoutChild(leftItem.parent, leftItem, 0, 0, leftDimensions.measuredWidth, leftDimensions.measuredHeight);
+                View.layoutChild(leftItem.parent as View, leftItem, 0, 0, leftDimensions.measuredWidth, leftDimensions.measuredHeight);
             } else {
                 const rightDimensions = View.measureChild(
-                    rightItem.parent,
+                    rightItem.parent as View,
                     rightItem,
                     layout.makeMeasureSpec(Math.abs(args.data.x), layout.EXACTLY),
                     layout.makeMeasureSpec(mainView.getMeasuredHeight(), layout.EXACTLY));
 
-                View.layoutChild(rightItem.parent, rightItem, mainView.getMeasuredWidth() - rightDimensions.measuredWidth, 0, mainView.getMeasuredWidth(), rightDimensions.measuredHeight);
+                View.layoutChild(rightItem.parent as View, rightItem, mainView.getMeasuredWidth() - rightDimensions.measuredWidth, 0, mainView.getMeasuredWidth(), rightDimensions.measuredHeight);
             }
         }
 

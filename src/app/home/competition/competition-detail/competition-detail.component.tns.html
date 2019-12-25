@@ -1,9 +1,46 @@
-<GridLayout columns="*, *" rows="auto, auto, *">
-    <GridLayout *ngIf="isAdmin && competition.secret" col="0" colSpan="2" row="0" columns="*, *" rows="auto">
+<GridLayout columns="*, *" rows="auto, *">
+    <GridLayout *ngIf="isAdmin && competition.secret"
+                col="0" colSpan="2" row="0" columns="*, *" rows="auto" class="subAction">
         <Button col="0" row="0" [text]="'Admin QR code'|L" (tap)="onTapQr('admin')"></Button>
         <Button col="1" row="0" [text]="'Marshal QR code'|L" (tap)="onTapQr('marshal')"></Button>
     </GridLayout>
 
+    <Tabs selectedIndex="0" colSpan="2" row="1">
+        <TabStrip>
+            <TabStripItem>
+                <Label [text]="'Connected\ndevices'|L"></Label>
+                <Image src="font://&#xf3cd;" class="fas"></Image>
+            </TabStripItem>
+            <TabStripItem class="special">
+                <Label [text]="'Checkpoints'|L"></Label>
+                <Image src="font://&#xf5a0;" class="fas"></Image>
+            </TabStripItem>
+        </TabStrip>
+
+        <TabContentItem>
+            <ListView [items]="competition?.mobile_devices">
+                <ng-template let-device="item" let-i="index">
+                    <StackLayout>
+                        <Label [text]="device|deviceName" [ngClass]="{'-warning': device.isAdmin, 'font-weight-bold': device.uuid == uuid}"></Label>
+                    </StackLayout>
+                </ng-template>
+            </ListView>
+        </TabContentItem>
+        <TabContentItem>
+            <ListView [items]="competition?.checkpoints"
+                      (itemTap)="onItemTap($event)">
+                <ng-template let-checkpoint="item" let-i="index">
+                    <StackLayout [class.active]="isReader(checkpoint)">
+                        <Label [text]="checkpoint.order + ': ' + checkpoint.title"></Label>
+                        <Label [text]="checkpoint.marshal" *ngIf="checkpoint.marshal" class="font-italic"></Label>
+                        <Label [text]="device|getDevice:competition|deviceName" *ngFor="let device of checkpoint.devices" class="font-italic"></Label>
+                    </StackLayout>
+                </ng-template>
+            </ListView>
+        </TabContentItem>
+    </Tabs>
+
+    <!--
     <StackLayout col="0" row="1" class="p-t-10 p-b-10">
         <Label [text]="'Connected\ndevices'|L"
                textWrap="true"
@@ -32,5 +69,6 @@
             </StackLayout>
         </ng-template>
     </ListView>
+    -->
 </GridLayout>
 

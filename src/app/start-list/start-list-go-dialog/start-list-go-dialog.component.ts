@@ -5,9 +5,10 @@ import {ModalDialogParams} from "nativescript-angular"
 import {DialogComponent} from "@src/app/shared/dialog.component"
 import {BehaviorSubject, Observable, ReplaySubject, timer} from "rxjs"
 import {filter, map, takeUntil, takeWhile, withLatestFrom} from "rxjs/operators"
+import {environment} from "@src/environments/environment"
 
 
-const TIMER_COUNT = 5
+const TIMER_COUNT = environment.production ? 15 : 5
 
 
 @Component({

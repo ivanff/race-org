@@ -11,6 +11,12 @@ import {CompetitionService} from "@src/app/mobile/services/competition.service"
 import {ReplaySubject} from "rxjs"
 import {takeUntil} from "rxjs/operators"
 import * as _ from "lodash"
+import {RadListSwipeComponent} from "@src/app/shared/rad-list-swipe.component"
+import {ListViewEventData, RadListView, SwipeActionsEventData} from "nativescript-ui-listview"
+import {ActivatedRoute} from "@angular/router"
+import {Athlet} from "@src/app/shared/interfaces/athlet"
+import {View} from "@nativescript/core/nativescript-core"
+import {layout} from "@nativescript/core/utils/utils"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
@@ -18,9 +24,10 @@ const firebase = require('nativescript-plugin-firebase/app')
     selector: 'app-competition',
     templateUrl: './competition.component.html'
 })
-export class CompetitionComponent extends BaseComponent implements OnInit, OnDestroy {
+export class CompetitionComponent extends RadListSwipeComponent implements OnInit, OnDestroy {
     competitions: Competition[] = []
     selected_competition: Competition
+    swiped_competition: Competition
     collection: firestore.CollectionReference = firebase.firestore().collection('competitions')
     mobile_device: MobileDevice = {
         uuid: device.uuid,
@@ -32,6 +39,7 @@ export class CompetitionComponent extends BaseComponent implements OnInit, OnDes
     private destroy = new ReplaySubject<any>(1)
 
     constructor(public routerExtensions: RouterExtensions,
+                private activeRoute: ActivatedRoute,
                 private auth: AuthService,
                 private _competition: CompetitionService) {
         super(routerExtensions)
@@ -59,7 +67,6 @@ export class CompetitionComponent extends BaseComponent implements OnInit, OnDes
                         }
                     })
                 }
-
 
                 // this.competitions = inserted.concat(this.competitions)
             }
@@ -103,9 +110,52 @@ export class CompetitionComponent extends BaseComponent implements OnInit, OnDes
         console.log('>> CompetitionComponent ngOnDestroy')
     }
 
-    onItemTap($event): void {
-        const competition = {...this.competitions[$event.index]}
 
+    onSwipeCellStarted(args: SwipeActionsEventData) {
+        super.onSwipeCellStarted(args);
+        this.swiped_competition = this.competitions[args.index]
+    }
+
+    onSwipeCellFinished(args: SwipeActionsEventData) {
+        const swipeView = args['object'];
+        if (swipeView) {
+            if (this.leftThresholdPassed) {
+                this.swiped_competition = null
+            } else if (this.rightThresholdPassed) {
+            }
+            this.leftThresholdPassed = false;
+            this.rightThresholdPassed = false;
+        }
+    }
+
+    onCellSwiping(args: SwipeActionsEventData) {
+        const swipeLimits = args.data.swipeLimits;
+        const swipeView = args['swipeView'];
+        if (swipeView) {
+            if (args.data.x > swipeView.getMeasuredWidth() / 4 && !this.leftThresholdPassed) {
+                this.leftThresholdPassed = true;
+            } else if (args.data.x < -swipeView.getMeasuredWidth() / 4 && !this.rightThresholdPassed) {
+                this.rightThresholdPassed = true;
+            }
+        }
+
+    }
+
+    onLeftSwipeClick(args: SwipeActionsEventData): void {
+        super.onLeftSwipeClick(args)
+        const competition = args.object.bindingContext as Competition
+        this._onItemTap(competition)
+    }
+
+    onRightSwipeClick(args: SwipeActionsEventData): void {
+        super.onRightSwipeClick(args);
+        const competition = args.object.bindingContext as Competition
+        this.routerExtensions.navigate(competition.parent_id ? [competition.parent_id, competition.id] : [competition.id], {
+            relativeTo: this.activeRoute
+        })
+    }
+
+    private _onItemTap(competition: Competition): void {
         if (this.selected_competition && competition.id == this.selected_competition.id) {
             competition.mobile_devices = competition.mobile_devices.filter((item: MobileDevice) => item.uuid !== this.mobile_device.uuid)
             this._competition.selected_competition_id$.next(null)

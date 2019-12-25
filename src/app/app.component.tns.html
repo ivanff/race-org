@@ -39,7 +39,7 @@
                             (tap)="navigateTo('/start-list')"
                             columns="auto, *"
                             class="side-label">
-                    <Label col="0" text="&#xf0ca;" class="fas"></Label>
+                    <Label col="0" text="&#xf0ae;" class="fas"></Label>
                     <Label [text]="'Start lists'|L" col="1"></Label>
                 </GridLayout>
 
@@ -50,6 +50,13 @@
                             class="side-label">
                     <Label col="0" text="&#xf0c0;" class="fas"></Label>
                     <Label [text]="'Athletes'|L" col="1"></Label>
+                </GridLayout>
+
+                <GridLayout *ngIf="_competition.selected_competition"
+                            columns="auto, *"
+                            class="side-label">
+                    <Label col="0" text="&#xf0cb;" class="fas"></Label>
+                    <Label [text]="'Results'|L" col="1"></Label>
                 </GridLayout>
 
                 <StackLayout class="m-10"></StackLayout>

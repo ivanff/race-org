@@ -12,7 +12,7 @@ import {ActivatedRoute} from "@angular/router"
 import {Switch} from "@nativescript/core/ui/switch"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
 import {RadListSwipeComponent} from "@src/app/shared/rad-list-swipe.component"
-import {ListViewEventData,} from "nativescript-ui-listview"
+import {ListViewEventData, SwipeActionsEventData,} from "nativescript-ui-listview"
 import {Page} from "@nativescript/core/ui/page"
 import * as _ from "lodash"
 import {StartListGroup} from "@src/app/shared/interfaces/start-list"
@@ -110,7 +110,7 @@ export class StartListGroupComponent extends RadListSwipeComponent implements On
         }
     }
 
-    onLeftSwipeClick(args: ListViewEventData): void {
+    onLeftSwipeClick(args: SwipeActionsEventData): void {
         const athlet = args.object.bindingContext as Athlet
 
         this.radItems.splice(this.radItems.indexOf(athlet), 1)
@@ -146,7 +146,7 @@ export class StartListGroupComponent extends RadListSwipeComponent implements On
         super.onLeftSwipeClick(args)
     }
 
-    onRightSwipeClick(args: ListViewEventData): void {
+    onRightSwipeClick(args: SwipeActionsEventData): void {
         const athlet = args.object.bindingContext as Athlet
         super.onRightSwipeClick(args)
         this.routerExtensions.navigate(['/athlets', athlet.id])

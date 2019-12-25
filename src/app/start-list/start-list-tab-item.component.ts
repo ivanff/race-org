@@ -10,15 +10,15 @@ import {StartListAddDialogComponent} from "@src/app/start-list/start-list-add-di
 import * as _ from "lodash"
 import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
 import {localize as L} from "nativescript-localize"
-import {DatePipe} from "@angular/common"
 import {groupNumberMatch, hasGroup, sortNumber} from "@src/app/shared/helpers"
+import {TzDatePipe} from "@src/app/shared/pipes/tzdate.pipe"
 
 const firebase = require('nativescript-plugin-firebase/app')
 
 
 @Component({
     templateUrl: './start-list-tab-item.component.tns.html',
-    providers: [DatePipe]
+    providers: [TzDatePipe]
 })
 export class StartListTabItemComponent implements OnInit, OnDestroy {
     private destroy = new ReplaySubject<any>(1)
@@ -30,7 +30,7 @@ export class StartListTabItemComponent implements OnInit, OnDestroy {
                 private _competition: CompetitionService,
                 private modalService: ModalDialogService,
                 private vcRef: ViewContainerRef,
-                private datePipe: DatePipe,
+                private tzDatePipe: TzDatePipe,
                 private activeRoute: ActivatedRoute,
                 private routerExtensions: RouterExtensions,
                 private snackbar: SnackbarService,) {
@@ -60,18 +60,7 @@ export class StartListTabItemComponent implements OnInit, OnDestroy {
             this.athlets = athlets
             const groupsDict = {}
 
-            athlets.sort((a: Athlet, b: Athlet): number => {
-                if (a.group && b.group) {
-                    const a_group: StartListGroup | null = a.group[this._competition.selected_competition.id]
-                    const b_group: StartListGroup | null = b.group[this._competition.selected_competition.id]
-
-
-                    if (a_group && b_group) {
-                        return a_group.id < b_group.id ? -1 : 1
-                    }
-                }
-                return 0
-            }).map((athlet: Athlet) => {
+            athlets.map((athlet: Athlet) => {
 
                 if (!hasGroup(athlet, this._competition.selected_competition)) {
                     athlet.group = {} || athlet.group
@@ -116,7 +105,7 @@ export class StartListTabItemComponent implements OnInit, OnDestroy {
         if (athlets.length) {
             const start_time: Date | null = athlets[0].group[this._competition.selected_competition.id].start_time
             if (start_time) {
-                return this.datePipe.transform(start_time, 'dd.MM HH:mm:ss')
+                return `${this.tzDatePipe.transform(start_time, 'shortDate')} ${this.tzDatePipe.transform(start_time, 'mediumTime')}`
             }
         }
         return L("Not started")
