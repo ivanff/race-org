@@ -21,6 +21,7 @@ export class AthletListResolve implements Resolve<Athlet[]> {
     }
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<Athlet[]> {
+
         let colRef: firestore.CollectionReference | firestore.Query =firebase.firestore().collection(this._competition.getAthletsCollectionPath())
 
         if (route.params.hasOwnProperty('class')) {

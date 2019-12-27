@@ -14,13 +14,15 @@ import * as application from "@nativescript/core/application"
 import {confirm} from "@nativescript/core/ui/dialogs"
 import {exit} from "nativescript-exit"
 import {RootComponent} from "./root/root.component"
-import {NavigationEnd} from "@angular/router"
+import {ActivatedRoute, NavigationEnd} from "@angular/router"
 import {filter} from "rxjs/operators"
 import {AuthService} from "./mobile/services/auth.service"
 import {CompetitionService} from "./mobile/services/competition.service"
 import {openUrl} from "@nativescript/core/utils/utils"
 import {RadSideDrawer} from "nativescript-ui-sidedrawer"
 import {localize as L} from "nativescript-localize"
+import {ExtendedNavigationExtras} from "@nativescript/angular/router/router-extensions";
+import {StartListComponent} from "./start-list/start-list.component"
 
 const firebase = require('nativescript-plugin-firebase')
 
@@ -36,13 +38,15 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     // @ts-ignore
     @ViewChild("sideDrawerId", {static: false}) drawerComponent: ElementRef
 
-    constructor(private routerExtensions: RouterExtensions,
-                private modalService: ModalDialogService,
-                private _changeDetectionRef: ChangeDetectorRef,
-                private vcRef: ViewContainerRef,
-                private zone: NgZone,
-                public auth: AuthService,
-                public _competition: CompetitionService) {
+    constructor(
+        private routerExtensions: RouterExtensions,
+        private activeRoute: ActivatedRoute,
+        private modalService: ModalDialogService,
+        private _changeDetectionRef: ChangeDetectorRef,
+        private vcRef: ViewContainerRef,
+        private zone: NgZone,
+        public auth: AuthService,
+        public _competition: CompetitionService) {
     }
 
     ngOnInit() {
@@ -74,7 +78,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         application.android.off(application.AndroidApplication.activityBackPressedEvent)
     }
 
-    navigateTo(path: string, extras?: any): void {
+    navigateTo(path: any, extras?: ExtendedNavigationExtras): void {
         this.routerExtensions.navigate([path], extras).then((result) => {
             if (result) {
                 this.closeDrawer()
@@ -82,17 +86,15 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         })
     }
 
-    openModal(path: string): void {
+    openModal(path: any): void {
         const options: ModalDialogOptions = {
             fullscreen: true,
             viewContainerRef: this.vcRef,
             context: {
-                path: [path]
+                path: path
             }
         }
-        this.modalService.showModal(RootComponent, options).then((result) => {
-            this.onBackPressed()
-        })
+        this.modalService.showModal(RootComponent, options)
         this.closeDrawer()
     }
 
@@ -110,7 +112,18 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                         this.routerExtensions.back()
                         this.closeDrawer()
                     } else {
-                        this.onExit()
+
+                        if (this._activatedUrl == '/home') {
+                            this.onExit()
+                        } else if (this._activatedUrl.startsWith('/start-list/(startList:list/')) {
+                            this.routerExtensions.navigate(['/start-list', {outlets: {startList: ['list']}}], {
+                                replaceUrl: true
+                            })
+                        } else {
+                            this.routerExtensions.navigate(['/home'], {
+                                clearHistory: true, animated: false
+                            })
+                        }
                     }
                 })
             }

@@ -12,12 +12,8 @@ import {ReplaySubject} from "rxjs"
 import {takeUntil} from "rxjs/operators"
 import * as _ from "lodash"
 import {RadListSwipeComponent} from "@src/app/shared/rad-list-swipe.component"
-import {ListViewEventData, RadListView, SwipeActionsEventData} from "nativescript-ui-listview"
+import {SwipeActionsEventData} from "nativescript-ui-listview"
 import {ActivatedRoute} from "@angular/router"
-import {Athlet} from "@src/app/shared/interfaces/athlet"
-import {View} from "@nativescript/core/nativescript-core"
-import {layout} from "@nativescript/core/utils/utils"
-
 const firebase = require('nativescript-plugin-firebase/app')
 
 @Component({

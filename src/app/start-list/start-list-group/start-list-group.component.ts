@@ -5,7 +5,8 @@ import {
 import {
     ModalDialogOptions,
     ModalDialogService,
-    RouterExtensions
+    RouterExtensions,
+    NSLocationStrategy
 } from "nativescript-angular"
 import {Athlet} from "@src/app/shared/interfaces/athlet"
 import {ActivatedRoute} from "@angular/router"
@@ -48,6 +49,7 @@ export class StartListGroupComponent extends RadListSwipeComponent implements On
     checked = true
 
     constructor(public routerExtensions: RouterExtensions,
+                public locationStrategy: NSLocationStrategy,
                 private page: Page,
                 private vcRef: ViewContainerRef,
                 private datePipe: DatePipe,
@@ -149,7 +151,9 @@ export class StartListGroupComponent extends RadListSwipeComponent implements On
     onRightSwipeClick(args: SwipeActionsEventData): void {
         const athlet = args.object.bindingContext as Athlet
         super.onRightSwipeClick(args)
-        this.routerExtensions.navigate(['/athlets', athlet.id])
+        this.routerExtensions.navigate(['/athlets', athlet.id], {
+            relativeTo: this.router
+        })
     }
 
     radListLoaded($event): void {
@@ -230,7 +234,7 @@ export class StartListGroupComponent extends RadListSwipeComponent implements On
                             batch.commit().then(() => {
                                 this.snackbar.success(L('Removed %s athlete(s)', athlets.length.toString())).then(() => {
                                     resolve()
-                                    this.routerExtensions.navigate(['/start-list'], {
+                                    this.routerExtensions.navigate(['/start-list', {outlets: {startList: ['list']}}], {
                                         replaceUrl: true
                                     })
                                 })

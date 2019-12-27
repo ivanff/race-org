@@ -10,7 +10,7 @@
         <ScrollView row="1">
             <StackLayout>
                 <GridLayout [class.active]="_activatedUrl == '/home'"
-                            (tap)="navigateTo('/home')"
+                            (tap)="navigateTo('/home', {clearHistory: true, animated: false})"
                             columns="auto, *"
                             class="side-label">
                     <Label col="0" text="&#xf015;" class="fas"></Label>
@@ -18,7 +18,7 @@
                 </GridLayout>
 
                 <GridLayout [class.active]="_activatedUrl.indexOf('/home/competitions') == 0"
-                            (tap)="navigateTo('/home/competitions')"
+                            (tap)="navigateTo('/home/competitions', {animated: false})"
                             columns="auto, *"
                             class="side-label">
                     <Label col="0" text="&#xf559;" class="fas"></Label>
@@ -27,7 +27,7 @@
 
                 <GridLayout *ngIf="_competition.selected_competition"
                             [class.active]="_activatedUrl == '/scan'"
-                            (tap)="navigateTo('/scan')"
+                            (tap)="navigateTo('/scan', {clearHistory: true, animated: false})"
                             columns="auto, *"
                             class="side-label">
                     <Label col="0" text="&#xf1eb;" class="fas"></Label>
@@ -36,7 +36,7 @@
 
                 <GridLayout *ngIf="_competition.selected_competition"
                             [class.active]="_activatedUrl.indexOf('/start-list') == 0"
-                            (tap)="navigateTo('/start-list')"
+                            (tap)="navigateTo('/start-list', {clearHistory: true, animated: false})"
                             columns="auto, *"
                             class="side-label">
                     <Label col="0" text="&#xf0ae;" class="fas"></Label>
@@ -45,7 +45,7 @@
 
                 <GridLayout *ngIf="_competition.selected_competition"
                             [class.active]="_activatedUrl.indexOf('/athlets') == 0"
-                            (tap)="navigateTo('/athlets')"
+                            (tap)="navigateTo('/athlets', {clearHistory: true, animated: false})"
                             columns="auto, *"
                             class="side-label">
                     <Label col="0" text="&#xf0c0;" class="fas"></Label>
@@ -54,9 +54,9 @@
 
                 <GridLayout *ngIf="_competition.selected_competition"
                             columns="auto, *"
-                            class="side-label">
+                            class="side-label disabled">
                     <Label col="0" text="&#xf0cb;" class="fas"></Label>
-                    <Label [text]="'Results'|L" col="1"></Label>
+                    <Label [text]="'Results'|L" col="1" ></Label>
                 </GridLayout>
 
                 <StackLayout class="m-10"></StackLayout>

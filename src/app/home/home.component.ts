@@ -3,6 +3,7 @@ import {BaseComponent} from "@src/app/shared/base.component"
 import {RouterExtensions} from "nativescript-angular"
 import * as appversion from "nativescript-appversion"
 import {openUrl} from "@nativescript/core/utils/utils"
+import {ActivatedRoute} from "@angular/router"
 
 @Component({
     selector: 'app-home',

@@ -62,28 +62,15 @@ export class StartListTabsComponent extends BaseComponent implements OnInit, Aft
     constructor(public routerExtensions: RouterExtensions,
                 private vcRef: ViewContainerRef,
                 private compiler: Compiler,
-                private router: ActivatedRoute,
+                private activeRoute: ActivatedRoute,
                 private zone: NgZone,
                 private _changeDetectionRef: ChangeDetectorRef,
                 private _competition: CompetitionService) {
+
         super(routerExtensions)
 
-        routerExtensions.router.events.pipe(
-            filter(e => {
-                if (e instanceof NavigationEnd) {
-                    if (e.url.indexOf('/start-list/') > -1) {
-                        return true
-                    }
-                }
-                return false
-            }),
-            first(),
-            takeUntil(this.destroy)
-        ).subscribe((val) => {
-            this.unsubscribe()
-        })
 
-        this.competition = this.router.snapshot.data['competition']
+        this.competition = this.activeRoute.parent.snapshot.data['competition']
         this.competition.classes.forEach((_class: string, index: number) => {
             const label = new Label()
             label.text = _class.toUpperCase()
@@ -200,7 +187,7 @@ export class StartListTabsComponent extends BaseComponent implements OnInit, Aft
             '_class': _class,
             'athletsBehavior$': this.athletsBehavior$,
             'tabIndex$': this.tabIndex$,
-            'tabIndex': tabIndex,
+            'tabIndex': tabIndex
         }, closeCallback);
 
         const childInjector = Injector.create({
@@ -230,4 +217,5 @@ export class StartListTabsComponent extends BaseComponent implements OnInit, Aft
     onSelectedIndexChanged($event): void {
         this.tabIndex$.next($event.newIndex)
     }
+
 }

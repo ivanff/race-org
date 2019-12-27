@@ -7,7 +7,7 @@ import {ActivatedRoute} from "@angular/router"
     templateUrl: './root.component.html'
 })
 export class RootComponent implements OnInit {
-    constructor(private _routerExtensions: RouterExtensions,
+    constructor(private routerExtensions: RouterExtensions,
                 private activeRoute: ActivatedRoute,
                 private params: ModalDialogParams) {
     }
@@ -16,6 +16,6 @@ export class RootComponent implements OnInit {
         if (this.params.context.hasOwnProperty('extras')) {
             extras = this.params.context['extras']
         }
-        this._routerExtensions.navigate([{outlets: {root: this.params.context.path}}], extras)
+        this.routerExtensions.navigate([{outlets: {startList: this.params.context.path}}], extras)
     }
 }

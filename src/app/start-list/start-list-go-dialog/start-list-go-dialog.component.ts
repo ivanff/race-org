@@ -6,7 +6,7 @@ import {DialogComponent} from "@src/app/shared/dialog.component"
 import {BehaviorSubject, Observable, ReplaySubject, timer} from "rxjs"
 import {filter, map, takeUntil, takeWhile, withLatestFrom} from "rxjs/operators"
 import {environment} from "@src/environments/environment"
-
+import {TNSPlayer} from 'nativescript-audio'
 
 const TIMER_COUNT = environment.production ? 15 : 5
 
@@ -22,11 +22,18 @@ export class StartListGoDialogComponent extends DialogComponent {
     private unsubscriber: any
     private pause$ = new BehaviorSubject<boolean>(false)
     private start_time: Date
+    private player: TNSPlayer = new TNSPlayer()
+
     stop = false
     timer = TIMER_COUNT
 
     constructor(public _params: ModalDialogParams) {
         super(_params)
+        this.player.initFromFile({
+            audioFile: "~/assets_mobile/sounds/alarm_clock.mp3",
+            loop: false
+        })
+
         this.timer$ = timer(0, 1000).pipe(
             withLatestFrom(this.pause$),
             filter(([i, paused]) => !paused),
@@ -53,9 +60,16 @@ export class StartListGoDialogComponent extends DialogComponent {
         this.unsubscriber = this.timer$.subscribe((next) => {
             if (!next) {
                 this.start_time = new Date()
+                this.player.play()
 
                 setTimeout(() => {
-                    this.onClose()
+                    if (this.player.isAudioPlaying()) {
+                        this.player.pause().then(() => {
+                            this.player.seekTo(0).then(() => {
+                                this.onClose()
+                            })
+                        })
+                    }
                 }, 2000)
             }
         })
@@ -74,13 +88,14 @@ export class StartListGoDialogComponent extends DialogComponent {
 
     ngOnDestroy(): void {
         super.ngOnDestroy()
+        this.player.dispose()
         this.destroy.next(null)
         this.destroy.complete()
     }
 
     onClose(args?: any): void {
-        super.onClose({
+        super.onClose(this.start_time ? {
             start_time: this.start_time
-        });
+        }: null);
     }
 }

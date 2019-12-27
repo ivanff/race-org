@@ -35,11 +35,12 @@ export const routes: Routes = [
         children: [
             {
                 path: '',
-                component: StatComponent
+                pathMatch: 'full',
+                component: StatComponent,
             },
             {
                 path: 'about',
-                component: AboutComponent
+                component: AboutComponent,
             },
             {
                 path: "competitions",
@@ -61,6 +62,7 @@ export const routes: Routes = [
             },
         ]
     },
+
     {
         path: "start-list",
         component: StartListComponent,
@@ -75,9 +77,9 @@ export const routes: Routes = [
         },
         children: [
             {
-                path: "",
+                path: "list",
                 component: StartListTabsComponent,
-                pathMatch: "full"
+                outlet: 'startList'
             },
             {
                 path: "add/:class/:group",
@@ -85,13 +87,15 @@ export const routes: Routes = [
                 resolve: {
                     athlets: AthletListResolve,
                 },
+                outlet: 'startList'
             },
             {
                 path: "list/:class/:group",
                 component: StartListGroupComponent,
                 resolve: {
                     athlets: AthletListResolve,
-                }
+                },
+                outlet: 'startList'
             },
         ]
     },

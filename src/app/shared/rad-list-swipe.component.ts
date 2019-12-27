@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core'
-import {ListViewEventData, RadListView, SwipeActionsEventData} from "nativescript-ui-listview"
+import {RadListView, SwipeActionsEventData} from "nativescript-ui-listview"
 import {BaseComponent} from "@src/app/shared/base.component"
 import {RouterExtensions} from "nativescript-angular"
 import {layout, View} from "@nativescript/core/ui/core/view"
