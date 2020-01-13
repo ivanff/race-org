@@ -170,7 +170,7 @@
             <mat-card-content>
                 <ul class="one-row">
                     <li>
-                        <button (click)="onAddAthlet()" mat-fab aria-label="Добавить атлетаы">
+                        <button (click)="onAddAthlet()" mat-fab aria-label="Добавить атлета">
                             <mat-icon>add</mat-icon>
                         </button>
                         Добавить атлета
@@ -184,6 +184,12 @@
                             </a>
                             Скачать таблицу в формате CSV
                         </csv>
+                    </li>
+                    <li>
+                        <button (click)="downloadStartStickers()" mat-fab class="bg-blue-400" aria-label="Скачать стартовые номера атлетов">
+                            <mat-icon>tab</mat-icon>
+                        </button>
+                        Скачать стартовые номера атлетов
                     </li>
                 </ul>
 

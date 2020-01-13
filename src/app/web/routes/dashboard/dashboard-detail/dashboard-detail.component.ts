@@ -4,11 +4,11 @@ import {ActivatedRoute, Router} from "@angular/router"
 import {FormControl, FormGroup, Validators} from "@angular/forms"
 import * as moment from 'moment-timezone'
 import {AngularFirestore, AngularFirestoreDocument} from "@angular/fire/firestore"
-import {debounceTime, first, shareReplay, takeUntil, tap} from "rxjs/operators"
-import {Observable, ReplaySubject} from "rxjs"
+import {catchError, debounceTime, first, shareReplay, switchMap, takeUntil, tap} from "rxjs/operators"
+import {defer, Observable, of, ReplaySubject, throwError} from "rxjs"
 import {Athlet} from "@src/app/shared/interfaces/athlet"
 import {LocalStorageService} from "angular-2-local-storage"
-import {environment} from "@src/environments/environment.prod"
+import {environment} from "@src/environments/environment"
 import {MatButtonToggleChange, MatDialog, MatSlideToggleChange, MatSort, MatTableDataSource} from "@angular/material"
 import {ChartOptions} from 'chart.js'
 import {Label} from "ng2-charts"
@@ -16,6 +16,8 @@ import * as _ from "lodash"
 import {Mark} from "@src/app/shared/interfaces/mark"
 import {AddAthletDialogComponent} from "@src/app/web/routes/dashboard/dashboard-detail/add-athlet-dialog.component"
 import {ResultMark} from "@src/app/web/routes/results/results.component"
+import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http"
+import * as firebase from "firebase"
 
 
 @Component({
@@ -82,6 +84,7 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
 
     constructor(private route: ActivatedRoute,
                 private afs: AngularFirestore,
+                private http: HttpClient,
                 private router: Router,
                 private localStorageService: LocalStorageService,
                 private dialog: MatDialog) {
@@ -126,7 +129,7 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
         }
 
         this.dataSource.filterPredicate = (athlet: Athlet, filter: string) => {
-            const data: {search: string, class: string} | null = JSON.parse(filter)
+            const data: { search: string, class: string } | null = JSON.parse(filter)
             let result = true
 
             if (!data) {
@@ -192,7 +195,7 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
         this._onDestroy.complete()
     }
 
-    private applyFilter(data: {search: string, class: string} | null): void {
+    private applyFilter(data: { search: string, class: string } | null): void {
         if (!data) {
             this.dataSource.filter = JSON.stringify(null)
         } else {
@@ -323,5 +326,32 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
         })
 
         return rows
+    }
+
+    downloadStartStickers(): void {
+        this.http.post(environment.backend_gateway + '/stickers',
+            JSON.stringify({
+                competition_id: this.competition.id
+            }),
+            {
+                headers: new HttpHeaders({
+                    'Content-Type': 'application/json'
+                }),
+                responseType: 'arraybuffer'
+            }
+        ).subscribe((data) => {
+
+            const blob = new Blob([data], {
+                type: 'application/zip'
+            });
+
+            const a = document.createElement('a')
+            a.href = URL.createObjectURL(blob)
+            a.download = `stickers_${this.competition.title}.zip`
+            document.body.appendChild(a)
+            a.click()
+            document.body.removeChild(a)
+
+        })
     }
 }
