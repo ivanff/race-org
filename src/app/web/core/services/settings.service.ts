@@ -35,7 +35,6 @@ export class SettingsService implements OnDestroy {
                                 .pipe(
                                     first(),
                                     map((stages) => {
-                                        console.log(2)
                                         return Object.assign(doc, {stages})
                                     })
                                 )

@@ -112,7 +112,7 @@
                         color="primary"
                         (click)="onSetTime(i)"
                         [disabled]="!element.mark?.missing && !element.mark?.manual" class="m-r-8">
-                    <mat-icon>edit</mat-icon>
+                    <mat-icon [matTooltip]="'Установить время'">edit</mat-icon>
                 </button>
                 <button mat-icon-button
                         color="primary"

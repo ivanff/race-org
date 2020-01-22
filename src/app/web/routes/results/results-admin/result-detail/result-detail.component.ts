@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core'
 import {ActivatedRoute} from "@angular/router"
 import {ResultMark as Mark} from "@src/app/web/routes/results/results.component"
 import {AngularFirestore, AngularFirestoreDocument} from "@angular/fire/firestore"
-import {MatDialog, MatTableDataSource} from "@angular/material"
+import {MatDialog, MatSnackBar, MatTableDataSource} from "@angular/material"
 import {ResultSetTimeComponent} from "@src/app/web/routes/results/results-admin/result-detail/result-set-time/result-set-time.component"
 import * as moment from "moment-timezone"
 import * as firebase from "firebase/app"
@@ -32,13 +32,18 @@ export class ResultDetailComponent implements OnInit {
 
     constructor(private route: ActivatedRoute,
                 private firestore: AngularFirestore,
+                private _snackBar: MatSnackBar,
                 private dialog: MatDialog) {
 
         this.athlet = route.snapshot.data['athlet']
+        this.athlet.marks = this.athlet.marks ? this.athlet.marks : []
+
         this.competition = route.snapshot.data['competition']
 
         this.checkpoints = this.competition.checkpoints.filter((checkpoint: Checkpoint) => checkpoint.classes.indexOf(this.athlet.class) > -1)
-        this.circles = Math.ceil(this.athlet.marks.length / this.checkpoints.length)
+
+        this.circles = this.evalueteCircles(this.athlet.marks)
+
         this.start_time = moment(this.competition.start_date.toMillis()).add(this.competition.start_time, 's')
         this.end_time = moment(this.competition.end_date.toMillis()).add(this.competition.start_time + this.competition.duration, 's')
     }
@@ -46,6 +51,23 @@ export class ResultDetailComponent implements OnInit {
     ngOnInit() {
         this.marks = [...this.athlet.marks.sort((a, b) => a.created < b.created ? -1 : a.created > b.created ? 1 : 0)]
         this.buildRows()
+    }
+
+    private evalueteCircles(marks: Array<Mark> | undefined): number {
+        if (marks) {
+            let keys = {}
+
+            marks.forEach((item) => {
+                if (keys.hasOwnProperty(item.key)) {
+                    keys[item.key] = keys[item.key] + 1
+                } else {
+                    keys[item.key] = 1
+                }
+            })
+            return _.max(Object.values(keys))
+        } else {
+            return 1
+        }
     }
 
     private buildRows() {
@@ -59,7 +81,6 @@ export class ResultDetailComponent implements OnInit {
             })
         })
 
-
         total_checkpoints.forEach((checkpoint: Checkpoint, index: number) => {
             const mark = this.marks[index]
             if (mark) {
@@ -72,6 +93,15 @@ export class ResultDetailComponent implements OnInit {
                         competition_id: this.competition.id
                     })
                 }
+            } else {
+                this.marks.push({
+                        missing: true,
+                        created: null,
+                        key: `CP_${(index % cp_in_circle) + 1}`,
+                        order: checkpoint.order,
+                        competition_id: this.competition.id
+                    }
+                )
             }
         })
 
@@ -96,7 +126,7 @@ export class ResultDetailComponent implements OnInit {
                 delete this.marks[index].missing
                 this.marks[index].manual = true
 
-                this.marks[index].created = firebase.firestore.Timestamp.fromMillis(
+                this.marks[index].created = <firebase.firestore.Timestamp>firebase.firestore.Timestamp.fromMillis(
                     this.start_time.clone().set('hour', result[0]).set('minutes', result[1]).set('seconds', result[2]).format('x')
                 )
             }
@@ -129,14 +159,24 @@ export class ResultDetailComponent implements OnInit {
         const athletDoc: AngularFirestoreDocument<Athlet> = this.firestore.doc<Athlet>(`athlets_${this.competition.id}/${this.athlet.id}`)
 
         athletDoc.update({
-            checkpoints: this.marks.filter((mark: Mark) => !(mark.missing && !mark.created))
-        }).then((result) => console.log(result)).catch((err) => alert(err))
+            marks: this.marks.filter((mark: Mark) => !(mark.missing && !mark.created))
+        }).then((result) => {
+            this._snackBar.open("Сохранено", null, {
+                duration: 5000,
+                verticalPosition: "top",
+                panelClass: 'snack-bar-success'
+            })
+        }).catch((err) => alert(err))
     }
 
     diffTime(a: firebase.firestore.Timestamp | null, b: firebase.firestore.Timestamp | null): string {
         if (a && b) {
             const diff: number = moment(b.toMillis()).diff(moment(a.toMillis()))
-            return `+${Math.round(moment.duration(diff).asMinutes())}m`
+            if (diff >= 0) {
+                return `${Math.floor(moment.duration(diff).asMinutes())}:${moment.duration(diff).seconds()}`
+            } else {
+                return `${Math.ceil(moment.duration(diff).asMinutes())}:${Math.abs(moment.duration(diff).seconds())}`
+            }
         }
         return ''
     }
