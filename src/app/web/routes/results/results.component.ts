@@ -11,6 +11,7 @@ import {Athlet} from "@src/app/shared/interfaces/athlet"
 import {map, takeUntil} from "rxjs/operators"
 import {ReplaySubject} from "rxjs"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
+import {calcCircles} from "@src/app/web/shared/utils/tools"
 
 
 export interface ResultMark extends Mark {
@@ -141,21 +142,24 @@ export class ResultsComponent implements OnInit, AfterViewInit {
             )
             .subscribe((athlets: Array<Athlet>) => {
                 this.athlets = athlets
-                this.circles = Math.ceil(
-                    _.max(this.athlets.map((athlet: Athlet) => athlet.marks.length)) / this.competition.checkpoints.length
-                )
-                this.buildHeader()
+                // this.athlets = athlets.filter((athlet) => {
+                //     return [888].indexOf(athlet.number) >= 0
+                // })
+                this.circles = this.buildHeader(this.athlets)
                 this.buildRows()
             })
     }
 
-    private buildHeader() {
-        this.checkpoints = []
+    private buildHeader(athlets: Array<Athlet>): number {
         const checkpoints: Array<Checkpoint> = this.competition.checkpoints.filter((checkpoint: Checkpoint) => _.intersection(
             this.classes, checkpoint.classes
         ).length)
+        const circles = _.max(
+            athlets.map((athlet: Athlet) => calcCircles(athlet.marks, checkpoints))
+        )
 
-        _.range(0, this.circles, 1).forEach(() => {
+        this.checkpoints = []
+        _.range(0, circles, 1).forEach(() => {
             checkpoints.forEach((checkpoint: Checkpoint) => {
                 this.checkpoints.push(checkpoint)
             })
@@ -170,6 +174,8 @@ export class ResultsComponent implements OnInit, AfterViewInit {
 
         this.csv_export_options.keys = this.displayedColumns
         this.csv_export_options.headers = this.displayedColumns
+
+        return circles
     }
 
     private buildRows() {
@@ -177,9 +183,6 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         const cp_in_circle = (this.checkpoints.length / this.circles)
 
         this.athlets.forEach((athlet: Athlet, y: number) => {
-            // if ([888, 131].indexOf(athlet.number) < 0) {
-            //     return
-            // }
             const clean_marks: Array<ResultMark | null> = [...athlet.marks.sort((a, b) => a.created < b.created ? -1 : a.created > b.created ? 1 : 0)]
 
             let last_cp = -1

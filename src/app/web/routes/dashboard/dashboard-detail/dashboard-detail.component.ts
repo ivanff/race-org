@@ -88,14 +88,12 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
                 private router: Router,
                 private localStorageService: LocalStorageService,
                 private dialog: MatDialog) {
+
         this.active_tab = this.localStorageService.get(`ActiveTab_${this.route.component['name']}`) || 0
 
         this.route.params.pipe(
             takeUntil(this._onDestroy)
         ).subscribe(params => {
-            console.log(
-                this.route.snapshot.data
-            )
             this.competition = this.route.snapshot.data.competition
             this.edit_competition = {...this.route.snapshot.data.competition}
             this.pieChartLabels = this.competition.classes
@@ -212,7 +210,7 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
 
     }
 
-    setActiveTab($event) {
+    setActiveTab($event: number) {
         this.active_tab = $event
         this.localStorageService.set(`ActiveTab_${this.route.component['name']}`, $event)
     }
@@ -223,7 +221,10 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
 
     onDelete(competition: Competition, collection?: string) {
         if (collection == 'stages') {
-            this.afs.collection('competitions').doc(this.competition.id).collection(collection).doc(competition.id).delete()
+            this.afs.collection('competitions').doc(this.competition.id).collection(collection).doc(competition.id).delete().then(() => {
+                this.setActiveTab(1)
+                location.reload()
+            })
         } else {
             Promise.all(this.competition.stages.map((stage: Competition) => {
                 return this.afs.collection('competitions').doc(this.competition.id).collection('stages').doc(stage.id).delete()
@@ -232,7 +233,7 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
                     this.afs.collection('competitions').doc(this.competition.id).delete(),
                     this.afs.collection(`athlets_${this.competition.id}`).doc(this.competition.id).delete(),
                 ]).then(() => {
-                    this.router.navigate(['dashboard'])
+                    this.router.navigate(['/cabinet'])
                 })
             })
         }

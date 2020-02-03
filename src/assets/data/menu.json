@@ -1,15 +1,15 @@
 {
   "menu": [
     {
-      "state": "dashboard",
+      "state": ["/cabinet", "dashboard"],
       "name": "На главную",
-      "type": "link",
+      "type": "state",
       "icon": "home"
     },
     {
-      "state": "add",
+      "state": ["/cabinet", "add"],
       "name": "Добавить соревнование",
-      "type": "link",
+      "type": "state",
       "icon": "add_circle_outline"
     },
     {

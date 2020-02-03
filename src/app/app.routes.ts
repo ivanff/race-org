@@ -14,15 +14,15 @@ import {ResultDetailComponent} from "@src/app/web/routes/results/results-admin/r
 import {AthletResolve} from "@src/app/shared/resolvers/athlet.resolver"
 import {DashboardEditComponent} from "@src/app/web/routes/dashboard/dashboard-edit/dashboard-edit.component"
 import {PrivatePolicyComponent} from "@src/app/web/routes/private-policy/private-policy.component"
+import {LandingComponent} from "@src/app/web/routes/sessions/landing/landing.component"
 
 const routes: Routes = [
-    // {
-    //     path: '',
-    //     redirectTo: 'auth/login',
-    //     pathMatch: 'full'
-    // },
     {
         path: '',
+        component: LandingComponent,
+    },
+    {
+        path: 'cabinet',
         component: AdminLayoutComponent,
         canActivate: [
             AuthGuard
@@ -99,14 +99,10 @@ const routes: Routes = [
         path: 'private_policy',
         component: PrivatePolicyComponent
     },
-    // {
-    //     path: 'athlet/register/:id',
-    //     component: AppAthletRegisterComponent,
-    //     resolve: {
-    //         competition: CompetitionResolve
-    //     }
-    // },
-    {path: '**', redirectTo: 'dashboard'},
+    {
+        path: '**',
+        redirectTo: 'auth/login'
+    },
 ];
 
 @NgModule({

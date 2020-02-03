@@ -23,13 +23,13 @@ export class SidemenuComponent {
             values.forEach((value) => {
                 if (value.start_date.toDate() < moment.utc().startOf('day').toDate() || true) {
                     menu_results.push({
-                        "state": '/results/' + value.id,
+                        "state": ['results', value.id],
                         "name": value.title,
                         "type": "state"
                     } as ChildrenItem)
                 }
                 menu_competitions.push({
-                    "state": '/edit/' + value.id,
+                    "state": ['edit', value.id],
                     "name": value.title,
                     "type": "state"
                 } as ChildrenItem)

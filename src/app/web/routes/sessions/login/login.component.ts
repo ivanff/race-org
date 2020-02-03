@@ -71,7 +71,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
     successRedirect(result: UserCredential) {
         this.auth.user = result.user
-        this.router.navigate(['/dashboard'])
+        this.router.navigate(['/cabinet'])
     }
 
     static googleAuthError(error) {

@@ -1,8 +1,8 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms"
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material"
-import {Mark} from "@src/app/shared/interfaces/mark"
 import * as firebase from "firebase/app"
+import {ResultMark} from "@src/app/web/routes/results/results.component"
 
 @Component({
   selector: 'app-result-add-mark',
@@ -10,9 +10,8 @@ import * as firebase from "firebase/app"
   styleUrls: ['./result-add-mark.component.scss']
 })
 export class ResultAddMarkComponent implements OnInit {
-
   addMarkForm: FormGroup
-  mark: {key?: string, order?: number, time?: string} = {}
+  mark: {order?: number, time?: string} = {}
 
   constructor(private _fb: FormBuilder,
               private dialogRef: MatDialogRef<ResultAddMarkComponent>,
@@ -22,7 +21,6 @@ export class ResultAddMarkComponent implements OnInit {
 
   ngOnInit() {
     this.addMarkForm = this._fb.group({
-      key: ['', []],
       order: ['', []],
       time: ['', []]
     })
@@ -31,8 +29,8 @@ export class ResultAddMarkComponent implements OnInit {
   onEnter(valid: boolean) {
     if (valid) {
       const result: Array<number> = this.mark.time.split(':').map((item) => parseInt(item))
-      this.dialogRef.close({
-        key: this.mark.key,
+      this.dialogRef.close(<ResultMark>{
+        competition_id: this.data.competition_id,
         order: this.mark.order,
         manual: true,
         created: firebase.firestore.Timestamp.fromMillis(

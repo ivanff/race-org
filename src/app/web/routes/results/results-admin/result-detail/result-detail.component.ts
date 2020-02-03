@@ -11,6 +11,7 @@ import * as _ from "lodash"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 import {Competition} from "@src/app/shared/interfaces/competition"
 import {Athlet, athletBuiltInKeys} from "@src/app/shared/interfaces/athlet"
+import {calcCircles} from "@src/app/web/shared/utils/tools"
 
 @Component({
     selector: 'app-result-detail',
@@ -22,11 +23,11 @@ export class ResultDetailComponent implements OnInit {
     dataSource = new MatTableDataSource<any>([])
     displayedColumns: string[] = ['cp', 'nfc', 'nfc_cp_offset', 'local', 'actions']
     marks: Array<Mark> = []
+    other_marks: Array<Mark> = []
     competition: Competition
     athlet: Athlet
     athletBuiltInKeysExcluded: string[] = [...athletBuiltInKeys].map((item) => '!' + item)
     checkpoints: Array<Checkpoint> = []
-    circles: number = 0
     start_time: moment
     end_time: moment
 
@@ -39,43 +40,22 @@ export class ResultDetailComponent implements OnInit {
         this.athlet.marks = this.athlet.marks ? this.athlet.marks : []
 
         this.competition = route.snapshot.data['competition']
-
         this.checkpoints = this.competition.checkpoints.filter((checkpoint: Checkpoint) => checkpoint.classes.indexOf(this.athlet.class) > -1)
-
-        this.circles = this.evalueteCircles(this.athlet.marks)
-
         this.start_time = moment(this.competition.start_date.toMillis()).add(this.competition.start_time, 's')
         this.end_time = moment(this.competition.end_date.toMillis()).add(this.competition.start_time + this.competition.duration, 's')
     }
 
     ngOnInit() {
-        this.marks = [...this.athlet.marks.sort((a, b) => a.created < b.created ? -1 : a.created > b.created ? 1 : 0)]
+        this.marks = [...this.athlet.marks.sort((a, b) => a.created < b.created ? -1 : a.created > b.created ? 1 : 0).filter((mark: Mark) => mark.competition_id == this.competition.id)]
+        this.other_marks = [...this.athlet.marks.filter((mark: Mark) => mark.competition_id != this.competition.id)]
         this.buildRows()
-    }
-
-    private evalueteCircles(marks: Array<Mark> | undefined): number {
-        if (marks) {
-            let keys = {}
-
-            marks.forEach((item) => {
-                if (keys.hasOwnProperty(item.key)) {
-                    keys[item.key] = keys[item.key] + 1
-                } else {
-                    keys[item.key] = 1
-                }
-            })
-            return _.max(Object.values(keys))
-        } else {
-            return 1
-        }
     }
 
     private buildRows() {
         const cp_in_circle = this.checkpoints.length
         let total_checkpoints: Array<Checkpoint> = []
-        let rows: Array<any> = []
 
-        _.range(0, this.circles, 1).forEach(() => {
+        _.range(0, calcCircles(this.marks, this.checkpoints)).forEach(() => {
             this.checkpoints.forEach((checkpoint: Checkpoint) => {
                 total_checkpoints.push(checkpoint)
             })
@@ -143,23 +123,29 @@ export class ResultDetailComponent implements OnInit {
         const dialogRef = this.dialog.open(ResultAddMarkComponent, {
             width: '250px',
             data: {
-                start_time: this.start_time
+                start_time: this.start_time,
+                competition_id: this.competition.id,
+                checkpoints: this.checkpoints
             }
             //build validator
         })
         dialogRef.afterClosed().subscribe((result: Mark | undefined) => {
             if (result) {
                 this.marks.push(result)
-                this.onSave()
+                this.onSave().then(() => {
+                    this.buildRows()
+                })
             }
         })
     }
 
-    onSave(): void {
+    onSave(): Promise<any> {
         const athletDoc: AngularFirestoreDocument<Athlet> = this.firestore.doc<Athlet>(`athlets_${this.competition.id}/${this.athlet.id}`)
 
-        athletDoc.update({
-            marks: this.marks.filter((mark: Mark) => !(mark.missing && !mark.created))
+        return athletDoc.update({
+            marks: [
+                ...this.marks.filter((mark: Mark) => !(mark.missing && !mark.created)),...this.other_marks
+            ]
         }).then((result) => {
             this._snackBar.open("Сохранено", null, {
                 duration: 5000,
@@ -173,7 +159,7 @@ export class ResultDetailComponent implements OnInit {
         if (a && b) {
             const diff: number = moment(b.toMillis()).diff(moment(a.toMillis()))
             if (diff >= 0) {
-                return `${Math.floor(moment.duration(diff).asMinutes())}:${moment.duration(diff).seconds()}`
+                return `+${Math.floor(moment.duration(diff).asMinutes())}:${moment.duration(diff).seconds()}`
             } else {
                 return `${Math.ceil(moment.duration(diff).asMinutes())}:${Math.abs(moment.duration(diff).seconds())}`
             }

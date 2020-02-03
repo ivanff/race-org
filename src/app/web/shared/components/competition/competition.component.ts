@@ -357,8 +357,8 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
                     }
                 })
             }
-
-            this.router.navigate(['/dashboard'])
+            this.setActiveTabEvent.emit(1)
+            this.router.navigate(['/cabinet'])
         })
     }
 }

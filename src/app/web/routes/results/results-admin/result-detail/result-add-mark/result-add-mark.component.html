@@ -3,15 +3,15 @@
       (ngSubmit)="onEnter(addMarkForm.valid)">
     <div mat-dialog-content>
         <mat-form-field>
-            <mat-label>Checkpoint key</mat-label>
-            <input matInput [(ngModel)]="mark.key" formControlName="key" required>
+            <mat-label>Контрольная точка</mat-label>
+            <mat-select [(ngModel)]="mark.order" formControlName="order" required>
+                <mat-option *ngFor="let checkpoint of data.checkpoints" [value]="checkpoint.order">
+                    {{checkpoint.title}}
+                </mat-option>
+            </mat-select>
         </mat-form-field>
         <mat-form-field>
-            <mat-label>Order</mat-label>
-            <input matInput [(ngModel)]="mark.order" formControlName="order" required type="number">
-        </mat-form-field>
-        <mat-form-field>
-            <mat-label>Please, enter time</mat-label>
+            <mat-label>Введите время отметки</mat-label>
             <input matInput [(ngModel)]="mark.time" formControlName="time" required>
         </mat-form-field>
     </div>

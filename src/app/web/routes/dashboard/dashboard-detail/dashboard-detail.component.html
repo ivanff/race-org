@@ -48,7 +48,7 @@
                         </h4>
                     </mat-card-title>
                     <mat-card-subtitle>
-                        <a [routerLink]="['/public/athlet/register', competition.id]"
+                        <a [routerLink]="['/public', 'athlet', 'register', competition.id]"
                            *ngIf="!competition.stop_registration"
                            target="_blank">Публичная страница</a>
                     </mat-card-subtitle>

@@ -14,6 +14,7 @@ import {ResultAddMarkComponent} from "@src/app/web/routes/results/results-admin/
 import {ResultsComponent} from "@src/app/web/routes/results/results.component"
 import {PrivatePolicyComponent} from "@src/app/web/routes/private-policy/private-policy.component"
 import {AddAthletDialogComponent} from "@src/app/web/routes/dashboard/dashboard-detail/add-athlet-dialog.component"
+import {LandingComponent} from "@src/app/web/routes/sessions/landing/landing.component"
 
 const COMPONENTS = [
     DashboardComponent,
@@ -27,6 +28,7 @@ const COMPONENTS = [
     ResultAddMarkComponent,
     ResultSetTimeComponent,
 
+    LandingComponent,
     LoginComponent,
 
     // RegisterComponent,
