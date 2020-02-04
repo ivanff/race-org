@@ -68,6 +68,15 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
             .sort((a, b) => a.created > b.created ? -1 : a.created < b.created ? 1 : 0)
     }
 
+    getGroup(): string {
+        if (this.athlet.group) {
+            if (this.athlet.group.hasOwnProperty(this._competition.selected_competition.id)) {
+                return this.athlet.group[this._competition.selected_competition.id].id
+            }
+        }
+        return L('not assigned')
+    }
+
     setNfcId(data: NfcTagData) {
         let batch = firebase.firestore().batch()
         const athlets = this.collection.where('nfc_id', '==', data.id).get()

@@ -14,7 +14,11 @@ export class StartListComponent extends BaseComponent implements OnInit, OnDestr
     }
 
     ngOnInit(): void {
-        this.routerExtensions.navigate([{outlets: {startList: ['list']}}], {relativeTo: this.activeRoute})
+        this.routerExtensions.navigate([{outlets: {startList: ['list']}}], {
+            relativeTo: this.activeRoute,
+            replaceUrl: true,
+            clearHistory: true
+        })
     }
 
     ngOnDestroy(): void {

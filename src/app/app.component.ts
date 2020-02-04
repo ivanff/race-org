@@ -69,6 +69,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                 filter((event: any) => event instanceof NavigationEnd),
             )
             .subscribe((event: NavigationEnd) => {
+                console.log(
+                    event
+                )
                 this._activatedUrl = event.urlAfterRedirects || ''
             })
         this._changeDetectionRef.detectChanges()
@@ -109,19 +112,28 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             if (!args.stopEvent) {
                 this.zone.run(() => {
                     if (this.routerExtensions.canGoBack()) {
-                        this.routerExtensions.back()
+                        if (this._activatedUrl.startsWith('/start-list/(startList:add/')) {
+                            this.routerExtensions.navigate(['/start-list', {outlets: {startList: ['list']}}], {
+                                relativeTo: this.activeRoute,
+                                replaceUrl: true
+                            })
+                        } else {
+                            this.routerExtensions.back()
+                        }
                         this.closeDrawer()
                     } else {
-
                         if (this._activatedUrl == '/home') {
                             this.onExit()
                         } else if (this._activatedUrl.startsWith('/start-list/(startList:list/')) {
                             this.routerExtensions.navigate(['/start-list', {outlets: {startList: ['list']}}], {
+                                relativeTo: this.activeRoute,
                                 replaceUrl: true
                             })
                         } else {
                             this.routerExtensions.navigate(['/home'], {
-                                clearHistory: true, animated: false
+                                relativeTo: this.activeRoute,
+                                clearHistory: true,
+                                animated: false
                             })
                         }
                     }

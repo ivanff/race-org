@@ -1,4 +1,4 @@
-import {NgModule, NO_ERRORS_SCHEMA} from '@angular/core'
+import {Injectable, NgModule, NO_ERRORS_SCHEMA} from '@angular/core'
 import {NativeScriptModule} from 'nativescript-angular/nativescript.module'
 
 import {AppRoutingModule} from '@src/app/app-routing.module'
@@ -58,6 +58,7 @@ import {StartListGoDialogComponent} from "@src/app/start-list/start-list-go-dial
 import localeRu from "@angular/common/locales/ru"
 
 registerLocaleData(localeRu)
+
 
 @NgModule({
     entryComponents: [
@@ -131,7 +132,7 @@ registerLocaleData(localeRu)
         SqliteService,
         NfcService,
         BarcodeService,
-        AuthService,
+        AuthService
     ],
     bootstrap: [AppComponent],
     schemas: [NO_ERRORS_SCHEMA]

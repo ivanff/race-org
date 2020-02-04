@@ -16,7 +16,7 @@
                [class.-warning]="!athlet.nfc_id"
                class="font-weight-bold"></Label>
 
-        <Label [text]="'Start group: ' + (athlet.group ? athlet.group : ('not assigned'|L))"
+        <Label [text]="'Start group: ' + getGroup()"
                [class.-warning]="!athlet.group"
                class="font-weight-bold"></Label>
 

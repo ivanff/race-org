@@ -17,6 +17,7 @@ import {StartListGroupComponent} from "@src/app/start-list/start-list-group/star
 import {StartListTabsComponent} from "@src/app/start-list/start-list-tabs.component"
 import {StartListComponent} from "@src/app/start-list/start-list.component"
 import {AthletListResolve} from "@src/app/shared/resolvers/athlet-list.resolver"
+import {BaseComponent} from "@src/app/shared/base.component"
 
 export const routes: Routes = [
     {
@@ -62,7 +63,6 @@ export const routes: Routes = [
             },
         ]
     },
-
     {
         path: "start-list",
         component: StartListComponent,
@@ -76,6 +76,11 @@ export const routes: Routes = [
             competition: CompetitionResolve
         },
         children: [
+            {
+                path: 'blank',
+                component: BaseComponent,
+                outlet: 'startList'
+            },
             {
                 path: "list",
                 component: StartListTabsComponent,
