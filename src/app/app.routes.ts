@@ -57,12 +57,12 @@ const routes: Routes = [
             }, {
                 path: 'results/:id',
                 component: ResultsAdminComponent,
-                data: {
-                    title: 'Результат',
-                    titleI18n: 'Result',
-                    //TODO
-                    is_admin: true,
-                },
+                resolve: {
+                    competition: CompetitionResolve,
+                }
+            }, {
+                path: 'results/:id/:parent_id',
+                component: ResultsAdminComponent,
                 resolve: {
                     competition: CompetitionResolve,
                 }

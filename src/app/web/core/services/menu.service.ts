@@ -9,6 +9,7 @@ export interface ChildrenItem {
     state: string | Array<string>;
     name: string;
     type: 'link' | 'sub' | 'extLink' | 'extTabLink' | 'state';
+    icon?: string;
     children?: ChildrenItem[];
 }
 

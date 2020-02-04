@@ -1,6 +1,5 @@
 <div mat-dialog-content fxLayout="column" fxLayoutAlign="center center">
     <h3 class="m-0">Добавить атлета</h3>
-    {{valid}}
     <athlet-add [competition]="data.competition"
                 (onValid)="valid = $event"
                 (onCreated)="onCreated($event)"

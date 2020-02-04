@@ -21,7 +21,7 @@ export class DashboardEditComponent implements OnInit {
   }
 
   onCreated($event) {
-    this.route.navigate(['edit', this.competition.id])
+    this.route.navigate(['/cabinet', 'edit', this.competition.id])
   }
 
 }

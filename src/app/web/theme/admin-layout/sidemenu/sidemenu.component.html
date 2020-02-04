@@ -80,6 +80,7 @@
         <a class="matero-sidemenu-link" [routerLink]="childLvl1.state"
            *ngIf="childLvl1.type === 'state'"
            matRipple [matRippleDisabled]="!ripple">
+          <mat-icon *ngIf="childLvl1.icon" class="menu-icon">{{ childLvl1.icon }}</mat-icon>
           <span class="menu-name">{{ childLvl1.name }}</span>
         </a>
         <a class="matero-sidemenu-link" [href]="childLvl1.state"

@@ -128,12 +128,14 @@ export class ResultsComponent implements OnInit, AfterViewInit {
             return result
         }
 
-        this.firestore.collection<Athlet>(`athlets_${this.competition.id}`).valueChanges({idField: 'id'})
+        this.firestore.collection<Athlet>(`athlets_${this.competition.parent_id || this.competition.id}`).valueChanges({idField: 'id'})
             .pipe(
                 map((athlets: Array<Athlet>) => {
                     athlets = athlets.filter((athlet) => this.classes.indexOf(athlet.class) >= 0)
                     athlets.map((athlet: Athlet) => {
-                        athlet.marks = athlet.marks ? athlet.marks.filter((mark: Mark) => mark.competition_id == this.competition.id) : []
+                        athlet.marks = athlet.marks ? athlet.marks.filter((mark: Mark) => {
+                          return mark.competition_id == this.competition.id
+                        }) : []
                     })
                     // return athlets.filter((athlet: Athlet) => athlet.number == 444)
                     return athlets
