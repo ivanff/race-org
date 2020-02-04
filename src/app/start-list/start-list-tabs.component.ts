@@ -150,32 +150,9 @@ export class StartListTabsComponent extends BaseComponent implements OnInit, Aft
         return athlets
     }
 
-    // private firestoreCollectionObservable(): Observable<Array<Athlet>> {
-    //     return new Observable((subscriber) => {
-    //         let colRef: firestore.CollectionReference = firebase.firestore().collection(this._competition.getAthletsCollectionPath())
-    //             .orderBy('created', 'desc')
-    //         let t0 = (new Date()).getTime() / 1000
-    //
-    //         colRef.get({source: 'cache'} as firestore.GetOptions).then((snapshot: firestore.QuerySnapshot) => {
-    //             subscriber.next(this.fillAthlets(snapshot))
-    //         })
-    //
-    //         return colRef.onSnapshot( (snapshot: firestore.QuerySnapshot) => {
-    //             subscriber.next(this.fillAthlets(snapshot))
-    //
-    //             console.log(
-    //                 'performance',
-    //                 t0 - ((new Date()).getTime() / 1000)
-    //             )
-    //         })
-    //     })
-    // }
-
     private createContent(_class: string, tabIndex: number): Promise<any> {
         const resolver = this.vcRef.injector.get(ComponentFactoryResolver);
         let componentView: View;
-
-        // const componentFactory = resolver.resolveComponentFactory(StartListTabItemComponent);
 
         const closeCallback = once((...args) => {
             console.log(

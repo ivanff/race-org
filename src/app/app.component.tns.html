@@ -36,7 +36,8 @@
 
                 <GridLayout *ngIf="_competition.selected_competition"
                             [class.active]="_activatedUrl.indexOf('/start-list') == 0"
-                            (tap)="navigateTo('/start-list', {clearHistory: true, animated: false})"
+                            [class.disabled]="!_competition.selected_competition.group_start"
+                            (tap)="_competition.selected_competition.group_start ? navigateTo('/start-list', {clearHistory: true, animated: false}): null"
                             columns="auto, *"
                             class="side-label">
                     <Label col="0" text="&#xf0ae;" class="fas"></Label>

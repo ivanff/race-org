@@ -5,10 +5,14 @@ import {AppAthletRegisterComponent, SuccessDialogComponent} from "./app-athlet-r
 import {CompetitionResolve} from "@src/app/shared/resolvers/competition.resolver"
 import {NotificationComponent} from "@src/app/web/theme/admin-layout/notification/notification.component"
 import {PublicCompetitionComponent} from "@src/app/web/routes/public/public-competition/public-competition.component"
+import {PublicCompetitionComponentResults} from "@src/app/web/routes/public/public-competition/public-competition-results/public-competition-results.component"
+import {PublicCompetitionComponentAthlets} from "@src/app/web/routes/public/public-competition/public-competition-athlets/public-competition-athlets.component"
 
 const COMPONENTS = [
     AppAthletRegisterComponent,
-    PublicCompetitionComponent
+    PublicCompetitionComponent,
+    PublicCompetitionComponentResults,
+    PublicCompetitionComponentAthlets,
 ];
 const COMPONENTS_DYNAMIC = [
     SuccessDialogComponent,

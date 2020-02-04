@@ -3,6 +3,8 @@ import { Routes, RouterModule } from '@angular/router';
 import {AppAthletRegisterComponent} from "./app-athlet-register/app-athlet-register.component"
 import {CompetitionResolve} from "@src/app/shared/resolvers/competition.resolver"
 import {PublicCompetitionComponent} from "@src/app/web/routes/public/public-competition/public-competition.component"
+import {PublicCompetitionComponentResults} from "@src/app/web/routes/public/public-competition/public-competition-results/public-competition-results.component"
+import {PublicCompetitionComponentAthlets} from "@src/app/web/routes/public/public-competition/public-competition-athlets/public-competition-athlets.component"
 
 
 const routes: Routes = [
@@ -18,8 +20,19 @@ const routes: Routes = [
     component: PublicCompetitionComponent,
     resolve: {
       competition: CompetitionResolve
-    }
+    },
+    children: [
+      {
+        path: '',
+        component: PublicCompetitionComponentAthlets,
+      },
+      {
+        path: 'results',
+        component: PublicCompetitionComponentResults,
+      },
+    ]
   },
+
 ]
 
 @NgModule({

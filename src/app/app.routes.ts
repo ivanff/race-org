@@ -99,10 +99,10 @@ const routes: Routes = [
         path: 'private_policy',
         component: PrivatePolicyComponent
     },
-    {
-        path: '**',
-        redirectTo: 'auth/login'
-    },
+    // {
+    //     path: '**',
+    //     redirectTo: 'auth/login'
+    // },
 ];
 
 @NgModule({
