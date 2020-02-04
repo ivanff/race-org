@@ -4,7 +4,7 @@
                 row="0"
                 androidElevation="3"
                 android:backgroundColor="white">
-        <Button (tap)="onSplit()" col="0" [text]="'Split athletes by group'|L" class="btn -primary"></Button>
+        <Button (tap)="onSplit()" [isEnabled]="athlets.length > 1" col="0" [text]="'Split athletes by group'|L" class="btn -primary"></Button>
         <Button (tap)="onRemoveGroup()" col="1" [text]="'Remove all groups'|L" class="btn -warning"></Button>
     </GridLayout>
 

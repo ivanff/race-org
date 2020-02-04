@@ -10,9 +10,17 @@
         </StackLayout>
 
         <StackLayout row="1" sdkToggleNavButton class="font-small">
-            <Button class="btn -active" [text]="'Split athletes by\nspecific group size'|L" [isEnabled]="!!this.size" (tap)="onSplitBySize()"></Button>
-            <Button class="btn -active" [text]="'Create groups by\nresults of previous stage'|L" [isEnabled]="false" (tap)="onSplitByStage()"></Button>
-            <Button class="btn -active" [text]="'Create group'|L" (tap)="onAddGroup()"></Button>
+            <Button class="btn -active"
+                    [text]="'Split athletes by\nspecific group size'|L"
+                    [isEnabled]="size ? size <= params.context['maxSize'] :!!size"
+                    (tap)="onSplitBySize()"></Button>
+            <Button class="btn -active"
+                    [text]="'Create groups by\nresults of previous stage'|L"
+                    [isEnabled]="false"
+                    (tap)="onSplitByStage()"></Button>
+            <Button class="btn -active"
+                    [text]="'Create group'|L"
+                    (tap)="onAddGroup()"></Button>
         </StackLayout>
     </GridLayout>
 

@@ -14,8 +14,8 @@ import {groupNumberMatch, sortNumber} from "@src/app/shared/helpers"
 export class StartListAddDialogComponent extends DialogComponent {
     size: number
 
-    constructor(public _params: ModalDialogParams) {
-        super(_params)
+    constructor(public params: ModalDialogParams) {
+        super(params)
     }
 
     onSizeChange($event): void {
@@ -38,9 +38,8 @@ export class StartListAddDialogComponent extends DialogComponent {
     }
 
     onAddGroup(): void {
-        const groupsKeys: Array<string> = this._params.context['groupsKeys']
+        const groupsKeys: Array<string> = this.params.context['groupsKeys']
         const groupNumbers: Array<number> = groupsKeys.map((item: string) => groupNumberMatch(item)).filter((item) => item > -1).sort(sortNumber)
-
 
         let next = 0
 
@@ -50,7 +49,7 @@ export class StartListAddDialogComponent extends DialogComponent {
 
         this.onClose({
             action: 'navigate',
-            value: ['add', this._params.context['_class'], `${this._params.context['_class']}_${next}`]
+            value: ['add', this.params.context['_class'], `${this.params.context['_class']}_${next}`]
         })
     }
 }

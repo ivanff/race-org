@@ -115,7 +115,8 @@ export class StartListTabItemComponent implements OnInit, OnDestroy {
         const options: ModalDialogOptions = {
             context: {
                 _class: this._class,
-                groupsKeys: this.groupsArray.map((item) => item.key)
+                groupsKeys: this.groupsArray.map((item) => item.key),
+                maxSize: this.athlets.length,
             },
             viewContainerRef: this.vcRef,
             fullscreen: false
