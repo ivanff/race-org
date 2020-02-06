@@ -1,5 +1,5 @@
 import {Injectable, OnDestroy} from '@angular/core'
-import {combineLatest, Observable, ReplaySubject, Subject} from 'rxjs'
+import {combineLatest, Observable, of, ReplaySubject, Subject} from 'rxjs'
 import {AppSettings, defaults} from '../settings'
 import timezones from 'google-timezones-json'
 import {Competition} from "@src/app/shared/interfaces/competition"
@@ -28,18 +28,22 @@ export class SettingsService implements OnDestroy {
             .valueChanges({idField: 'id'})
             .pipe(
                 switchMap((values: Array<any>) => {
-                    return combineLatest(
-                        values.map((doc) => {
-                            return this.afs.collection('competitions').doc(doc.id)
-                                .collection('stages')
-                                .valueChanges({idField: 'id'})
-                                .pipe(
-                                    map((stages) => {
-                                        return Object.assign(doc, {stages})
-                                    })
-                                )
-                        })
-                    )
+                    if (values.length) {
+                        return combineLatest(
+                            values.map((doc) => {
+                                return this.afs.collection('competitions').doc(doc.id)
+                                    .collection('stages')
+                                    .valueChanges({idField: 'id'})
+                                    .pipe(
+                                        map((stages) => {
+                                            return Object.assign(doc, {stages})
+                                        })
+                                    )
+                            })
+                        )
+                    } else {
+                        return of(null)
+                    }
                 }),
                 shareReplay(1),
                 takeUntil(this._onDestroy)

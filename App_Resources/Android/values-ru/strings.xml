@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <string name="Countdown">"Обратный отсчет"</string>
   <string name="_Athletes_in_group___J6bg8">"Атлеты в группе: "</string>
   <string name="_Athletes_not_in_groups___22MRRO">"Атлеты не в группах: "</string>
   <string name="_Remove_all_groups_ZDzH3N">"Удалить все группы"</string>

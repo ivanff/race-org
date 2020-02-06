@@ -100,18 +100,18 @@ export class StartListTabsComponent extends BaseComponent implements OnInit, Aft
 
         this.tabStrip.items = this.tapStripItems
 
-        console.log('constructor StartListTabsComponent')
-
         let colRef: firestore.CollectionReference = firebase.firestore().collection(this._competition.getAthletsCollectionPath())
             .orderBy('created', 'desc')
 
         colRef.get({source: 'cache'}).then((snapshot: firestore.QuerySnapshot) => {
             this.athletsBehavior$.next(this.fillAthlets(snapshot))
+        }).finally(() => {
+            this.unsubscribe = colRef.onSnapshot( (snapshot: firestore.QuerySnapshot) => {
+                this.athletsBehavior$.next(this.fillAthlets(snapshot))
+            })
         })
 
-        this.unsubscribe = colRef.onSnapshot( (snapshot: firestore.QuerySnapshot) => {
-            this.athletsBehavior$.next(this.fillAthlets(snapshot))
-        })
+        console.log('constructor StartListTabsComponent')
     }
 
     ngOnInit(): void {

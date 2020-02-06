@@ -40,6 +40,8 @@ export class StartupService {
             ).toPromise().then((res: any) => {
                 this.menuService.set(res.menu);
             })
-        ])
+        ]).catch((err) => {
+            console.log(err)
+        })
     }
 }

@@ -136,6 +136,7 @@ export class StartListTabItemComponent implements OnInit, OnDestroy {
                         setTimeout(() => {
                             this.routerExtensions.navigate(['/start-list', {outlets: {startList: resp.value}}], {
                                 relativeTo: this.activeRoute,
+                                skipLocationChange: true
                             })
                         }, 100)
 
@@ -170,6 +171,7 @@ export class StartListTabItemComponent implements OnInit, OnDestroy {
 
         this.routerExtensions.navigate(['/start-list', {outlets: {startList: ['list', this._class, item.key]}}], {
             relativeTo: this.activeRoute,
+            skipLocationChange: true,
             clearHistory: false,
         })
     }

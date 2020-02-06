@@ -111,24 +111,26 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             args.cancel = true
             if (!args.stopEvent) {
                 this.zone.run(() => {
-                    if (this.routerExtensions.canGoBack()) {
-                        if (this._activatedUrl.startsWith('/start-list/(startList:add/')) {
-                            this.routerExtensions.navigate(['/start-list', {outlets: {startList: ['list']}}], {
-                                relativeTo: this.activeRoute,
-                                replaceUrl: true
-                            })
-                        } else {
-                            this.routerExtensions.back()
-                        }
-                        this.closeDrawer()
+                    console.log(
+                        '!!!!!!!', this._activatedUrl, this.routerExtensions.canGoBack()
+                    )
+                    if (this._activatedUrl.startsWith('/start-list/(startList:list/')) {
+                        this.routerExtensions.navigate(['/start-list', {outlets: {startList: ['list']}}], {
+                            relativeTo: this.activeRoute,
+                            replaceUrl: true
+                        })
+                    } else if (this._activatedUrl.startsWith('/start-list/(startList:add/')) {
+                        this.routerExtensions.navigate(['/start-list', {outlets: {startList: ['list']}}], {
+                            relativeTo: this.activeRoute,
+                            replaceUrl: true
+                        })
+                    } else if (this.routerExtensions.canGoBack()) {
+                        this.routerExtensions.back({
+                            relativeTo: this.activeRoute
+                        })
                     } else {
                         if (this._activatedUrl == '/home') {
                             this.onExit()
-                        } else if (this._activatedUrl.startsWith('/start-list/(startList:list/')) {
-                            this.routerExtensions.navigate(['/start-list', {outlets: {startList: ['list']}}], {
-                                relativeTo: this.activeRoute,
-                                replaceUrl: true
-                            })
                         } else {
                             this.routerExtensions.navigate(['/home'], {
                                 relativeTo: this.activeRoute,
@@ -137,6 +139,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                             })
                         }
                     }
+                    this.closeDrawer()
                 })
             }
         })

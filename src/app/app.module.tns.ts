@@ -1,4 +1,4 @@
-import {Injectable, NgModule, NO_ERRORS_SCHEMA} from '@angular/core'
+import {NgModule, NO_ERRORS_SCHEMA} from '@angular/core'
 import {NativeScriptModule} from 'nativescript-angular/nativescript.module'
 
 import {AppRoutingModule} from '@src/app/app-routing.module'
@@ -14,7 +14,7 @@ import {StartListGroupComponent} from "@src/app/start-list/start-list-group/star
 import {StartListAddDialogComponent} from "@src/app/start-list/start-list-add-dialog/start-list-add-dialog.component"
 import {StatComponent} from "@src/app/home/stat/stat.component"
 import {OrderModule} from "ngx-order-pipe"
-import {BaseComponent} from "@src/app/shared/base.component"
+import {BaseComponent, TestComponent} from "@src/app/shared/base.component"
 import {AboutComponent} from "@src/app/home/about/about.component"
 import {ReactiveFormsModule} from "@angular/forms";
 import {AthletResolve} from "@src/app/shared/resolvers/athlet.resolver"
@@ -70,6 +70,7 @@ registerLocaleData(localeRu)
     ],
     declarations: [
         BaseComponent,
+        TestComponent,
         RadListSwipeComponent,
         AppComponent,
         RootComponent,

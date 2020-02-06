@@ -9,7 +9,7 @@ interface PublicTableResultRow {
   place: number,
   number: number,
   fio: string,
-  class: number,
+  class: string,
 }
 
 
