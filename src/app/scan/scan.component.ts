@@ -29,7 +29,6 @@ import {Msg} from "@src/app/shared/interfaces/msg"
 import {keepAwake, allowSleepAgain} from "nativescript-insomnia";
 import {BarcodeService} from "@src/app/mobile/services/barcode.service"
 import {Qr} from "@src/app/shared/interfaces/qr"
-import {Button} from "@nativescript/core/ui/button"
 import {localize as L} from "nativescript-localize"
 
 const firebase = require('nativescript-plugin-firebase/app')
@@ -64,6 +63,11 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
         super(routerExtensions)
         this.collection = firebase.firestore().collection(this._competition.getAthletsCollectionPath())
         this.current_checkpoint = activeRoute.snapshot.data['current_checkpoint']
+    }
+
+    private _missingCheck(date: Date) {
+        // Если мало чек поинтов значит трасса короткая, проверка предыдущей отметки соркатить до минуты
+        return moment().diff(date, 'minutes') < (this._competition.selected_competition.checkpoints.length > 1 ? 5 : 1)
     }
 
     ngAfterViewInit() {
@@ -137,7 +141,6 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
     }
 
     onFound(athlet: Athlet, msg: string, error?: boolean): void {
-
         this.snackbar.snackbar$.next({
             level: error ? 'alert' : 'success',
             msg: `<${athlet.number}> ${msg}`,
@@ -152,8 +155,8 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
         if (marks.length) {
             const last_mark = marks[marks.length - 1]
 
-            if ((moment().diff(last_mark.created, 'minutes') <= 5) && (last_mark.order == this.current_checkpoint.order)) {
-                this.snackbar.alert(L('Current mark marked less than 5 minutes ago!'))
+            if (this._missingCheck(last_mark.created) && (last_mark.order == this.current_checkpoint.order)) {
+                this.snackbar.alert(L('The current mark was set recently!'))
                 return
             }
 

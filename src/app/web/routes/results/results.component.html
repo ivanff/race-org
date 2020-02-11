@@ -30,23 +30,30 @@
             <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
 
                 <ng-container *ngIf="!hide_place" matColumnDef="place">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Place</th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Место</th>
                     <td mat-cell *matCellDef="let element"
                         [class.highlight]="element.place <= 3"> {{ element.place }} </td>
                 </ng-container>
 
                 <ng-container matColumnDef="number">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> No.</th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Ст. Номер</th>
                     <td mat-cell *matCellDef="let element"><b>{{element.number}}</b></td>
                 </ng-container>
 
                 <ng-container matColumnDef="class">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Class</th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Класс</th>
                     <td mat-cell *matCellDef="let element"> {{element.athlet.class}} </td>
                 </ng-container>
 
+                <ng-container matColumnDef="group">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Группа</th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ element.group }}
+                    </td>
+                </ng-container>
+
                 <ng-container matColumnDef="athlet">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Athlet</th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Атлет</th>
                     <td mat-cell *matCellDef="let element" class="athlet">
                         <ul>
                             <li [ngSwitch]="is_admin">

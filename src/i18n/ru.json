@@ -79,7 +79,7 @@
   "Enable device sleeping": "Включение засыпания устройства",
   "Athlete number is found": "Номер атлета найден",
   "Athlete number is't found: %s": "Номер атлета не найден: %s",
-  "Current mark marked less than 5 minutes ago!": "Текущая метка отмечена менее 5 минут назад!",
+  "The current mark was set recently!": "Текущая отметка была поставлена совсем недавно!",
   "The Marshal's previous mark may have been missed": "Возможно пропущена предыдущая отметка маршала",
   "The competition is over, time is up!": "Соревнование окончено, время вышло!",
   "THE PASSAGE MARK RECORDED": "ПРОХОЖДЕНИЕ ТОЧКИ ЗАПИСАНО",

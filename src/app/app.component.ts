@@ -111,9 +111,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             args.cancel = true
             if (!args.stopEvent) {
                 this.zone.run(() => {
-                    console.log(
-                        '!!!!!!!', this._activatedUrl, this.routerExtensions.canGoBack()
-                    )
                     if (this._activatedUrl.startsWith('/start-list/(startList:list/')) {
                         this.routerExtensions.navigate(['/start-list', {outlets: {startList: ['list']}}], {
                             relativeTo: this.activeRoute,

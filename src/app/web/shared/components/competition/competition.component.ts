@@ -7,7 +7,8 @@ import {
     OnInit,
     Output,
     SimpleChanges,
-    ViewChild
+    ViewChild,
+    ChangeDetectorRef
 } from '@angular/core';
 import {
     MatVerticalStepper
@@ -89,6 +90,7 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
     @ViewChild('stepper', {static: true}) stepper: MatVerticalStepper
 
     constructor(private fb: FormBuilder,
+                private ref: ChangeDetectorRef,
                 private firestore: AngularFirestore,
                 private router: Router,
                 private settings: SettingsService,
@@ -156,12 +158,8 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.hasOwnProperty('competition')) {
             if (!changes['competition'].firstChange) {
-                const competition = {...changes['competition'].currentValue}
-                this.stepper.reset()
-                setTimeout(() => {
-                    this.competition = competition
-                    this.ngOnInit()
-                }, 100)
+                this.competition = {...changes['competition'].currentValue}
+                this.ngOnInit()
             }
         }
     }

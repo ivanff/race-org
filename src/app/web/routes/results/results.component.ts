@@ -24,6 +24,7 @@ export interface ResultMark extends Mark {
 export interface TableRow {
     place: number,
     number: number,
+    group?: string,
     athlet: Athlet,
     marks: Array<ResultMark>,
     last_created: Date,
@@ -45,7 +46,7 @@ export class ResultsComponent implements OnInit, AfterViewInit {
     protected _onDestroy = new ReplaySubject<any>(1)
 
     dataSource = new MatTableDataSource<TableRow>([])
-    displayedColumns: string[] = ['place', 'number', 'class', 'athlet']
+    displayedColumns: string[] = ['place', 'number', 'class', 'group', 'athlet']
 
     filter: Filter = {class: '', str: ''}
     now: Date = new Date()
@@ -229,6 +230,7 @@ export class ResultsComponent implements OnInit, AfterViewInit {
 
             rows.push({
                 number: athlet.number,
+                group: athlet.group ? (athlet.group[this.competition.id] ? athlet.group[this.competition.id].id: ""): "",
                 athlet: athlet,
                 marks: clean_marks,
                 last_created: last_cp >= 0 ? clean_marks[last_cp].created : null,
@@ -310,6 +312,10 @@ export class ResultsComponent implements OnInit, AfterViewInit {
                     }
                     case 'number': {
                         row['number'] = item.number
+                        break
+                    }
+                    case 'group': {
+                        row['group'] = item.group
                         break
                     }
                     case 'class': {

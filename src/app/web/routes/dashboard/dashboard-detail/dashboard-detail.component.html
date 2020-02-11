@@ -164,8 +164,10 @@
     <mat-tab label="Атлеты">
         <mat-card style="overflow: hidden">
             <mat-card-header>
-                <mat-card-title>Зарегистрированные спортсмены</mat-card-title>
-                <mat-card-subtitle></mat-card-subtitle>
+                <mat-card-title>{{ edit_competition.title }}</mat-card-title>
+                <mat-card-subtitle>
+                    Зарегистрированные спортсмены
+                </mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
                 <ul class="one-row">
@@ -213,6 +215,9 @@
                                                       class="p-r-8">{{_class}}</mat-radio-button>
                                 </mat-radio-group>
                             </div>
+                            <div fxFlex="100" class="mat-form-field p-16">
+                                <mat-checkbox color="primary" formControlName="missing_nfc">NFC метка не назначена</mat-checkbox>
+                            </div>
                         </mat-card-content>
                     </mat-card>
                 </form>
@@ -238,6 +243,15 @@
                     <ng-container matColumnDef="class">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header> Класс</th>
                         <td mat-cell *matCellDef="let element">{{element.class}}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="nfc_id">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> NFC</th>
+                        <td mat-cell *matCellDef="let element">{{ element.nfc_id }}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="group">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Группа</th>
+                        <td mat-cell *matCellDef="let element">{{ element.group ? (element.group[edit_competition.id] ? element.group[edit_competition.id].id: ""): "" }}</td>
                     </ng-container>
 
                     <ng-container matColumnDef="created">

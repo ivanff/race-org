@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Competition} from "@src/app/shared/interfaces/competition"
 import {ActivatedRoute, Router} from "@angular/router"
 import {FormControl, FormGroup, Validators} from "@angular/forms"
@@ -29,7 +29,7 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
 
     athlets$: Observable<Athlet[]>
     dataSource = new MatTableDataSource<Athlet>([])
-    displayedColumns: string[] = ['number', 'fio', 'phone', 'class', 'created', 'actions']
+    displayedColumns: string[] = ['number', 'fio', 'phone', 'class', 'nfc_id', 'group', 'created', 'actions']
 
     competition: Competition
     edit_competition: Competition
@@ -127,16 +127,15 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
         }
 
         this.dataSource.filterPredicate = (athlet: Athlet, filter: string) => {
-            const data: { search: string, class: string } | null = JSON.parse(filter)
+            const data: { search: string, class: string, missing_nfc: boolean } | null = JSON.parse(filter)
             let result = true
 
             if (!data) {
                 result = true
             } else {
                 const search = data.search.trim().toLowerCase()
-                const _class = data.class.trim().toLowerCase()
 
-                if (data.search.length) {
+                if (search.length) {
                     if (parseInt(search).toString() == search) {
                         if (athlet.number.toString().indexOf(search) >= 0) {
                             result = true
@@ -151,10 +150,14 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
                         result = false
                     }
                 }
+                const _class = data.class.trim().toLowerCase()
                 if (_class.length) {
                     if (athlet.class != _class) {
                         result = false
                     }
+                }
+                if (data.missing_nfc && athlet.nfc_id) {
+                    result = false
                 }
             }
             return result
@@ -167,16 +170,26 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
             if (this.competition.id == next) {
                 this.edit_competition = {...this.competition}
             } else {
-                const competitions = this.competition.stages.filter((item: Competition) => item.id == next)
-                if (competitions.length) {
-                    this.edit_competition = {...competitions[0]}
+                for (let item of this.competition.stages) {
+                    if (item.id == next) {
+                        this.edit_competition = {...item}
+                        break
+                    }
                 }
+                // const competitions = this.competition.stages.filter((item: Competition) => item.id == next)
+                // if (competitions.length) {
+                //     this.edit_competition = {...competitions[0]}
+                //     console.log(
+                //         this.edit_competition
+                //     )
+                // }
             }
         })
 
         this.filterAthlets = new FormGroup({
             'search': new FormControl('', [Validators.minLength(3)]),
-            'class': new FormControl('', [])
+            'class': new FormControl('', []),
+            'missing_nfc': new FormControl(false, []),
         })
 
         this.filterAthlets.statusChanges.subscribe((next) => {
@@ -193,7 +206,7 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
         this._onDestroy.complete()
     }
 
-    private applyFilter(data: { search: string, class: string } | null): void {
+    private applyFilter(data: { search: string, class: string, missing_nfc: boolean } | null): void {
         if (!data) {
             this.dataSource.filter = JSON.stringify(null)
         } else {
