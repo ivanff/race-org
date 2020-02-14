@@ -3,6 +3,7 @@
   <string name="_app_name_1k3Sbz">"RaceOrg"</string>
   <string name="app_name">"RaceOrg"</string>
   <string name="title_activity_kimera">"RaceOrg"</string>
+  <string name="Countdown">"Countdown"</string>
   <string name="_Athletes_in_group___J6bg8">"Athletes in group: "</string>
   <string name="_Athletes_not_in_groups___22MRRO">"Athletes not in groups: "</string>
   <string name="_Remove_all_groups_ZDzH3N">"Remove all groups"</string>
@@ -67,7 +68,7 @@
   <string name="_THE_PASSAGE_MARK_RECORDED_1280zQ">"THE PASSAGE MARK RECORDED"</string>
   <string name="_The_competition_is_over__time_is_up__2aEJFL">"The competition is over, time is up!"</string>
   <string name="_The_Marshal_s_previous_mark_may_have_been_missed_tcdrk">"The Marshal\'s previous mark may have been missed"</string>
-  <string name="_Current_mark_marked_less_than_5_minutes_ago__I62NX">"Current mark marked less than 5 minutes ago!"</string>
+  <string name="_The_current_mark_was_set_recently__kghIK">"The current mark was set recently!"</string>
   <string name="_Athlete_number_is_t_found___s_Z1sjvOk">"Athlete number is\'t found: %1$s"</string>
   <string name="_Athlete_number_is_found_ZEObwp">"Athlete number is found"</string>
   <string name="_Enable_device_sleeping_Z2458Sb">"Enable device sleeping"</string>
@@ -147,5 +148,4 @@
   <string name="assigned">"assigned"</string>
   <string name="_Search_shop_1giToM">"Search shop"</string>
   <string name="Scan">"Scan"</string>
-  <string name="Countdown">"Countdown"</string>
 </resources>

@@ -70,10 +70,10 @@ export class ResultsComponent implements OnInit, AfterViewInit {
     start_time: moment
     end_time: moment
     athlets: Array<Athlet> = []
-    is_admin: boolean = false
     circles: number
 
     @Input('classes') classes: Array<string> = []
+    @Input('is_admin') is_admin: boolean = false
 
     @ViewChild('picker', {static: true}) picker: NgxTimepickerFieldComponent
     @ViewChild(MatSort, {static: true}) sort: MatSort
@@ -84,7 +84,6 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         this.hide_start_time = this.route.snapshot.data['hide_start_time']
         this.hide_class_filter = this.route.snapshot.data['hide_class_filter']
         this.hide_place = this.route.snapshot.data['hide_place']
-        this.is_admin = this.route.snapshot.data['is_admin']
 
         if (this.hide_place) {
             this.displayedColumns.shift()
@@ -187,7 +186,6 @@ export class ResultsComponent implements OnInit, AfterViewInit {
 
         this.athlets.forEach((athlet: Athlet, y: number) => {
             const clean_marks: Array<ResultMark | null> = [...athlet.marks.sort((a, b) => a.created < b.created ? -1 : a.created > b.created ? 1 : 0)]
-
             let last_cp = -1
 
             for (const i of _.range(0, this.checkpoints.length + 1, 1)) {
@@ -233,7 +231,7 @@ export class ResultsComponent implements OnInit, AfterViewInit {
                 group: athlet.group ? (athlet.group[this.competition.id] ? athlet.group[this.competition.id].id: ""): "",
                 athlet: athlet,
                 marks: clean_marks,
-                last_created: last_cp >= 0 ? clean_marks[last_cp].created : null,
+                last_created: last_cp >= 0 ? clean_marks[last_cp].created.toDate() : null,
                 last_cp: last_cp,
             } as TableRow)
 
@@ -243,12 +241,12 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         if (this.competition.result_by_full_circle) {
             for (let row of rows) {
                 const [credit_circle, credit_cp] = this.getCreditCircle(row.marks)
-                // console.log(
-                //     row.athlet.fio,
-                //     [credit_circle, credit_cp]
-                // )
+                console.log(
+                    row.athlet.fio,
+                    [credit_circle, credit_cp]
+                )
                 if (credit_circle.length) {
-                    row.last_created = credit_circle.pop().created
+                    row.last_created = credit_circle.pop().created.toDate()
                     row.last_cp = credit_cp
                 }
             }
@@ -378,7 +376,7 @@ export class ResultsComponent implements OnInit, AfterViewInit {
 
         const credit_circle = (last_circle || []).filter((item) => !!item)
 
-        return [credit_circle, (credit_circle.length - 1) * circle_index]
+        return [credit_circle, (credit_circle.length - 1) * circle_index || circle_index]
     }
 
     getTzOffset(timezone: string) {

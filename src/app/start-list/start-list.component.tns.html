@@ -1,4 +1,4 @@
-<ActionBar [title]="'Start lists'|L">
+<ActionBar [title]="('Start lists'|L) + ' ' + (time | async)">
     <NavigationButton icon="res://round_menu_black_24"
                       (tap)="onDrawerButtonTap()"></NavigationButton>
 </ActionBar>

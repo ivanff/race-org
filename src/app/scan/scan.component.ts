@@ -149,7 +149,9 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
     }
 
     private setMark(mark: Mark) {
-        const marks: Array<Mark> = this.last_athlet.marks.filter((mark: Mark) => mark.competition_id == this._competition.selected_competition.id)
+        const marks: Array<Mark> = this.last_athlet.marks.filter((mark: Mark): boolean => {
+            return mark.competition_id == this._competition.selected_competition.id
+        })
         // this.activityIndicatorRef.nativeElement.busy = false
 
         if (marks.length) {

@@ -1,6 +1,6 @@
 import * as firebase from "firebase/app"
 import {StartListGroup} from "@src/app/shared/interfaces/start-list"
-import { Mark } from "./mark";
+import { Mark } from "./mark.tns";
 
 export interface Athlet {
     id?: string

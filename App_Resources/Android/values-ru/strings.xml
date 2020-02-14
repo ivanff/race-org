@@ -65,7 +65,7 @@
   <string name="_THE_PASSAGE_MARK_RECORDED_1280zQ">"ПРОХОЖДЕНИЕ ТОЧКИ ЗАПИСАНО"</string>
   <string name="_The_competition_is_over__time_is_up__2aEJFL">"Соревнование окончено, время вышло!"</string>
   <string name="_The_Marshal_s_previous_mark_may_have_been_missed_tcdrk">"Возможно пропущена предыдущая отметка маршала"</string>
-  <string name="_Current_mark_marked_less_than_5_minutes_ago__I62NX">"Текущая метка отмечена менее 5 минут назад!"</string>
+  <string name="_The_current_mark_was_set_recently__kghIK">"Текущая отметка была поставлена совсем недавно!"</string>
   <string name="_Athlete_number_is_t_found___s_Z1sjvOk">"Номер атлета не найден: %1$s"</string>
   <string name="_Athlete_number_is_found_ZEObwp">"Номер атлета найден"</string>
   <string name="_Enable_device_sleeping_Z2458Sb">"Включение засыпания устройства"</string>

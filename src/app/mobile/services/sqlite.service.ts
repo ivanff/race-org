@@ -4,7 +4,6 @@ import {Folder, File} from "@nativescript/core/file-system"
 import {Request} from "nativescript-background-http"
 import {environment} from "@src/environments/environment"
 import {device} from "@nativescript/core/platform"
-import * as moment from 'moment'
 import {Mark} from "@src/app/shared/interfaces/mark"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
 import {SqlRow} from "@src/app/shared/interfaces/sql-row"
@@ -135,21 +134,21 @@ export class SqliteService implements OnInit, OnDestroy {
 
     async insert(nfc_id: Array<number>, athlet_id: string, mark: Mark) {
 
-        const rows = await this.check(nfc_id, athlet_id, mark)
-        if (rows) {
-            if (rows.length) {
-                const row = rows[0]
-                const created = row[row.length - 1]
-                console.log(
-                    rows,
-                    moment(created),
-                    moment(mark.created).diff(created, 'minutes')
-                )
-                if (moment(mark.created).diff(created, 'minutes') <= 5) {
-                    return
-                }
-            }
-        }
+        // const rows = await this.check(nfc_id, athlet_id, mark)
+        // if (rows) {
+        //     if (rows.length) {
+        //         const row = rows[0]
+        //         const created = row[row.length - 1]
+        //         console.log(
+        //             rows,
+        //             moment(created),
+        //             moment(mark.created).diff(created, 'minutes')
+        //         )
+        //         if (moment(mark.created).diff(created, 'minutes') <= 5) {
+        //             return
+        //         }
+        //     }
+        // }
 
         return await this.database.execSQL(`INSERT INTO ${this.tableName} (competition_id, competition_parent_id, nfc_id, athlet_id, checkpoint_order, created) VALUES (?, ?, ?, ?, ?, ?)`, [
             this._competition.selected_competition.id,

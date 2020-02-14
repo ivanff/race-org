@@ -21,25 +21,21 @@ export class SidemenuComponent {
             let menu_competitions: Array<ChildrenItem> = []
             let menu_results: Array<ChildrenItem> = []
             competitions.forEach((competition: Competition) => {
-                if (competition.start_date.toDate() < moment.utc().startOf('day').toDate()) {
-                    menu_results.push({
-                        "state": ['results', competition.id],
-                        "name": competition.title,
-                        "type": "state"
-                    } as ChildrenItem)
+                menu_results.push({
+                    "state": ['results', competition.id],
+                    "name": competition.title,
+                    "type": "state"
+                } as ChildrenItem)
 
-                    if (competition.stages) {
-                        competition.stages.forEach((stage: Competition) => {
-                            menu_results.push({
-                                "state": ['results', stage.id, competition.id],
-                                "name": `${stage.title}`,
-                                "icon": 'location_on',
-                                "type": "state"
-                            })
+                if (competition.stages) {
+                    competition.stages.forEach((stage: Competition) => {
+                        menu_results.push({
+                            "state": ['results', stage.id, competition.id],
+                            "name": `${stage.title}`,
+                            "icon": 'location_on',
+                            "type": "state"
                         })
-                    }
-
-
+                    })
                 }
                 menu_competitions.push({
                     "state": ['edit', competition.id],

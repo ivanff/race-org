@@ -1,29 +1,34 @@
-<StackLayout [ngSwitch]="competition" class="p-10">
-    <StackLayout *ngSwitchDefault>
+<ScrollView [ngSwitch]="competition">
+    <StackLayout *ngSwitchDefault class="p-10">
         <Label class="h1" [text]="competition.title" textWrap="true"></Label>
+
+        <Button class="btn -primary scan" [text]="'Scan'|L" [nsRouterLink]="['/scan']"></Button>
 
         <Label [text]="('Current timezone '|L) + current_timezone" class="font-weight-bold"></Label>
         <Label [text]="('Start date: '|L) + (competition|tzdateStart)" textWrap="true"></Label>
         <Label [text]="('Finish date: '|L) + (competition|tzdateFinish)" textWrap="true"></Label>
 
-        <Label [text]="('Timezone of the competition place'|L) + '\n' + competition.timezone" textWrap="true" class="font-weight-bold"></Label>
+        <Label [text]="('Timezone of the competition place'|L) + '\n' + competition.timezone" textWrap="true"
+               class="font-weight-bold"></Label>
         <Label [text]="('Start date: '|L) + (competition|tzdateStart:competition.timezone)" textWrap="true"></Label>
-        <Label [text]="('Finish date: '|L) + (competition|tzdateFinish:competition.timezone)" textWrap="true" [class.-warning]="timeElapsed"></Label>
+        <Label [text]="('Finish date: '|L) + (competition|tzdateFinish:competition.timezone)" textWrap="true"
+               [class.-warning]="timeElapsed"></Label>
 
         <Label [text]="'Info'|L" class="font-weight-bold"></Label>
         <Label [text]="('Total registered athletes: '|L) + athlets_count"></Label>
-        <Label *ngFor="let _class of competition.classes" [text]="('Class: '|L) + _class + ' ' + (by_class_count.hasOwnProperty(_class) ? by_class_count[_class] : ('wait'|L))"></Label>
-        <Button class="btn -primary scan" [text]="'Scan'|L" [nsRouterLink]="['/scan']"></Button>
-<!--        <Button [text]="'1'|L"-->
-<!--                [nsRouterLink]="['/start-list', 'list', 'hobby', 'hobby_3']"-->
-<!--                class="btn"></Button>-->
-<!--        <Button [text]="'2'|L"-->
-<!--                [nsRouterLink]="['/start-list', 'add', 'hobby']"-->
-<!--                class="btn"></Button>-->
+        <Label *ngFor="let _class of competition.classes"
+               [text]="('Class: '|L) + _class + ' ' + (by_class_count.hasOwnProperty(_class) ? by_class_count[_class] : ('wait'|L))"></Label>
+
+        <!--        <Button [text]="'1'|L"-->
+        <!--                [nsRouterLink]="['/start-list', 'list', 'hobby', 'hobby_3']"-->
+        <!--                class="btn"></Button>-->
+        <!--        <Button [text]="'2'|L"-->
+        <!--                [nsRouterLink]="['/start-list', 'add', 'hobby']"-->
+        <!--                class="btn"></Button>-->
     </StackLayout>
-    <StackLayout *ngSwitchCase="null">
+    <StackLayout *ngSwitchCase="null" class="p-10">
         <Button [text]="'Select\ncompetition'|L"
                 [nsRouterLink]="['competitions']"
                 class="btn -primary scan"></Button>
     </StackLayout>
-</StackLayout>
+</ScrollView>

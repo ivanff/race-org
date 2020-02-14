@@ -1,8 +1,6 @@
-import * as firebase from "firebase"
-
 export interface Mark {
     key?: string
-    created: firebase.firestore.Timestamp
+    created: Date
     order: number
     competition_id: string
 }
