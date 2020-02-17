@@ -68,7 +68,6 @@ export class ResultDetailComponent implements OnInit {
                     this.marks.splice(index, 0, {
                         missing: true,
                         created: null,
-                        key: `CP_${(index % cp_in_circle) + 1}`,
                         order: checkpoint.order,
                         competition_id: this.competition.id
                     })
@@ -77,7 +76,6 @@ export class ResultDetailComponent implements OnInit {
                 this.marks.push({
                         missing: true,
                         created: null,
-                        key: `CP_${(index % cp_in_circle) + 1}`,
                         order: checkpoint.order,
                         competition_id: this.competition.id
                     }
@@ -98,17 +96,16 @@ export class ResultDetailComponent implements OnInit {
     onSetTime(index: number): void {
         const dialogRef = this.dialog.open(ResultSetTimeComponent, {
             width: '250px',
-            data: {}
+            data: {
+                'start_time': this.start_time
+            }
             //build validator
         })
-        dialogRef.afterClosed().subscribe(result => {
+        dialogRef.afterClosed().subscribe((result: firebase.firestore.Timestamp) => {
             if (result) {
                 delete this.marks[index].missing
                 this.marks[index].manual = true
-
-                this.marks[index].created = <firebase.firestore.Timestamp>firebase.firestore.Timestamp.fromMillis(
-                    this.start_time.clone().set('hour', result[0]).set('minutes', result[1]).set('seconds', result[2]).format('x')
-                )
+                this.marks[index].created = result
             }
         })
     }
@@ -140,7 +137,7 @@ export class ResultDetailComponent implements OnInit {
     }
 
     onSave(): Promise<any> {
-        const athletDoc: AngularFirestoreDocument<Athlet> = this.firestore.doc<Athlet>(`athlets_${this.competition.id}/${this.athlet.id}`)
+        const athletDoc: AngularFirestoreDocument<Athlet> = this.firestore.doc<Athlet>(`athlets_${this.competition.parent_id || this.competition.id}/${this.athlet.id}`)
 
         return athletDoc.update({
             marks: [

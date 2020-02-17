@@ -3,6 +3,15 @@
       (ngSubmit)="onEnter(setTimeForm.valid)">
     <div mat-dialog-content>
         <p>Введите время отметки</p>
+        <mat-form-field class="m-r-16">
+            <input matInput
+                   [matDatepicker]="start_date_picker"
+                   formControlName="date"
+                   placeholder="Дата отметки"
+                   required>
+            <mat-datepicker-toggle matSuffix [for]="start_date_picker"></mat-datepicker-toggle>
+            <mat-datepicker #start_date_picker></mat-datepicker>
+        </mat-form-field>
         <mat-form-field>
             <input matInput formControlName="time" required>
         </mat-form-field>

@@ -13,7 +13,7 @@ export class AthletResolve implements Resolve<Athlet> {
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Athlet> {
         let competition_id = route.parent.params.id
         if (!competition_id) {
-            competition_id = route.params.id
+            competition_id = route.params.parent_id || route.params.id
         }
 
         console.log(

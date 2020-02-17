@@ -73,6 +73,13 @@ const routes: Routes = [
                     competition: CompetitionResolve,
                     athlet: AthletResolve,
                 }
+            }, {
+                path: 'results/:id/:parent_id/detail/:athlet_id',
+                component: ResultDetailComponent,
+                resolve: {
+                    competition: CompetitionResolve,
+                    athlet: AthletResolve,
+                }
             },
         ],
     },

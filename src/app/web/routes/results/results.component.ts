@@ -27,7 +27,7 @@ export interface TableRow {
     group?: string,
     athlet: Athlet,
     marks: Array<ResultMark>,
-    last_created: Date,
+    last_created: firebase.firestore.Timestamp | null,
     last_cp: number
 }
 
@@ -133,9 +133,7 @@ export class ResultsComponent implements OnInit, AfterViewInit {
                 map((athlets: Array<Athlet>) => {
                     athlets = athlets.filter((athlet) => this.classes.indexOf(athlet.class) >= 0)
                     athlets.map((athlet: Athlet) => {
-                        athlet.marks = athlet.marks ? athlet.marks.filter((mark: Mark) => {
-                          return mark.competition_id == this.competition.id
-                        }) : []
+                        athlet.marks = athlet.marks ? athlet.marks.filter((mark: Mark) => mark.competition_id == this.competition.id) : []
                     })
                     // return athlets.filter((athlet: Athlet) => athlet.number == 444)
                     return athlets
@@ -186,6 +184,7 @@ export class ResultsComponent implements OnInit, AfterViewInit {
 
         this.athlets.forEach((athlet: Athlet, y: number) => {
             const clean_marks: Array<ResultMark | null> = [...athlet.marks.sort((a, b) => a.created < b.created ? -1 : a.created > b.created ? 1 : 0)]
+
             let last_cp = -1
 
             for (const i of _.range(0, this.checkpoints.length + 1, 1)) {
@@ -208,7 +207,7 @@ export class ResultsComponent implements OnInit, AfterViewInit {
                         if (i == 0) {
                             last_cp = 0
                         } else {
-                            if (clean_marks[i - 1]) {
+                            if (clean_marks[i - 1] && clean_marks[last_cp]) {
                                 if (clean_marks[i - 1].created == clean_marks[last_cp].created) {
                                     last_cp = i
                                 }
@@ -231,7 +230,7 @@ export class ResultsComponent implements OnInit, AfterViewInit {
                 group: athlet.group ? (athlet.group[this.competition.id] ? athlet.group[this.competition.id].id: ""): "",
                 athlet: athlet,
                 marks: clean_marks,
-                last_created: last_cp >= 0 ? clean_marks[last_cp].created.toDate() : null,
+                last_created: last_cp >= 0 ? clean_marks[last_cp].created : null,
                 last_cp: last_cp,
             } as TableRow)
 
@@ -241,12 +240,9 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         if (this.competition.result_by_full_circle) {
             for (let row of rows) {
                 const [credit_circle, credit_cp] = this.getCreditCircle(row.marks)
-                console.log(
-                    row.athlet.fio,
-                    [credit_circle, credit_cp]
-                )
+
                 if (credit_circle.length) {
-                    row.last_created = credit_circle.pop().created.toDate()
+                    row.last_created = credit_circle.pop().created
                     row.last_cp = credit_cp
                 }
             }
@@ -268,6 +264,9 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         })
         rows.map((row: TableRow, i: number) => row.place = i + 1)
         this.dataSource.data = rows
+        console.log(
+            rows
+        )
     }
 
     applyFilter($event: any, field: string) {
@@ -280,8 +279,8 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         this.dataSource.filter = JSON.stringify(this.filter)
     }
 
-    diffTime(_created: any): string {
-        const created = moment(_created.toDate())
+    diffTime(date: firebase.firestore.Timestamp): string {
+        const created = moment(date.toDate())
 
         if (created > this.start_time) {
             created.diff(this.start_time, 'ms')

@@ -4,7 +4,7 @@
     <div mat-dialog-content>
         <mat-form-field>
             <mat-label>Контрольная точка</mat-label>
-            <mat-select [(ngModel)]="mark.order" formControlName="order" required>
+            <mat-select formControlName="order" required>
                 <mat-option *ngFor="let checkpoint of data.checkpoints" [value]="checkpoint.order">
                     {{checkpoint.title}}
                 </mat-option>
@@ -12,7 +12,7 @@
         </mat-form-field>
         <mat-form-field>
             <mat-label>Введите время отметки</mat-label>
-            <input matInput [(ngModel)]="mark.time" formControlName="time" required>
+            <input matInput formControlName="time" required>
         </mat-form-field>
     </div>
     <div mat-dialog-actions>

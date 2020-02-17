@@ -94,9 +94,6 @@
                              [class.active]="element.last_created == element.marks[y].created"
                              [class.elapsed]="element.marks[y].elapsed" class="p-l-4 p-r-4">
                             <small>
-                                {{ diffTime(element.marks[y].created) }}
-                            </small>
-                            <small>
                                 {{ element.marks[y].created.toDate()|date:"HH:mm:ss z":getTzOffset(competition.timezone) }}
                                 <br>
                             </small>

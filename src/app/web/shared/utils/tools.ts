@@ -18,6 +18,8 @@ export function calcCircles(marks: Array<Mark> | undefined,  checkpoints: Array<
                 checkpointsOrders = [...orders]
             } else if (index == 0) {
                 checkpointsOrders.splice(index, 1)
+            } else {
+                circles += 1
             }
         })
         return circles + (checkpointsOrders.length == orders.length ? 0 : 1)
