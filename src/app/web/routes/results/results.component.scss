@@ -17,6 +17,9 @@ table {
 
 .elapsed {
   color: darkgray;
+  &.active {
+    color: mix(darkgray, blue, 50%);
+  }
 }
 
 .highlight {
@@ -41,7 +44,8 @@ table {
   width: 70px;
 }
 
-.athlet {
+.athlet,
+.group {
   ul {
     padding: 0;
     margin: 4px 0;

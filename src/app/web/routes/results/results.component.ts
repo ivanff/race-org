@@ -12,6 +12,7 @@ import {map, takeUntil} from "rxjs/operators"
 import {ReplaySubject} from "rxjs"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 import {calcCircles} from "@src/app/web/shared/utils/tools"
+import {StartListGroup} from "@src/app/shared/interfaces/start-list"
 
 
 export interface ResultMark extends Mark {
@@ -24,7 +25,8 @@ export interface ResultMark extends Mark {
 export interface TableRow {
     place: number,
     number: number,
-    group?: string,
+    group?: StartListGroup | null,
+    startOffset?: number,
     athlet: Athlet,
     marks: Array<ResultMark>,
     last_created: firebase.firestore.Timestamp | null,
@@ -46,7 +48,7 @@ export class ResultsComponent implements OnInit, AfterViewInit {
     protected _onDestroy = new ReplaySubject<any>(1)
 
     dataSource = new MatTableDataSource<TableRow>([])
-    displayedColumns: string[] = ['place', 'number', 'class', 'group', 'athlet']
+    displayedColumns: string[] = ['place', 'number', 'class', 'athlet']
 
     filter: Filter = {class: '', str: ''}
     now: Date = new Date()
@@ -87,6 +89,10 @@ export class ResultsComponent implements OnInit, AfterViewInit {
 
         if (this.hide_place) {
             this.displayedColumns.shift()
+        }
+
+        if (this.competition.group_start) {
+            this.displayedColumns.splice(this.displayedColumns.indexOf('athlet'), 0, 'group')
         }
 
         this.start_time = moment(this.competition.start_date.toMillis()).add(this.competition.start_time, 's')
@@ -142,6 +148,17 @@ export class ResultsComponent implements OnInit, AfterViewInit {
             )
             .subscribe((athlets: Array<Athlet>) => {
                 this.athlets = athlets
+
+                if (this.competition.group_start) {
+                    const start_time: firebase.firestore.Timestamp = _.min(
+                        athlets.filter(athlet => athlet.group ? athlet.group.hasOwnProperty(this.competition.id) : false)
+                            .map((athlet: Athlet) => athlet.group[this.competition.id].start_time)
+                    )
+                    if (start_time) {
+                        this.start_time = moment(start_time.toMillis())
+                    }
+                }
+
                 // this.athlets = athlets.filter((athlet) => {
                 //     return [888].indexOf(athlet.number) >= 0
                 // })
@@ -171,7 +188,6 @@ export class ResultsComponent implements OnInit, AfterViewInit {
             this.displayedColumns.push(`CP_${i}`)
         })
 
-
         this.csv_export_options.keys = this.displayedColumns
         this.csv_export_options.headers = this.displayedColumns
 
@@ -184,6 +200,12 @@ export class ResultsComponent implements OnInit, AfterViewInit {
 
         this.athlets.forEach((athlet: Athlet, y: number) => {
             const clean_marks: Array<ResultMark | null> = [...athlet.marks.sort((a, b) => a.created < b.created ? -1 : a.created > b.created ? 1 : 0)]
+            const group = athlet.group ? athlet.group[this.competition.id] : null
+            let startOffset: number = 0
+
+            if (group) {
+                startOffset = this.start_time.diff(group.start_time.toDate(), 'ms')
+            }
 
             let last_cp = -1
 
@@ -201,7 +223,7 @@ export class ResultsComponent implements OnInit, AfterViewInit {
             for (const i of _.range(0, this.checkpoints.length + 1, 1)) {
                 const mark = clean_marks[i]
                 if (mark) {
-                    if (mark.created.toDate() > this.end_time) {
+                    if (mark.created.toMillis() + startOffset > this.end_time.valueOf()) {
                         mark.elapsed = true
                     } else {
                         if (i == 0) {
@@ -227,13 +249,18 @@ export class ResultsComponent implements OnInit, AfterViewInit {
 
             rows.push({
                 number: athlet.number,
-                group: athlet.group ? (athlet.group[this.competition.id] ? athlet.group[this.competition.id].id: ""): "",
+                group: group,
+                startOffset: startOffset,
                 athlet: athlet,
                 marks: clean_marks,
                 last_created: last_cp >= 0 ? clean_marks[last_cp].created : null,
                 last_cp: last_cp,
             } as TableRow)
 
+
+            console.log(
+                rows
+            )
 
         })
 
@@ -254,9 +281,12 @@ export class ResultsComponent implements OnInit, AfterViewInit {
             } else if (a.last_cp > b.last_cp) {
                 return -1
             } else {
-                if (a.last_created < b.last_created) {
+                const a_mills = a.last_created ? a.last_created.toMillis() + a.startOffset : undefined
+                const b_mills = b.last_created ? b.last_created.toMillis() + b.startOffset : undefined
+
+                if (a_mills < b_mills) {
                     return -1
-                } else if (a.last_created > b.last_created) {
+                } else if (a_mills > b_mills) {
                     return 1
                 }
             }
@@ -264,9 +294,6 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         })
         rows.map((row: TableRow, i: number) => row.place = i + 1)
         this.dataSource.data = rows
-        console.log(
-            rows
-        )
     }
 
     applyFilter($event: any, field: string) {
@@ -279,20 +306,25 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         this.dataSource.filter = JSON.stringify(this.filter)
     }
 
-    diffTime(date: firebase.firestore.Timestamp): string {
-        const created = moment(date.toDate())
+    // diffTime(date: firebase.firestore.Timestamp): string {
+    //     const created = moment(date.toDate())
+    //     const zeroTime = new Date(Date.UTC(this.start_time.year(), this.start_time.month(), this.start_time.day(), 0, 0, 0, 0))
+    //
+    //     if (created > this.start_time) {
+    //         zeroTime.setMilliseconds(created.diff(this.start_time, 'ms') + zeroTime.getTimezoneOffset() * 60000)
+    //         return [zeroTime.getHours(), zeroTime.getMinutes(), zeroTime.getSeconds()].join(':')
+    //     }
+    //     return ''
+    // }
 
-        if (created > this.start_time) {
-            created.diff(this.start_time, 'ms')
-        }
+    formatDuration(ms: number): string {
+        const zeroTime = new Date(Date.UTC(this.start_time.year(), this.start_time.month(), this.start_time.day(), 0, 0, 0, 0))
+        zeroTime.setMilliseconds(Math.abs(ms) + zeroTime.getTimezoneOffset() * 60000)
+        return [zeroTime.getHours(), zeroTime.getMinutes(), zeroTime.getSeconds()].join(':')
+    }
 
-        const zero_time = new Date(Date.UTC(this.start_time.year(), this.start_time.month(), this.start_time.day(), 0, 0, 0, 0))
-
-        if (created > this.start_time) {
-            zero_time.setMilliseconds(created.diff(this.start_time, 'ms') + zero_time.getTimezoneOffset() * 60000)
-            return [zero_time.getHours(), zero_time.getMinutes(), zero_time.getSeconds()].join(':')
-        }
-        return ''
+    getOffsetDate(d: firebase.firestore.Timestamp, offset: number): Date {
+        return moment(d.toDate()).add(offset,'ms').toDate()
     }
 
     getCsvData(data: Array<any>) {

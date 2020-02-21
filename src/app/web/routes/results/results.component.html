@@ -47,8 +47,18 @@
 
                 <ng-container matColumnDef="group">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header>Группа</th>
-                    <td mat-cell *matCellDef="let element">
-                        {{ element.group }}
+                    <td mat-cell *matCellDef="let element" class="group">
+                        <ul *ngIf="element.group">
+                            <li>
+                                {{ element.group.id }}
+                            </li>
+                            <li>
+                                {{ element.group.start_time.toDate()|date:"HH:mm:ss z":getTzOffset(competition.timezone) }}
+                            </li>
+                            <li *ngIf="element.startOffset" style="color: red">
+                                -{{ formatDuration(element.startOffset) }}
+                            </li>
+                        </ul>
                     </td>
                 </ng-container>
 
@@ -93,6 +103,9 @@
                         <div *ngSwitchDefault
                              [class.active]="element.last_created == element.marks[y].created"
                              [class.elapsed]="element.marks[y].elapsed" class="p-l-4 p-r-4">
+                            <small *ngIf="element.last_created == element.marks[y].created">
+                                {{ getOffsetDate(element.last_created, element.startOffset)|date:"HH:mm:ss":getTzOffset(competition.timezone) }}
+                            </small>
                             <small>
                                 {{ element.marks[y].created.toDate()|date:"HH:mm:ss z":getTzOffset(competition.timezone) }}
                                 <br>
