@@ -79,7 +79,6 @@
 
     <div *ngIf="hasSubmitButton" class="mat-form-field full-width">
         <button mat-raised-button color="primary"
-                [disabled]="!formIsValid()"
                 type="submit">
             {{ athlet?.id ? 'Сохранить' : 'Зарегистрироваться' }}
         </button>

@@ -16,12 +16,11 @@ export class AthletChangeComponent extends AthletRegisterComponent implements On
     @Input() athlet: Athlet
 
     ngOnInit() {
+        this.allowed.push(this.athlet.number)
         super.ngOnInit()
         this.registerForm.removeControl('phone')
         this.registerForm.removeControl('code')
         this.registerForm.removeControl('captcha')
-        this.registerForm.setControl('number', new FormControl('', [<any>Validators.required, <any>Validators.min(1), <any>Validators.max(999)], [AthletRegisterComponent.usedValue(this.athlet_collection, 'number', false, [this.athlet.number])]))
-
         this._fillForm()
     }
 

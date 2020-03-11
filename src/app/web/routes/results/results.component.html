@@ -74,15 +74,14 @@
                             <li>
                                 {{element.athlet.nfc_id}}
                             </li>
-                            <li>
-                                г. {{element.athlet.city}}
-                            </li>
-                            <li [hidden]="!is_admin">
-                                тел. {{element.athlet.phone}}
-                            </li>
-                            <li [hidden]="!is_admin">
-                                moto: {{element.athlet.bike}}
-                            </li>
+                            <ul [hidden]="!is_admin">
+                                <li>
+                                    тел. {{element.athlet.phone}}
+                                </li>
+                                <li *ngFor="let attr of competition.athlet_extra_fields">
+                                    {{attr}}: {{element.athlet[attr] || ""}}
+                                </li>
+                            </ul>
                         </ul>
                     </td>
                 </ng-container>

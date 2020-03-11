@@ -62,7 +62,6 @@ export class AppAthletRegisterComponent implements OnInit, OnDestroy {
     athlet: Athlet
     action: string = 'register'
     getAthletForm: FormGroup
-    formIsValid = () => false
 
     private athlet_collection: AngularFirestoreCollection
     protected _onDestroy = new ReplaySubject<any>(1)
@@ -132,8 +131,6 @@ export class AppAthletRegisterComponent implements OnInit, OnDestroy {
                 }
             }
         })
-
-        setTimeout(() => this.formIsValid = () => this.getAthletForm.valid, 0);
 
         this.afs.collection('competitions').doc(this.competition.id).valueChanges().pipe(
             takeUntil(this._onDestroy)

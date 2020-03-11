@@ -150,9 +150,8 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
                         result = false
                     }
                 }
-                const _class = data.class.trim().toLowerCase()
-                if (_class.length) {
-                    if (athlet.class != _class) {
+                if (data.class.length) {
+                    if (athlet.class != data.class) {
                         result = false
                     }
                 }

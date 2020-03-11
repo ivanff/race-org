@@ -134,9 +134,8 @@ export class StartListTabItemComponent implements OnInit, OnDestroy {
                         return null
                     case 'navigate':
                         setTimeout(() => {
-                            this.routerExtensions.navigate(['/start-list', {outlets: {startList: resp.value}}], {
-                                relativeTo: this.activeRoute,
-                                skipLocationChange: true
+                            this.routerExtensions.navigate([{outlets: {startList: resp.value}}], {
+                                relativeTo: this.activeRoute.parent
                             })
                         }, 100)
 
@@ -169,10 +168,8 @@ export class StartListTabItemComponent implements OnInit, OnDestroy {
     onItemTap($event): void {
         const item = $event.object.items[$event.index]
 
-        this.routerExtensions.navigate(['/start-list', {outlets: {startList: ['list', this._class, item.key]}}], {
-            relativeTo: this.activeRoute,
-            skipLocationChange: true,
-            clearHistory: false,
+        this.routerExtensions.navigate([{outlets: {startList: ['list', this._class, item.key]}}], {
+            relativeTo: this.activeRoute.parent,
         })
     }
 

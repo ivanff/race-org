@@ -151,8 +151,9 @@ export class StartListGroupComponent extends RadListSwipeComponent implements On
     onRightSwipeClick(args: SwipeActionsEventData): void {
         const athlet = args.object.bindingContext as Athlet
         super.onRightSwipeClick(args)
-        this.routerExtensions.navigate(['/athlets', athlet.id], {
-            relativeTo: this.router
+        this.routerExtensions.navigate([{outlets: {startList: ['athlet', athlet.id]}}], {
+            queryParams: {back: this.router.snapshot.url},
+            relativeTo: this.router.parent,
         })
     }
 

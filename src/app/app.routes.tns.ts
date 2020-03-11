@@ -102,6 +102,14 @@ export const routes: Routes = [
                 },
                 outlet: 'startList'
             },
+            {
+                path: "athlet/:id",
+                component: AthletDetailComponent,
+                resolve: {
+                    athlet: AthletResolve
+                },
+                outlet: 'startList'
+            },
         ]
     },
     {

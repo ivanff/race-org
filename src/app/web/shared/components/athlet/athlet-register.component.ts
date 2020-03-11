@@ -8,8 +8,8 @@ import {
     Validators
 } from "@angular/forms"
 import {AngularFirestore, AngularFirestoreCollection} from "@angular/fire/firestore"
-import {catchError, debounceTime, map, skipWhile, take} from "rxjs/operators"
-import {Observable, throwError} from "rxjs"
+import {catchError, debounceTime, map, skipWhile, startWith, switchMap, take, filter} from "rxjs/operators"
+import {Observable, Subject, throwError} from "rxjs"
 import {MatSnackBar} from "@angular/material"
 import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http"
 import {environment} from "@src/environments/environment"
@@ -32,13 +32,16 @@ export class AthletRegisterComponent implements OnInit {
     registerForm: FormGroup
     athlet: Athlet
     hasSubmitButton = true
-    formIsValid = () => false
+    allowed: Array<number> = []
+
+    $formDelayValid = new Subject()
 
     @Input() competition: Competition
     @Output() onCreated = new EventEmitter<{ athlet: Athlet, form: FormGroupDirective }>()
     @Output() onValid = new EventEmitter<boolean>()
 
     athlet_collection: AngularFirestoreCollection
+
 
     constructor(public fb: FormBuilder,
                 private _snackBar: MatSnackBar,
@@ -51,7 +54,7 @@ export class AthletRegisterComponent implements OnInit {
         this.athlet_collection = this.afs.collection<Athlet>(`athlets_${this.competition.id}`)
         this.registerForm = this.fb.group({
             fio: ['', [<any>Validators.required]],
-            number: ['', [<any>Validators.required, <any>Validators.min(1), <any>Validators.max(999)], [AthletRegisterComponent.usedValue(this.athlet_collection, 'number')]],
+            number: ['', [<any>Validators.required, <any>Validators.min(1), <any>Validators.max(999)], [AthletRegisterComponent.usedValue(this.athlet_collection, 'number', false, this.allowed)]],
             class: ['', [<any>Validators.required]],
             phone: ['', [<any>Validators.minLength(10), <any>Validators.maxLength(10), Validators.pattern("^[0-9]*$")], [AthletRegisterComponent.usedValue(this.athlet_collection, 'phone')]],
             code: [{
@@ -59,12 +62,13 @@ export class AthletRegisterComponent implements OnInit {
                 disabled: true
             }, [<any>Validators.minLength(6), <any>Validators.required], [this.checkSmsCode.bind(this)]],
         })
+
+        this.registerForm.markAsDirty({onlySelf: false})
         this.competition.athlet_extra_fields.forEach((item) => this.registerForm.addControl(item, new FormControl('', [])))
 
         if (!this.athlet) {
             this.registerForm.addControl('captcha', new FormControl('', [<any>Validators.required]))
         }
-        setTimeout(() => this.formIsValid = () => this.registerForm.valid, 0);
 
         this.registerForm.statusChanges.pipe(
             map((next) => {
@@ -90,7 +94,18 @@ export class AthletRegisterComponent implements OnInit {
     }
 
     onSave(model, is_valid: boolean, formDirective?: FormGroupDirective): void {
-        if (is_valid) {
+        this.$formDelayValid.pipe(
+            startWith(this.registerForm.dirty),
+            switchMap(() => {
+                return this.registerForm.statusChanges.pipe(
+                    startWith(this.registerForm.status),
+                    filter(next => next !== 'PENDING'),
+                    take(1)
+                )
+            }),
+            filter(next => next == 'VALID'),
+            take(1)
+        ).subscribe((next) => {
             let athlet = {...model}
             delete athlet.code
             delete athlet.captcha
@@ -105,7 +120,7 @@ export class AthletRegisterComponent implements OnInit {
                 })
                 return athlet
             })
-        }
+        })
     }
 
     onSendSms(): void {
@@ -143,6 +158,10 @@ export class AthletRegisterComponent implements OnInit {
 
     static usedValue(collection, field: string, inverse: boolean = false, allowed: Array<any> = []): AsyncValidatorFn {
         return (control: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null> => {
+            console.log(
+                control.value,
+                control
+            )
             return collection.afs.collection(collection.ref.path, ref => ref.where(field, '==', parseInt(control.value))).valueChanges().pipe(
                 debounceTime(300),
                 take(1),

@@ -14,7 +14,7 @@ import * as application from "@nativescript/core/application"
 import {confirm} from "@nativescript/core/ui/dialogs"
 import {exit} from "nativescript-exit"
 import {RootComponent} from "./root/root.component"
-import {ActivatedRoute, NavigationEnd} from "@angular/router"
+import {ActivatedRoute, NavigationEnd, Params} from "@angular/router"
 import {filter} from "rxjs/operators"
 import {AuthService} from "./mobile/services/auth.service"
 import {CompetitionService} from "./mobile/services/competition.service"
@@ -22,7 +22,6 @@ import {openUrl} from "@nativescript/core/utils/utils"
 import {RadSideDrawer} from "nativescript-ui-sidedrawer"
 import {localize as L} from "nativescript-localize"
 import {ExtendedNavigationExtras} from "@nativescript/angular/router/router-extensions";
-import {StartListComponent} from "./start-list/start-list.component"
 
 const firebase = require('nativescript-plugin-firebase')
 
@@ -34,6 +33,7 @@ const firebase = require('nativescript-plugin-firebase')
 // @ts-ignore
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     _activatedUrl: string = '/'
+    _activatedParams: Params
     private drawer: RadSideDrawer
     // @ts-ignore
     @ViewChild("sideDrawerId", {static: false}) drawerComponent: ElementRef
@@ -69,9 +69,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                 filter((event: any) => event instanceof NavigationEnd),
             )
             .subscribe((event: NavigationEnd) => {
-                console.log(
-                    event
-                )
+                this._activatedParams = this.activeRoute.snapshot.queryParams
                 this._activatedUrl = event.urlAfterRedirects || ''
             })
         this._changeDetectionRef.detectChanges()
@@ -111,7 +109,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             args.cancel = true
             if (!args.stopEvent) {
                 this.zone.run(() => {
-                    if (this._activatedUrl.startsWith('/start-list/(startList:list/')) {
+                      if (this._activatedUrl.startsWith('/start-list/(startList:list/')) {
                         this.routerExtensions.navigate(['/start-list', {outlets: {startList: ['list']}}], {
                             relativeTo: this.activeRoute,
                             replaceUrl: true
@@ -121,13 +119,21 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                             relativeTo: this.activeRoute,
                             replaceUrl: true
                         })
+                    } else if (this._activatedUrl.startsWith('/start-list/(startList:athlet/') && this._activatedParams.hasOwnProperty('back')) {
+                        this.routerExtensions.navigate(['/start-list', {outlets: {startList: this._activatedParams['back']}}], {
+                          relativeTo: this.activeRoute,
+                          replaceUrl: true
+                        })
                     } else if (this.routerExtensions.canGoBack()) {
                         this.routerExtensions.back({
-                            relativeTo: this.activeRoute
+                            relativeTo: this.activeRoute,
                         })
                     } else {
+                        console.log(
+                            "'Can't go back"
+                        )
                         if (this._activatedUrl == '/home') {
-                            this.onExit()
+                            // this.onExit()
                         } else {
                             this.routerExtensions.navigate(['/home'], {
                                 relativeTo: this.activeRoute,

@@ -9,7 +9,7 @@ import {
     ViewContainerRef
 } from '@angular/core'
 import {Competition} from "@src/app/shared/interfaces/competition"
-import {ActivatedRoute, NavigationEnd} from "@angular/router"
+import {ActivatedRoute} from "@angular/router"
 import {
     DetachedLoader,
     ModalDialogParams,
@@ -29,8 +29,7 @@ import {Athlet} from "@src/app/shared/interfaces/athlet"
 import {once} from "nativescript-angular/common/utils"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
 import {firestore} from "nativescript-plugin-firebase"
-import {BehaviorSubject, Observable, ReplaySubject} from "rxjs"
-import {filter, first, shareReplay, takeUntil} from "rxjs/operators"
+import {BehaviorSubject, ReplaySubject} from "rxjs"
 import {getNumber, setNumber} from "@nativescript/core/application-settings"
 import {StartListTabItemComponent} from "@src/app/start-list/start-list-tab-item.component"
 
