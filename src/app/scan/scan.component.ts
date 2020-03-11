@@ -19,7 +19,7 @@ import {ActivatedRoute} from "@angular/router"
 import * as moment from 'moment'
 import {TextField} from "@nativescript/core/ui/text-field"
 import {BehaviorSubject, defer, EMPTY, ReplaySubject} from "rxjs"
-import {debounceTime, map, switchMap, takeUntil} from "rxjs/operators"
+import {debounceTime, map, switchMap, take, takeUntil} from "rxjs/operators"
 import {Athlet} from "@src/app/shared/interfaces/athlet"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 import {SqliteService} from "@src/app/mobile/services/sqlite.service"
@@ -46,6 +46,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
     input_number = ''
     private collection: firestore.CollectionReference
     private destroy = new ReplaySubject<any>(1)
+    private $lastAthlet: any
 
     @ViewChild('activityIndicator', {static: false}) activityIndicatorRef: ElementRef
     @ViewChild('textField', {static: false}) textFieldRef: ElementRef
@@ -80,7 +81,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
         keepAwake().then(() => {
             this.snackbar.success(L("Disable device sleeping"))
         })
-        this.number$.pipe(
+        this.$lastAthlet = this.number$.pipe(
             debounceTime(500),
             switchMap((value) => {
                 const number: number = parseInt(value)
@@ -109,8 +110,11 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
                 } else {
                     return EMPTY
                 }
-            })
-        ).subscribe((athlet: Athlet) => {
+            }),
+            takeUntil(this.destroy)
+        )
+
+        this.$lastAthlet.subscribe((athlet: Athlet) => {
             this.last_athlet = athlet
         })
     }
@@ -248,6 +252,16 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
         const textField = <TextField>$event.object
         this.number$.next(textField.text)
         this.last_athlet = null
+    }
+
+    onReturnPress(textField: TextField): void {
+        this.$lastAthlet.pipe(
+            take(1)
+        ).subscribe((last_athlet) => {
+            if (last_athlet) {
+                this.setNumberMark(textField)
+            }
+        })
     }
 }
 

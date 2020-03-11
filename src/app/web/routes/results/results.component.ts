@@ -13,6 +13,7 @@ import {ReplaySubject} from "rxjs"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 import {calcCircles} from "@src/app/web/shared/utils/tools"
 import {StartListGroup} from "@src/app/shared/interfaces/start-list"
+import {SCORE_MAP} from "@src/app/shared/helpers"
 
 
 export interface ResultMark extends Mark {
@@ -44,11 +45,12 @@ export interface Filter {
     styleUrls: ['./results.component.scss']
 })
 export class ResultsComponent implements OnInit, AfterViewInit {
-    competition: Competition
     protected _onDestroy = new ReplaySubject<any>(1)
 
+    SCORE_MAP = SCORE_MAP
+    competition: Competition
     dataSource = new MatTableDataSource<TableRow>([])
-    displayedColumns: string[] = ['place', 'number', 'class', 'athlet']
+    displayedColumns: string[] = ['place', 'score', 'number', 'class', 'athlet']
 
     filter: Filter = {class: '', str: ''}
     now: Date = new Date()
@@ -204,7 +206,7 @@ export class ResultsComponent implements OnInit, AfterViewInit {
             let startOffset: number = 0
 
             if (group) {
-                startOffset = this.start_time.diff(group.start_time.toDate(), 'ms')
+                startOffset = this.start_time.diff((group.start_time || this.start_time).toDate(), 'ms')
             }
 
             let last_cp = -1
@@ -374,6 +376,8 @@ export class ResultsComponent implements OnInit, AfterViewInit {
 
         return rows
     }
+
+    lockPublishResults(): void {}
 
     isLastCp(index: number): boolean {
         const cp_in_circle = this.checkpoints.length / this.circles

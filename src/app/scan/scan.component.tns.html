@@ -23,6 +23,7 @@
             <TextField [hint]="'Athlete number'|L"
                        [text]="input_number"
                        (textChange)="onTextChange($event)"
+                       (returnPress)="onReturnPress(textField)"
                        #textField
                        keyboardType="number"
                        maxLength="3"

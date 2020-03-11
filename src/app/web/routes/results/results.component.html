@@ -17,6 +17,12 @@
                     Скачать таблицу в формате CSV
                 </csv>
             </li>
+            <li>
+                <a (click)="lockPublishResults()" mat-fab class="bg-purple">
+                    <mat-icon>lock</mat-icon>
+                </a>
+                Зафиксировать и опубликовать результаты
+            </li>
         </ul>
         <mat-card>
             <mat-card-content fxLayout="row wrap">
@@ -33,6 +39,11 @@
                     <th mat-header-cell *matHeaderCellDef mat-sort-header>Место</th>
                     <td mat-cell *matCellDef="let element"
                         [class.highlight]="element.place <= 3"> {{ element.place }} </td>
+                </ng-container>
+
+                <ng-container *ngIf="!hide_place" matColumnDef="score">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Очки</th>
+                    <td mat-cell *matCellDef="let element"> {{ SCORE_MAP[element.place] || "" }} </td>
                 </ng-container>
 
                 <ng-container matColumnDef="number">
@@ -53,7 +64,7 @@
                                 {{ element.group.id }}
                             </li>
                             <li>
-                                {{ element.group.start_time.toDate()|date:"HH:mm:ss z":getTzOffset(competition.timezone) }}
+                                {{ (element.group.start_time || start_time).toDate()|date:"HH:mm:ss z":getTzOffset(competition.timezone) }}
                             </li>
                             <li *ngIf="element.startOffset" style="color: red">
                                 -{{ formatDuration(element.startOffset) }}
