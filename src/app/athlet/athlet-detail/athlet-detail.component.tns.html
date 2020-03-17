@@ -34,6 +34,7 @@
         <Button [text]="activityIndicator.busy ? ('Stop scan'|L) :('Set NFC tag'|L) "
                 (tap)="(activityIndicator.busy = !activityIndicator.busy)"
                 [class.-primary]="!activityIndicator.busy"
+                [isEnabled]="nfc.available"
                 row="0"
                 col="0"
                 class="btn">

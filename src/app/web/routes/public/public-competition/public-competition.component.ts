@@ -4,8 +4,8 @@ import {ActivatedRoute} from "@angular/router"
 import {AngularFirestore} from "@angular/fire/firestore"
 import {Athlet} from "@src/app/shared/interfaces/athlet"
 import {Observable, ReplaySubject} from "rxjs"
-import {MatSort, MatTableDataSource} from "@angular/material"
-import {takeUntil, tap} from "rxjs/operators"
+import {MatSort} from "@angular/material"
+import {shareReplay, startWith, takeUntil, tap} from "rxjs/operators"
 import {FormControl, FormGroup} from "@angular/forms"
 
 @Component({
@@ -14,7 +14,7 @@ import {FormControl, FormGroup} from "@angular/forms"
 })
 export class PublicCompetitionComponent implements OnInit, OnDestroy {
   protected _onDestroy = new ReplaySubject<any>(1)
-  private competition: Competition
+  competition: Competition
 
   athlets$: Observable<Athlet[]>
 
@@ -30,7 +30,9 @@ export class PublicCompetitionComponent implements OnInit, OnDestroy {
       this.competition = next
     })
 
-    this.athlets$ = this.afs.collection<Athlet>(`athlets_${this.competition.id}`, (ref => ref.orderBy('created', 'desc'))).valueChanges()
+    this.athlets$ = this.afs.collection<Athlet>(`athlets_${this.competition.id}`, (ref => ref.orderBy('created', 'desc'))).valueChanges().pipe(
+        shareReplay(1)
+    )
     this.filterAthlets = new FormGroup({
       'search': new FormControl('', []),
       'class': new FormControl('', [])
@@ -54,13 +56,17 @@ export class PublicCompetitionComponent implements OnInit, OnDestroy {
   }
 
   onActivate($event: any): void {
-    this.athlets$.pipe(
-      tap((athlets: Array<Athlet>) => {
+    $event.filterForm = this.filterAthlets
+
+    if ($event.hasOwnProperty('athlets$')) {
+      this.athlets$.subscribe((athlets: Array<Athlet>) => {
         $event.athlets$.next(athlets)
-      }),
-      takeUntil(this._onDestroy)
-    ).subscribe()
-    this.filterAthlets.statusChanges.subscribe((next) => {
+      })
+    }
+
+    this.filterAthlets.statusChanges.pipe(
+        startWith(this.filterAthlets.status)
+    ).subscribe((next) => {
       if (next == 'VALID') {
         $event.applyFilter(this.filterAthlets.value)
       } else {
@@ -68,4 +74,11 @@ export class PublicCompetitionComponent implements OnInit, OnDestroy {
       }
     })
   }
+
+  onDeactivate($event: any): void {
+    if ($event.hasOwnProperty('athlets$')) {
+      this._onDestroy.next(null)
+    }
+  }
+
 }

@@ -27,6 +27,7 @@ import {MAT_DATE_LOCALE} from "@angular/material"
 import {CompetitionResolve} from "@src/app/shared/resolvers/competition.resolver"
 import {AthletResolve} from "@src/app/shared/resolvers/athlet.resolver"
 import {ToastrModule} from 'ngx-toastr'
+import {ResultsComponent} from "@src/app/web/routes/results/results.component"
 
 registerLocaleData(localeRu)
 

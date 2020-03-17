@@ -1,8 +1,52 @@
 <page-header [title]="competition.title"></page-header>
 
-<mat-tab-group [selectedIndex]="active_tab" (selectedIndexChange)="setActiveTab($event)" [hidden]="hasChildren">
+<mat-tab-group [selectedIndex]="active_tab" (selectedIndexChange)="setActiveTab($event)">
     <mat-tab *ngFor="let _class of competition.classes" [label]="_class|titlecase">
-        <app-results [classes]="[_class]" [is_admin]="true"></app-results>
+        <mat-card style="overflow: hidden">
+            <mat-card-header>
+                <mat-card-title>Результаты сорвенования</mat-card-title>
+                <mat-card-subtitle>
+                    {{ competition|tzdateFinish }}
+                </mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+                <ul class="one-row">
+                    <li>
+                        <csv [data]="getCsvData(filteredData)"
+                             [filename]="competition.classes.join('_') + '_' + (this.now|date:'dd-MM-yy_HH:mm:ss')"
+                             [options]="csv_export_options">
+                            <a mat-fab class="bg-teal-400">
+                                <mat-icon>get_app</mat-icon>
+                            </a>
+                            Скачать таблицу в формате CSV
+                        </csv>
+                    </li>
+                    <li>
+                        <a (click)="lockPublishResults()" mat-fab class="bg-purple">
+                            <mat-icon>lock</mat-icon>
+                        </a>
+                        Зафиксировать и опубликовать результаты
+                    </li>
+                </ul>
+                <form [formGroup]="filterAthlets">
+                    <mat-card>
+                        <mat-card-content fxLayout="row wrap">
+                            <mat-form-field fxFlex="100" class="m-b-24">
+                                <input matInput formControlName="search" placeholder="Фильтр">
+                                <mat-hint>По фамилии или номеру участника</mat-hint>
+                            </mat-form-field>
+                        </mat-card-content>
+                    </mat-card>
+                </form>
+                <div class="table-container">
+                    <app-results [classes]="[_class]"
+                                 [competition]="competition"
+                                 [start_time]="start_time"
+                                 [is_admin]="true"
+                                 (onActivate)="onActivate($event)"></app-results>
+                </div>
+            </mat-card-content>
+        </mat-card>
     </mat-tab>
 </mat-tab-group>
 

@@ -2,6 +2,7 @@ import {Pipe} from '@angular/core'
 import * as moment from "moment-timezone"
 import {DatePipe} from "@angular/common"
 import {Competition} from "@src/app/shared/interfaces/competition"
+import {device} from "@nativescript/core/platform"
 
 const postSovietLangs = [
     'ru',
@@ -13,7 +14,7 @@ function getLocale(locale?) {
     if (locale) {
         return postSovietLangs.indexOf(locale) > -1 ? 'ru' : null
     } else {
-        if (['ru', 'ru-RU'].indexOf(window.navigator.language) >= 0) {
+        if (device.language == 'ru') {
             return 'ru'
         }
     }
@@ -36,7 +37,7 @@ export class TzDatePipe extends DatePipe {
 export class TzDateStartPipe extends DatePipe {
     transform(competition: Competition, timezone?: string, locale?: string): string {
         const date = moment.tz(
-            `${moment(competition.end_date.toMillis()).format('YYYY-MM-DD')}T00:00:00`, competition.timezone
+            `${moment(competition.end_date).format('YYYY-MM-DD')}T00:00:00`, competition.timezone
         ).add(competition.start_time, 's')
 
         const format = getLocale(locale) == 'ru' ? "dd.MM.yyyy HH:mm:ss z" : "yyyy-MM-dd HH:mm:ss z"
@@ -50,13 +51,10 @@ export class TzDateStartPipe extends DatePipe {
 export class TzDateFinishPipe extends DatePipe {
     transform(competition: Competition, timezone?: string, locale?: string): string {
         const date = moment.tz(
-            `${moment(competition.start_date.toMillis()).format('YYYY-MM-DD')}T00:00:00`, competition.timezone
+            `${moment(competition.start_date).format('YYYY-MM-DD')}T00:00:00`, competition.timezone
         ).add(competition.start_time + competition.duration, 's')
 
         const format = getLocale(locale) == 'ru' ? "dd.MM.yyyy HH:mm:ss z" : "yyyy-MM-dd HH:mm:ss z"
-        console.log(
-            format
-        )
 
         return super.transform(date.toDate(), format, timezone ? moment.tz(timezone).format('ZZ') : null, getLocale(locale))
     }

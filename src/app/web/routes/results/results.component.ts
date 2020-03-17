@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core'
+import {AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core'
 import {AngularFirestore} from '@angular/fire/firestore'
 import {MatSort, MatTableDataSource} from '@angular/material'
 import * as moment from 'moment-timezone'
@@ -34,74 +34,49 @@ export interface TableRow {
     last_cp: number
 }
 
-export interface Filter {
-    str: string
-    class: string
-}
-
 @Component({
     selector: 'app-results',
     templateUrl: './results.component.html',
     styleUrls: ['./results.component.scss']
 })
-export class ResultsComponent implements OnInit, AfterViewInit {
+export class ResultsComponent implements OnInit, AfterViewInit, OnDestroy {
     protected _onDestroy = new ReplaySubject<any>(1)
 
     SCORE_MAP = SCORE_MAP
-    competition: Competition
     dataSource = new MatTableDataSource<TableRow>([])
     displayedColumns: string[] = ['place', 'score', 'number', 'class', 'athlet']
 
-    filter: Filter = {class: '', str: ''}
-    now: Date = new Date()
-    csv_export_options = {
-        fieldSeparator: ',',
-        quoteStrings: '"',
-        decimalseparator: '.',
-        showLabels: true,
-        headers: this.displayedColumns,
-        showTitle: true,
-        title: 'Результаты',
-        useBom: false,
-        removeNewLines: true,
-        keys: this.displayedColumns,
-    }
-
-    hide_start_time = false
     hide_place = false
-    hide_class_filter = false
     checkpoints: Array<Checkpoint> = []
-    start_time: moment
     end_time: moment
     athlets: Array<Athlet> = []
     circles: number
 
     @Input('classes') classes: Array<string> = []
+    @Input('competition') competition: Competition
     @Input('is_admin') is_admin: boolean = false
+    @Input('start_time') start_time: moment
+    @Output() onActivate = new EventEmitter<any>()
 
     @ViewChild('picker', {static: true}) picker: NgxTimepickerFieldComponent
     @ViewChild(MatSort, {static: true}) sort: MatSort
 
     constructor(private firestore: AngularFirestore,
                 private route: ActivatedRoute) {
-        this.competition = this.route.snapshot.data['competition']
-        this.hide_start_time = this.route.snapshot.data['hide_start_time']
-        this.hide_class_filter = this.route.snapshot.data['hide_class_filter']
         this.hide_place = this.route.snapshot.data['hide_place']
 
         if (this.hide_place) {
             this.displayedColumns.shift()
         }
 
-        if (this.competition.group_start) {
-            this.displayedColumns.splice(this.displayedColumns.indexOf('athlet'), 0, 'group')
-        }
-
-        this.start_time = moment(this.competition.start_date.toMillis()).add(this.competition.start_time, 's')
-        this.end_time = moment(this.competition.end_date.toMillis()).add(this.competition.start_time + this.competition.duration, 's')
     }
 
     ngAfterViewInit() {
+        if (this.competition.group_start) {
+            this.displayedColumns.splice(this.displayedColumns.indexOf('athlet'), 0, 'group')
+        }
+        this.end_time = moment(this.competition.end_date.toMillis()).add(this.start_time.seconds() + this.competition.duration, 's')
+        this.onActivate.emit(this)
     }
 
     ngOnInit() {
@@ -116,23 +91,27 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         this.sort.sort({id: 'place', start: 'asc', disableClear: false})
         this.dataSource.sort = this.sort
 
-        this.dataSource.filterPredicate = (data: TableRow, filter: string) => {
-            const filter_obj = JSON.parse(filter) as Filter
+        this.dataSource.filterPredicate = (item: TableRow, filter: string) => {
+            const data: {search: string} | null = JSON.parse(filter)
+
             let result = true
 
-            if (filter_obj.str) {
-                if (data.number.toString().indexOf(filter_obj.str) >= 0) {
-                    result = true
-                } else if (data.athlet.fio.toLocaleLowerCase().indexOf(filter_obj.str) >= 0) {
-                    result = true
-                } else {
-                    result = false
-                }
-            }
-            if (filter_obj.class) {
-                result = (data.athlet.class === filter_obj.class) && result
-            }
+            if (!data) {
+                result = true
+            } else {
+                const search = data.search.trim()
+                if (search.length) {
+                    const clean_search = search.toLowerCase()
 
+                    if (parseInt(clean_search).toString() == clean_search) {
+                        result = item.number.toString().indexOf(clean_search) >= 0
+                    } else {
+                        result = item.athlet.fio.toLowerCase().indexOf(clean_search) >= 0
+                    }
+                }
+
+                result = result && (this.classes.indexOf(item.athlet.class) >= 0)
+            }
             return result
         }
 
@@ -169,6 +148,11 @@ export class ResultsComponent implements OnInit, AfterViewInit {
             })
     }
 
+    ngOnDestroy(): void {
+        this._onDestroy.next(null)
+        this._onDestroy.complete()
+    }
+
     private buildHeader(athlets: Array<Athlet>): number {
         const checkpoints: Array<Checkpoint> = this.competition.checkpoints.filter((checkpoint: Checkpoint) => _.intersection(
             this.classes, checkpoint.classes
@@ -190,9 +174,6 @@ export class ResultsComponent implements OnInit, AfterViewInit {
             this.displayedColumns.push(`CP_${i}`)
         })
 
-        this.csv_export_options.keys = this.displayedColumns
-        this.csv_export_options.headers = this.displayedColumns
-
         return circles
     }
 
@@ -203,6 +184,7 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         this.athlets.forEach((athlet: Athlet, y: number) => {
             const clean_marks: Array<ResultMark | null> = [...athlet.marks.sort((a, b) => a.created < b.created ? -1 : a.created > b.created ? 1 : 0)]
             const group = athlet.group ? athlet.group[this.competition.id] : null
+            // меньше нуля
             let startOffset: number = 0
 
             if (group) {
@@ -298,14 +280,12 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         this.dataSource.data = rows
     }
 
-    applyFilter($event: any, field: string) {
-        if (field === 'str') {
-            this.filter.str = $event.target.value.trim().toLowerCase()
+    private applyFilter(data: {search: string} | null): void {
+        if (!data) {
+            this.dataSource.filter = JSON.stringify(null)
+        } else {
+            this.dataSource.filter = JSON.stringify(data)
         }
-        if (field === 'class') {
-            this.filter.class = $event
-        }
-        this.dataSource.filter = JSON.stringify(this.filter)
     }
 
     // diffTime(date: firebase.firestore.Timestamp): string {
@@ -328,56 +308,6 @@ export class ResultsComponent implements OnInit, AfterViewInit {
     getOffsetDate(d: firebase.firestore.Timestamp, offset: number): Date {
         return moment(d.toDate()).add(offset,'ms').toDate()
     }
-
-    getCsvData(data: Array<any>) {
-        let rows: Array<any> = []
-
-        data.map((item) => {
-            let row = {}
-            let i = 0
-            for (let key of this.csv_export_options.keys) {
-                switch (key) {
-                    case 'place': {
-                        row['place'] = item.place
-                        break
-                    }
-                    case 'number': {
-                        row['number'] = item.number
-                        break
-                    }
-                    case 'group': {
-                        row['group'] = item.group
-                        break
-                    }
-                    case 'class': {
-                        row['class'] = item.athlet.class
-                        break
-                    }
-                    case 'athlet': {
-                        row['athlet'] = item.athlet.fio
-                        break
-                    }
-                    default: {
-                        const mark: ResultMark | undefined = item.marks[i]
-
-                        if (mark) {
-                            row[key] = moment(mark.created.toDate()).format('HH:mm:ss')
-                        } else {
-                            row[key] = ''
-                        }
-
-                        i = i + 1
-                    }
-                }
-            }
-
-            rows.push(row)
-        })
-
-        return rows
-    }
-
-    lockPublishResults(): void {}
 
     isLastCp(index: number): boolean {
         const cp_in_circle = this.checkpoints.length / this.circles
@@ -414,11 +344,11 @@ export class ResultsComponent implements OnInit, AfterViewInit {
         return [credit_circle, (credit_circle.length - 1) * circle_index || circle_index]
     }
 
-    getTzOffset(timezone: string) {
-        return moment.tz(timezone).format('z')
-    }
-
     trackByIndex(index, item) {
         return index
+    }
+
+    getTzOffset(timezone: string) {
+        return moment.tz(timezone).format('z')
     }
 }

@@ -18,8 +18,8 @@ import {isAndroid} from "@nativescript/core/platform"
 import {ActivatedRoute} from "@angular/router"
 import * as moment from 'moment'
 import {TextField} from "@nativescript/core/ui/text-field"
-import {BehaviorSubject, defer, EMPTY, ReplaySubject} from "rxjs"
-import {debounceTime, map, switchMap, take, takeUntil} from "rxjs/operators"
+import {BehaviorSubject, defer, EMPTY, Observable, Observer, ReplaySubject, Subject} from "rxjs"
+import {debounceTime, map, startWith, switchMap, take, takeUntil, tap} from "rxjs/operators"
 import {Athlet} from "@src/app/shared/interfaces/athlet"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 import {SqliteService} from "@src/app/mobile/services/sqlite.service"
@@ -44,9 +44,12 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
     current_checkpoint: Checkpoint = null
     number$ = new BehaviorSubject(null)
     input_number = ''
+    // foundedNumbers$ = new Subject()
+    foundedNumbers$: any
     private collection: firestore.CollectionReference
     private destroy = new ReplaySubject<any>(1)
     private $lastAthlet: any
+
 
     @ViewChild('activityIndicator', {static: false}) activityIndicatorRef: ElementRef
     @ViewChild('textField', {static: false}) textFieldRef: ElementRef
@@ -64,6 +67,16 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
         super(routerExtensions)
         this.collection = firebase.firestore().collection(this._competition.getAthletsCollectionPath())
         this.current_checkpoint = activeRoute.snapshot.data['current_checkpoint']
+
+        const z = []
+        this.foundedNumbers$ = (new BehaviorSubject<string>(null)).pipe(
+            map((i) => {
+                if (i != null) {
+                    z.unshift(i)
+                }
+                return z.join('; ')
+            })
+        )
     }
 
     private _missingCheck(date: Date) {
@@ -81,6 +94,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
         keepAwake().then(() => {
             this.snackbar.success(L("Disable device sleeping"))
         })
+
         this.$lastAthlet = this.number$.pipe(
             debounceTime(500),
             switchMap((value) => {
@@ -120,7 +134,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
     }
 
     ngOnDestroy(): void {
-        console.log('>> ScanCompenent ngOnDestroy')
+        console.log('>> ScanComponent ngOnDestroy')
         allowSleepAgain().then(() => {
             this.snackbar.success(L("Enable device sleeping"))
         })
@@ -145,6 +159,8 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
     }
 
     onFound(athlet: Athlet, msg: string, error?: boolean): void {
+        this.foundedNumbers$.next(athlet.number)
+
         this.snackbar.snackbar$.next({
             level: error ? 'alert' : 'success',
             msg: `<${athlet.number}> ${msg}`,
@@ -220,7 +236,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
         }
     }
 
-    setNumberMark(textField: TextField) {
+    setNumberMark(textField: TextField, ) {
         if (this.current_checkpoint) {
             const mark: Mark = {
                 order: this.current_checkpoint.order,

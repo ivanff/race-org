@@ -14,9 +14,10 @@
         <GridLayout columns="2*, *" rows="*,*">
             <Button row="0" col="0"
                     [colSpan]="_competition.selected_competition.checking.indexOf('barcode') > -1 ? 1 : 2"
-                    [text]="activityIndicator.busy ? ('Search shop'|L) :('By NFC tag'|L) "
+                    [text]="activityIndicator.busy ? ('Search stop'|L) :('By NFC tag'|L) "
                     (tap)="(activityIndicator.busy = !activityIndicator.busy)"
                     [class.-primary]="!activityIndicator.busy"
+                    [isEnabled]="nfc.available"
                     class="btn">
             </Button>
             <Button row="0" col="1"

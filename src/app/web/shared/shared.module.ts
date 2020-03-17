@@ -30,6 +30,8 @@ import {
 } from "ng-recaptcha"
 import {ChartsModule} from "ng2-charts"
 import {AthletAddComponent} from "@src/app/web/shared/components/athlet/athlet-add.component"
+import {TzDateFinishPipe, TzDatePipe, TzDateStartPipe} from "@src/app/shared/pipes/tzdate.pipe"
+import {ResultsComponent} from "@src/app/web/routes/results/results.component"
 
 const THIRD_MODULES = [
     DemoMaterialModule,
@@ -44,6 +46,8 @@ const THIRD_MODULES = [
     ChartsModule,
 ];
 const COMPONENTS = [
+
+    ResultsComponent,
     BreadcrumbComponent,
     PageHeaderComponent,
     MiniProgressComponent,
@@ -58,7 +62,10 @@ const COMPONENTS = [
 ];
 const DIRECTIVES = [];
 const PIPES = [
-    FilterPipe
+    FilterPipe,
+    TzDatePipe,
+    TzDateStartPipe,
+    TzDateFinishPipe,
 ];
 
 @NgModule({

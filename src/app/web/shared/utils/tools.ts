@@ -1,5 +1,7 @@
 import {ResultMark as Mark} from "@src/app/web/routes/results/results.component"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
+import {PublicTableAthletRow} from "@src/app/web/routes/public/public-competition/public-competition-athlets/public-competition-athlets.component"
+import {PublicTableResultRow} from "@src/app/web/routes/public/public-competition/public-competition-results/public-competition-results.component"
 
 export function calcCircles(marks: Array<Mark> | undefined,  checkpoints: Array<Checkpoint>): number {
     const orders = checkpoints.map((item) => item.order)
@@ -26,4 +28,31 @@ export function calcCircles(marks: Array<Mark> | undefined,  checkpoints: Array<
     } else {
         return 1
     }
+}
+
+export function filterPredicate (item: PublicTableAthletRow | PublicTableResultRow, filter: string): boolean {
+    const data: {search: string, class: string} | null = JSON.parse(filter)
+    let result = true
+
+    if (!data) {
+        result = true
+    } else {
+        const search = data.search.trim()
+
+        if (search.length) {
+            const clean_search = search.toLowerCase()
+
+            if (parseInt(clean_search).toString() == clean_search) {
+                result = item.number.toString().indexOf(clean_search) >= 0
+            } else {
+                result = item.fio.toLowerCase().indexOf(clean_search) >= 0
+            }
+
+        }
+
+        if (data.class.length) {
+            result = result && (item.class == data.class)
+        }
+    }
+    return result
 }

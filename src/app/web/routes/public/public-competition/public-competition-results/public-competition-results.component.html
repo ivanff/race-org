@@ -1,4 +1,25 @@
 <h2 class="text-center text-white">
-    Результаты
+    Результаты в реальном времени
 </h2>
 
+<mat-card style="overflow: hidden">
+    <mat-card-header>
+        <mat-card-title>
+            {{ competition|tzdateFinish }}
+        </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+        <mat-tab-group [selectedIndex]="active_tab" (selectedIndexChange)="setActiveTab($event)">
+            <mat-tab *ngFor="let _class of competition.classes" [label]="_class|titlecase">
+                <div class="table-container">
+                    <app-results [classes]="[_class]"
+                                 [competition]="competition"
+                                 [start_time]="start_time"
+                                 [is_admin]="false"
+                                 (onActivate)="onActivate($event)"></app-results>
+                </div>
+            </mat-tab>
+        </mat-tab-group>
+    </mat-card-content>
+</mat-card>

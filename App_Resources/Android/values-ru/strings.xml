@@ -78,10 +78,10 @@
   <string name="_This_application_will_be_closed_Z1nX3lY">"Приложение будет закрыто"</string>
   <string name="_Are_you_sure__Z10Co7l">"Вы уверены?"</string>
   <string name="_This_device_is_not_assigned_to_a_NFC_reader_Z2mU8ty">"Это устройство не назначено NFC считывателем"</string>
-  <string name="_Title___pNAnx">"Название"</string>
-  <string name="_Order___x2Lcm">"Порядок"</string>
-  <string name="_Close___Z25nAEQ">"Закрыть"</string>
-  <string name="_Open___Z2h9qyA">"Открыть"</string>
+  <string name="_Title___pNAnx">"Название: "</string>
+  <string name="_Order___x2Lcm">"Порядок: "</string>
+  <string name="_Close___Z25nAEQ">"Закрыть: "</string>
+  <string name="_Open___Z2h9qyA">"Открыть: "</string>
   <string name="_Total_registered_athletes___Z1PAOn3">"Всего зарегестрированно участников: "</string>
   <string name="_Select_competition_Z1PqDHv">"Назначить\nсоревнование"</string>
   <string name="_A_prototype_application_for_the_organization_of_competitions__the_process_of_which_is_associated_with_the_time_stamps_on_the_control_points___The_winners_are_the_athletes_who_have_passed_the_greater__all__number_of_control_points_for_a_smaller_number_of_time__in_the_order_of_points__ZcHRN2">"Прототип приложения для организации соревнований, процесс прохождения которого связан с отметками времени на контрольных точках.\nПобедителями считаются атлеты прошедшие большее (все) кол-во контрольных точек за за меньшее кол-во времени, в порядке следования точек."</string>
@@ -143,9 +143,10 @@
   <string name="Call">"Позвонить"</string>
   <string name="_not_assigned_1xCvI">"не назначено"</string>
   <string name="assigned">"назначено"</string>
-  <string name="_Search_shop_1giToM">"Остановить поиск"</string>
+  <string name="_Search_stop_1giWuP">"Остановить поиск"</string>
   <string name="Scan">"Сканировать"</string>
   <string name="_app_name_1k3Sbz">"RaceOrg"</string>
   <string name="app_name">"RaceOrg"</string>
   <string name="title_activity_kimera">"RaceOrg"</string>
+  <string name="_Search_shop_1giToM">"Search shop"</string>
 </resources>

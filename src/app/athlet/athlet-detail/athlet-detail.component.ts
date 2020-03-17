@@ -34,7 +34,7 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
                 private snackbar: SnackbarService,
                 private zone: NgZone,
                 private activeRoute: ActivatedRoute,
-                private nfc: NfcService,
+                public nfc: NfcService,
                 public _competition: CompetitionService
     ) {
         super(routerExtensions)

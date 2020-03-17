@@ -1,92 +1,64 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core'
-import {BehaviorSubject} from "rxjs"
-import {Athlet} from "@src/app/shared/interfaces/athlet"
+import {Component, Input, OnDestroy, OnInit} from '@angular/core'
 import {Competition} from "@src/app/shared/interfaces/competition"
-import {MatSort, MatTableDataSource} from "@angular/material"
 import {ActivatedRoute} from "@angular/router"
+import * as moment from 'moment-timezone'
+import {BehaviorSubject, ReplaySubject} from "rxjs"
+import {takeUntil} from "rxjs/operators"
+import {FormGroup} from "@angular/forms"
 
-interface PublicTableResultRow {
+export interface PublicTableResultRow {
   place: number,
   number: number,
   fio: string,
   class: string,
 }
 
-
+// http://localhost:4200/public/competition/cwx4XmKJTbL7BTyuCAYK/results
 @Component({
   selector: 'app-public-competition-results',
   templateUrl: './public-competition-results.component.html'
 })
 export class PublicCompetitionComponentResults implements OnInit, OnDestroy {
-  private athlets$ = new BehaviorSubject<Athlet[]>([])
   private competition: Competition
+  protected _onDestroy = new ReplaySubject<any>(1)
+  start_time: moment
+  $filterValue = new BehaviorSubject(null)
+  active_tab: number = 0
 
-  displayedColumns: string[] = ['place', 'fio', 'number']
-  dataSource = new MatTableDataSource<any>([])
-
-  @ViewChild(MatSort, {static: true}) sort: MatSort
+  filterForm: FormGroup
 
   constructor(private route: ActivatedRoute){
-    this.competition = route.snapshot.data['competition']
-    this.athlets$.subscribe((athlets: Athlet[]) => {
-      this.dataSource.data = athlets.map((item) => {
-        return {
+    this.competition = route.snapshot.parent.data['competition']
+    this.start_time = moment(this.competition.start_date.toMillis()).add(this.competition.start_time, 's')
+  }
 
-        }
-      })
+  ngOnInit(): void {}
+
+  ngOnDestroy(): void {
+    this._onDestroy.next(null)
+    this._onDestroy.complete()
+  }
+  
+  private applyFilter(data: {search: string, class: string} | null): void {
+    if (data.class) {
+      this.active_tab = this.competition.classes.indexOf(data.class)
+    }
+    this.$filterValue.next(data)
+  }
+
+
+  onActivate($event): void {
+    this.$filterValue.pipe(
+        takeUntil(
+            this._onDestroy
+        )
+    ).subscribe((data) => {
+      $event.applyFilter(data)
     })
   }
 
-  ngOnInit(): void {
-    this.sort.sort({id: 'created', start: 'desc', disableClear: false})
-    this.dataSource.sort = this.sort
-    this.dataSource.sortingDataAccessor = (item, property) => {
-      return item[property]
-    }
-
-    this.dataSource.filterPredicate = (item: PublicTableResultRow, filter: string) => {
-      const data: {search: string, class: string} | null = JSON.parse(filter)
-      let result = true
-
-      if (!data) {
-        result = true
-      } else {
-        const search = data.search.trim().toLowerCase()
-        const _class = data.class.trim().toLowerCase()
-
-        if (data.search.length) {
-          if (parseInt(search).toString() == search) {
-            if (item.number.toString().indexOf(search) >= 0) {
-              result = true
-            } else {
-              result = false
-            }
-          } else if (item.fio.toLowerCase().indexOf(search) >= 0) {
-            result = true
-          } else {
-            result = false
-          }
-        }
-        if (_class.length) {
-          if (item.class != _class) {
-            result = false
-          }
-        }
-      }
-      return result
-    }
-  }
-
-  private applyFilter(data: {search: string, class: string} | null): void {
-    if (!data) {
-      this.dataSource.filter = JSON.stringify(null)
-    } else {
-      this.dataSource.filter = JSON.stringify(data)
-    }
-  }
-
-  ngOnDestroy(): void {
-    this.athlets$.unsubscribe()
+  setActiveTab($event: number) {
+    this.filterForm.controls['class'].setValue(this.competition.classes[$event])
   }
 }
 

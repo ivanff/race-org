@@ -11,7 +11,6 @@ import {ResultsAdminComponent} from "@src/app/web/routes/results/results-admin/r
 import {ResultDetailComponent} from "@src/app/web/routes/results/results-admin/result-detail/result-detail.component"
 import {ResultSetTimeComponent} from "@src/app/web/routes/results/results-admin/result-detail/result-set-time/result-set-time.component"
 import {ResultAddMarkComponent} from "@src/app/web/routes/results/results-admin/result-detail/result-add-mark/result-add-mark.component"
-import {ResultsComponent} from "@src/app/web/routes/results/results.component"
 import {PrivatePolicyComponent} from "@src/app/web/routes/private-policy/private-policy.component"
 import {AddAthletDialogComponent} from "@src/app/web/routes/dashboard/dashboard-detail/add-athlet-dialog.component"
 import {LandingComponent} from "@src/app/web/routes/sessions/landing/landing.component"
@@ -22,7 +21,6 @@ const COMPONENTS = [
     DashboardEditComponent,
     DashboardAddComponent,
 
-    ResultsComponent,
     ResultsAdminComponent,
     ResultDetailComponent,
     ResultAddMarkComponent,

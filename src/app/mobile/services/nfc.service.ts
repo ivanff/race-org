@@ -6,9 +6,13 @@ import {Nfc, NfcTagData} from 'nativescript-nfc'
 })
 export class NfcService {
     nfc: Nfc
+    available = true
 
     constructor(private zone: NgZone) {
         this.nfc = new Nfc()
+        this.nfc.enabled().then((on) => {
+            this.available = on
+        })
     }
 
     doStartTagListener(fn: (data: NfcTagData) => any): Promise<any> {

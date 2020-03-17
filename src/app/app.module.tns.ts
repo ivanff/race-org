@@ -136,6 +136,9 @@ registerLocaleData(localeRu)
         AuthService
     ],
     bootstrap: [AppComponent],
+    exports: [
+        TzDateStartPipe
+    ],
     schemas: [NO_ERRORS_SCHEMA]
 })
 export class AppModule {

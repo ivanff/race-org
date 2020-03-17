@@ -34,7 +34,7 @@ export class AthletComponent extends BaseComponent implements OnInit, OnDestroy 
                 private snackbar: SnackbarService,
                 private barcode: BarcodeService,
                 private zone: NgZone,
-                private nfc: NfcService,
+                public nfc: NfcService,
                 private activeRoute: ActivatedRoute,
                 public _competition: CompetitionService) {
         super(routerExtensions)
