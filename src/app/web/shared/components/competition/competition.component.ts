@@ -82,6 +82,8 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
         marshal_has_device: true,
         result_by_full_circle: true,
         stop_registration: false,
+
+        lock_results: false,
         created: firebase.firestore.Timestamp.now()
     } as Competition
 
@@ -111,14 +113,24 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
             timezone: [this.competition.timezone ? this.competition.timezone : moment.tz.guess()],
             checking: this.formArrayChecking()
         })
+        this.firstFormGroup.controls['end_date'].disable()
+
         this.firstFormGroup.valueChanges.pipe(
             takeUntil(this._onDestroy)
         ).subscribe((next: any) => {
+
+            const start_time = this.getTime(next.start_time)
+            const duration = this.getTime(next.duration)
+            const end_date = next.start_date.clone().add(
+                start_time + duration, 's'
+            )
+            this.firstFormGroup.controls['end_date'].patchValue(end_date,{emitEvent: false})
+
             Object.assign(this.competition, {
                 title: next.title,
                 start_date: next.start_date ? firebase.firestore.Timestamp.fromDate(next.start_date.toDate()) : null,
-                start_time: next.start_time ? this.getTime(next.start_time) : null,
-                end_date: next.end_date ? firebase.firestore.Timestamp.fromDate(next.end_date.toDate()) : null,
+                start_time: next.start_time ? start_time : null,
+                end_date: next.end_date ? firebase.firestore.Timestamp.fromDate(end_date.toDate()) : null,
                 duration: next.duration ? this.getTime(next.duration) : null,
                 timezone: next.timezone,
                 checking: this.checking.filter((item, index) => next.checking[index])

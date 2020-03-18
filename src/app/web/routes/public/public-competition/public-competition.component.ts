@@ -22,15 +22,24 @@ export class PublicCompetitionComponent implements OnInit, OnDestroy {
 
   @ViewChild(MatSort, {static: true}) sort: MatSort
 
-  constructor(private router: ActivatedRoute, private afs: AngularFirestore) {
+  constructor(private router: ActivatedRoute,
+              private afs: AngularFirestore) {
     this.competition = this.router.snapshot.data['competition']
-    this.afs.collection<Competition>('competitions').doc(this.competition.id).valueChanges().pipe(
+
+    let $competition: Observable<Competition>
+    if (this.competition.parent_id) {
+      $competition = this.afs.doc<Competition>(`competitions/${this.competition.parent_id}/stages/${this.competition.id}`).valueChanges()
+    } else {
+      $competition = this.afs.doc<Competition>(`competitions/${this.competition.id}`).valueChanges()
+    }
+
+    $competition.pipe(
         takeUntil(this._onDestroy)
-    ).subscribe((next: Competition) => {
-      this.competition = next
+    ).subscribe((doc) => {
+      Object.assign(this.competition, doc)
     })
 
-    this.athlets$ = this.afs.collection<Athlet>(`athlets_${this.competition.id}`, (ref => ref.orderBy('created', 'desc'))).valueChanges().pipe(
+    this.athlets$ = this.afs.collection<Athlet>(`athlets_${this.competition.parent_id || this.competition.id}`, (ref => ref.orderBy('created', 'desc'))).valueChanges().pipe(
         shareReplay(1)
     )
     this.filterAthlets = new FormGroup({

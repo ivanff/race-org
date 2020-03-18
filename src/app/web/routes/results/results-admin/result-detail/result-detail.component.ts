@@ -42,7 +42,7 @@ export class ResultDetailComponent implements OnInit {
         this.competition = route.snapshot.data['competition']
         this.checkpoints = this.competition.checkpoints.filter((checkpoint: Checkpoint) => checkpoint.classes.indexOf(this.athlet.class) > -1)
         this.start_time = moment(this.competition.start_date.toMillis()).add(this.competition.start_time, 's')
-        this.end_time = moment(this.competition.end_date.toMillis()).add(this.competition.start_time + this.competition.duration, 's')
+        this.end_time = this.start_time.clone().add(this.competition.duration, 's')
     }
 
     ngOnInit() {

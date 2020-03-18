@@ -146,7 +146,6 @@
   <string name="Call">"Call"</string>
   <string name="_not_assigned_1xCvI">"not assigned"</string>
   <string name="assigned">"assigned"</string>
-  <string name="_Search_shop_1giToM">"Search shop"</string>
-  <string name="Scan">"Scan"</string>
   <string name="_Search_stop_1giWuP">"Search stop"</string>
+  <string name="Scan">"Scan"</string>
 </resources>

@@ -38,7 +38,6 @@ export class TzDateStartPipe extends DatePipe {
         const date = moment.tz(
             `${moment(competition.end_date.toMillis()).format('YYYY-MM-DD')}T00:00:00`, competition.timezone
         ).add(competition.start_time, 's')
-
         const format = getLocale(locale) == 'ru' ? "dd.MM.yyyy HH:mm:ss z" : "yyyy-MM-dd HH:mm:ss z"
         return super.transform(date.toDate(), format,timezone ? moment.tz(timezone).format('ZZ') : null, getLocale(locale))
     }
@@ -52,12 +51,7 @@ export class TzDateFinishPipe extends DatePipe {
         const date = moment.tz(
             `${moment(competition.start_date.toMillis()).format('YYYY-MM-DD')}T00:00:00`, competition.timezone
         ).add(competition.start_time + competition.duration, 's')
-
         const format = getLocale(locale) == 'ru' ? "dd.MM.yyyy HH:mm:ss z" : "yyyy-MM-dd HH:mm:ss z"
-        console.log(
-            format
-        )
-
         return super.transform(date.toDate(), format, timezone ? moment.tz(timezone).format('ZZ') : null, getLocale(locale))
     }
 }

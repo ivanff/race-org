@@ -4,7 +4,7 @@
     <mat-tab *ngFor="let _class of competition.classes" [label]="_class|titlecase">
         <mat-card style="overflow: hidden">
             <mat-card-header>
-                <mat-card-title>Результаты сорвенования</mat-card-title>
+                <mat-card-title>Результаты соревнования</mat-card-title>
                 <mat-card-subtitle>
                     {{ competition|tzdateFinish }}
                 </mat-card-subtitle>
@@ -12,7 +12,7 @@
             <mat-card-content>
                 <ul class="one-row">
                     <li>
-                        <csv [data]="getCsvData(filteredData)"
+                        <csv [data]="getCsvData()"
                              [filename]="competition.classes.join('_') + '_' + (this.now|date:'dd-MM-yy_HH:mm:ss')"
                              [options]="csv_export_options">
                             <a mat-fab class="bg-teal-400">
@@ -21,11 +21,27 @@
                             Скачать таблицу в формате CSV
                         </csv>
                     </li>
+                    <li [ngSwitch]="competition.lock_results">
+                        <div *ngSwitchDefault>
+                            <a (click)="toggleLockResults()"
+                               mat-fab class="bg-purple-400">
+                                <mat-icon>lock</mat-icon>
+                            </a>
+                            Зафиксировать и опубликовать результаты
+                        </div>
+                        <div *ngSwitchCase="true">
+                            <a (click)="toggleLockResults()"
+                               mat-fab class="bg-purple-400">
+                                <mat-icon>lock_open</mat-icon>
+                            </a>
+                            Разблокировать результаты
+                        </div>
+                    </li>
                     <li>
-                        <a (click)="lockPublishResults()" mat-fab class="bg-purple">
-                            <mat-icon>lock</mat-icon>
+                        <a [routerLink]="getPublicResults()" mat-fab class="bg-indigo-400">
+                            <mat-icon>table</mat-icon>
                         </a>
-                        Зафиксировать и опубликовать результаты
+                        Публичные результаты
                     </li>
                 </ul>
                 <form [formGroup]="filterAthlets">

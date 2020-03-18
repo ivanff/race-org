@@ -32,6 +32,7 @@ import {ChartsModule} from "ng2-charts"
 import {AthletAddComponent} from "@src/app/web/shared/components/athlet/athlet-add.component"
 import {TzDateFinishPipe, TzDatePipe, TzDateStartPipe} from "@src/app/shared/pipes/tzdate.pipe"
 import {ResultsComponent} from "@src/app/web/routes/results/results.component"
+import {ResultsLockComponent} from "@src/app/web/routes/results/results-lock.component"
 
 const THIRD_MODULES = [
     DemoMaterialModule,
@@ -48,6 +49,7 @@ const THIRD_MODULES = [
 const COMPONENTS = [
 
     ResultsComponent,
+    ResultsLockComponent,
     BreadcrumbComponent,
     PageHeaderComponent,
     MiniProgressComponent,

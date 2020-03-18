@@ -15,6 +15,7 @@ export interface Competition {
     start_date: firebase.firestore.Timestamp,
     start_time: number | null,
 
+    //TODO remove end_date
     end_date: firebase.firestore.Timestamp,
     duration: number | null,
 
@@ -30,5 +31,7 @@ export interface Competition {
     mobile_devices: Array<MobileDevice>,
     athlet_extra_fields: Array<string>,
 
+    lock_results: boolean,
+    results?: {[key: string]: any},
     created: firebase.firestore.Timestamp,
 }

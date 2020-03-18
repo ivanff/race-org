@@ -32,6 +32,19 @@ const routes: Routes = [
       },
     ]
   },
+  {
+    path: 'competition/:id/:parent_id',
+    component: PublicCompetitionComponent,
+    resolve: {
+      competition: CompetitionResolve
+    },
+    children: [
+      {
+        path: 'results',
+        component: PublicCompetitionComponentResults,
+      },
+    ]
+  },
 
 ]
 

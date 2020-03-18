@@ -8,7 +8,7 @@
 
     <ng-container *ngIf="!hide_place" matColumnDef="score">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Очки</th>
-        <td mat-cell *matCellDef="let element"> {{ SCORE_MAP[element.place] || "" }} </td>
+        <td mat-cell *matCellDef="let element"> {{ element.score || "" }} </td>
     </ng-container>
 
     <ng-container matColumnDef="number">
@@ -27,9 +27,6 @@
             <ul *ngIf="element.group">
                 <li>
                     {{ element.group.id }}
-                </li>
-                <li>
-<!--                    {{ (element.group.start_time || start_time).toDate()|tzdate|date:"HH:mm:ss z":getTzOffset(competition.timezone) }}-->
                 </li>
                 <li *ngIf="element.startOffset" style="color: red">
                     -{{ formatDuration(element.startOffset) }}

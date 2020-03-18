@@ -20,7 +20,7 @@ export class CompetitionResolve implements Resolve<Competition> {
                     map((doc: firestore.DocumentSnapshot) => {
                         const id = doc.id
                         const parent_id = route.params.parent_id
-                        return {id, parent_id,...doc.data()} as Competition
+                        return {id, parent_id, ...doc.data()} as Competition
                     })
                 )
         }

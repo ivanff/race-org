@@ -52,17 +52,19 @@
                             <li>
                                 <a [routerLink]="['/public', 'athlet', 'register', competition.id]"
                                    *ngIf="!competition.stop_registration"
-                                   target="_blank">Публичная страница</a>
+                                   target="_blank">Публичная страница регистрации</a>
                             </li>
                             <li>
                                 <a [routerLink]="['/public', 'competition', competition.id]"
-                                   *ngIf="!competition.stop_registration"
                                    target="_blank">Зарегистрированные атлеты</a>
                             </li>
                             <li>
                                 <a [routerLink]="['/public', 'competition', competition.id, 'results']"
-                                   *ngIf="!competition.stop_registration"
-                                   target="_blank">Результаты</a>
+                                   target="_blank">Результаты {{ competition.title }}</a>
+                            </li>
+                            <li *ngFor="let stage of competition.stages">
+                                <a [routerLink]="['/public', 'competition', stage.id, competition.id, 'results']"
+                                   target="_blank">Результаты {{ stage.title }}</a>
                             </li>
                         </ul>
                     </mat-card-subtitle>

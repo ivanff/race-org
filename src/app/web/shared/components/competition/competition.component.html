@@ -54,19 +54,19 @@
                             <input matInput
                                    [matDatepicker]="end_date_picker"
                                    [min]="minDate"
+                                   disabled
                                    formControlName="end_date"
-                                   placeholder="Дата окончания"
-                                   required>
+                                   placeholder="Дата окончания">
                             <mat-datepicker-toggle matSuffix [for]="end_date_picker"></mat-datepicker-toggle>
                             <mat-datepicker #end_date_picker></mat-datepicker>
                         </mat-form-field>
                         <mat-form-field>
                             <input matInput
                                    formControlName="duration"
-                                   placeholder="Контрольное время"
+                                   placeholder="Продолжительность зачёта"
                                    required>
                             <mat-hint>
-                                В формате 00:00
+                                В формате 00:00, относительно первого старта
                             </mat-hint>
                         </mat-form-field>
                     </p>

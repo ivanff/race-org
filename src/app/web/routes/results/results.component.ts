@@ -25,6 +25,7 @@ export interface ResultMark extends Mark {
 
 export interface TableRow {
     place: number,
+    score: number,
     number: number,
     group?: StartListGroup | null,
     startOffset?: number,
@@ -42,7 +43,6 @@ export interface TableRow {
 export class ResultsComponent implements OnInit, AfterViewInit, OnDestroy {
     protected _onDestroy = new ReplaySubject<any>(1)
 
-    SCORE_MAP = SCORE_MAP
     dataSource = new MatTableDataSource<TableRow>([])
     displayedColumns: string[] = ['place', 'score', 'number', 'class', 'athlet']
 
@@ -75,7 +75,7 @@ export class ResultsComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.competition.group_start) {
             this.displayedColumns.splice(this.displayedColumns.indexOf('athlet'), 0, 'group')
         }
-        this.end_time = moment(this.competition.end_date.toMillis()).add(this.start_time.seconds() + this.competition.duration, 's')
+        this.end_time = this.start_time.clone().add(this.competition.duration, 's')
         this.onActivate.emit(this)
     }
 
@@ -174,7 +174,7 @@ export class ResultsComponent implements OnInit, AfterViewInit, OnDestroy {
             this.displayedColumns.push(`CP_${i}`)
         })
 
-        return circles
+        return circles || 0
     }
 
     private buildRows() {
@@ -183,7 +183,7 @@ export class ResultsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.athlets.forEach((athlet: Athlet, y: number) => {
             const clean_marks: Array<ResultMark | null> = [...athlet.marks.sort((a, b) => a.created < b.created ? -1 : a.created > b.created ? 1 : 0)]
-            const group = athlet.group ? athlet.group[this.competition.id] : null
+            const group = athlet.group ? (athlet.group[this.competition.id] || null) : null
             // меньше нуля
             let startOffset: number = 0
 
@@ -242,9 +242,9 @@ export class ResultsComponent implements OnInit, AfterViewInit, OnDestroy {
             } as TableRow)
 
 
-            console.log(
-                rows
-            )
+            // console.log(
+            //     rows
+            // )
 
         })
 
@@ -276,7 +276,10 @@ export class ResultsComponent implements OnInit, AfterViewInit, OnDestroy {
             }
             return 0
         })
-        rows.map((row: TableRow, i: number) => row.place = i + 1)
+        rows.map((row: TableRow, i: number) => {
+            row.place = i + 1
+            row.score = SCORE_MAP[row.place] || 0
+        })
         this.dataSource.data = rows
     }
 
@@ -287,17 +290,6 @@ export class ResultsComponent implements OnInit, AfterViewInit, OnDestroy {
             this.dataSource.filter = JSON.stringify(data)
         }
     }
-
-    // diffTime(date: firebase.firestore.Timestamp): string {
-    //     const created = moment(date.toDate())
-    //     const zeroTime = new Date(Date.UTC(this.start_time.year(), this.start_time.month(), this.start_time.day(), 0, 0, 0, 0))
-    //
-    //     if (created > this.start_time) {
-    //         zeroTime.setMilliseconds(created.diff(this.start_time, 'ms') + zeroTime.getTimezoneOffset() * 60000)
-    //         return [zeroTime.getHours(), zeroTime.getMinutes(), zeroTime.getSeconds()].join(':')
-    //     }
-    //     return ''
-    // }
 
     formatDuration(ms: number): string {
         const zeroTime = new Date(Date.UTC(this.start_time.year(), this.start_time.month(), this.start_time.day(), 0, 0, 0, 0))

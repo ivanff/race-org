@@ -1,7 +1,7 @@
 <div class="public-container p-32">
     <form [formGroup]="filterAthlets">
         <mat-card class="m-20">
-            <h1 class="text-center">{{ getTitle() }} <a [routerLink]="['results']">Результаты</a></h1>
+            <h1 class="text-center">{{ getTitle() }} <a [routerLink]="['results']" routerLinkActive="disabled">Результаты</a></h1>
             <mat-card-content fxLayout="row wrap">
                 <mat-form-field fxFlex="100" class="p-16">
                     <input matInput formControlName="search" placeholder="Фильтр">

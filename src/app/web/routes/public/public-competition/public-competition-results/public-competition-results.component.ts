@@ -19,7 +19,7 @@ export interface PublicTableResultRow {
   templateUrl: './public-competition-results.component.html'
 })
 export class PublicCompetitionComponentResults implements OnInit, OnDestroy {
-  private competition: Competition
+  public competition: Competition
   protected _onDestroy = new ReplaySubject<any>(1)
   start_time: moment
   $filterValue = new BehaviorSubject(null)
@@ -42,6 +42,10 @@ export class PublicCompetitionComponentResults implements OnInit, OnDestroy {
   private applyFilter(data: {search: string, class: string} | null): void {
     if (data.class) {
       this.active_tab = this.competition.classes.indexOf(data.class)
+    } else {
+      if (this.competition.classes.length) {
+        this.filterForm.controls['class'].setValue(this.competition.classes[0])
+      }
     }
     this.$filterValue.next(data)
   }

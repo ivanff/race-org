@@ -1,5 +1,5 @@
-<h2 class="text-center text-white">
-    Результаты в реальном времени
+<h2 [hidden]="competition.lock_results" class="text-center text-white">
+    Предварительные результаты в реальном времени
 </h2>
 
 <mat-card style="overflow: hidden">
@@ -12,12 +12,18 @@
     <mat-card-content>
         <mat-tab-group [selectedIndex]="active_tab" (selectedIndexChange)="setActiveTab($event)">
             <mat-tab *ngFor="let _class of competition.classes" [label]="_class|titlecase">
-                <div class="table-container">
-                    <app-results [classes]="[_class]"
+                <div [ngSwitch]="competition.lock_results" class="table-container">
+                    <app-results *ngSwitchDefault
+                                 [classes]="[_class]"
                                  [competition]="competition"
                                  [start_time]="start_time"
                                  [is_admin]="false"
                                  (onActivate)="onActivate($event)"></app-results>
+                    <app-results-lock *ngSwitchCase="true"
+                                 [classes]="[_class]"
+                                 [competition]="competition"
+                                 [start_time]="start_time"
+                                 (onActivate)="onActivate($event)"></app-results-lock>
                 </div>
             </mat-tab>
         </mat-tab-group>
