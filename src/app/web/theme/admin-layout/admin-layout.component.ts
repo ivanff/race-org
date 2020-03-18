@@ -27,6 +27,7 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
 
   mobileQuery: MediaQueryList;
   private mobileQueryListener: () => void;
+
   get isOver(): boolean {
     return this.mobileQuery.matches;
   }

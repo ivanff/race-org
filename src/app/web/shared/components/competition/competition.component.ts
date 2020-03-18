@@ -130,7 +130,7 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
                 title: next.title,
                 start_date: next.start_date ? firebase.firestore.Timestamp.fromDate(next.start_date.toDate()) : null,
                 start_time: next.start_time ? start_time : null,
-                end_date: next.end_date ? firebase.firestore.Timestamp.fromDate(end_date.toDate()) : null,
+                end_date: end_date ? firebase.firestore.Timestamp.fromDate(end_date.toDate()) : null,
                 duration: next.duration ? this.getTime(next.duration) : null,
                 timezone: next.timezone,
                 checking: this.checking.filter((item, index) => next.checking[index])
@@ -334,6 +334,8 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
             p = collection.doc(this.competition.id).set(this.competition)
         } else {
             this.competition.user = this.auth.user.uid
+            this.competition.created = firebase.firestore.Timestamp.now()
+            this.competition.lock_results = false
             p = collection.add(this.competition)
         }
 

@@ -227,10 +227,6 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
         this.localStorageService.set(`ActiveTab_${this.route.component['name']}`, $event)
     }
 
-    getTzOffset(timezone: string) {
-        return moment.tz(timezone).format('z')
-    }
-
     onDelete(competition: Competition, collection?: string) {
         if (collection == 'stages') {
             this.afs.collection('competitions').doc(this.competition.id).collection(collection).doc(competition.id).delete().then(() => {

@@ -16,7 +16,7 @@
                     (tap)="onSplitBySize()"></Button>
             <Button class="btn -active"
                     [text]="'Create groups by\nresults of previous stage'|L"
-                    [isEnabled]="false"
+                    [isEnabled]="size ? size <= params.context['maxSize'] :!!size"
                     (tap)="onSplitByStage()"></Button>
             <Button class="btn -active"
                     [text]="'Create group'|L"

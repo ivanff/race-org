@@ -111,7 +111,7 @@ export class StartListTabItemComponent implements OnInit, OnDestroy {
         return L("Not started")
     }
 
-    onSplit(): Promise<any> {
+    onSplit(): void {
         const options: ModalDialogOptions = {
             context: {
                 _class: this._class,
@@ -122,26 +122,42 @@ export class StartListTabItemComponent implements OnInit, OnDestroy {
             fullscreen: false
         }
 
-        return this.modalService.showModal(StartListAddDialogComponent, options).then((resp: { action: string, value?: any } | null) => {
+        this.modalService.showModal(StartListAddDialogComponent, options).then((resp: { action: string, value?: any, results?: any } | null) => {
             if (resp) {
                 switch (resp.action) {
                     case 'size':
-                        return this.splitAthlet(_.shuffle(this.athlets), resp.value).catch((err) => {
+                        this.splitAthlet(_.shuffle(this.athlets), resp.value).catch((err) => {
                             this.snackbar.alert(err)
                         })
+                        return
                     case 'stage':
-                        alert("#TODO need stage results fixed")
-                        return null
+                        console.log(
+                            resp.results
+                        )
+                        if (!Object.keys(resp.results || {}).length) {
+                            this.snackbar.warning(
+                                L("No results previous stage")
+                            )
+                        } else {
+                            const iter = function (athlet: Athlet) {
+                                return resp.results[athlet.id]
+                            }
+
+                            this.splitAthlet(_.orderBy(this.athlets, iter, 'desc'), resp.value).catch((err) => {
+                                this.snackbar.alert(err)
+                            })
+                        }
+                        return
                     case 'navigate':
                         setTimeout(() => {
                             this.routerExtensions.navigate([{outlets: {startList: resp.value}}], {
                                 relativeTo: this.activeRoute.parent
                             })
                         }, 100)
-
-                        return null
+                        return
                     default:
-                        return null
+                        alert("Unknown action, " + resp.action)
+                        return
                 }
             }
             console.log(resp)

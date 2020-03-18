@@ -20,13 +20,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 private afs: AngularFirestore,
                 private auth: AuthService,
                 private settings: SettingsService) {
-
+        console.log(
+            'constructor'
+        )
     }
 
     ngOnInit() {
+        console.log(
+            'init'
+        )
         this.competitions$ = this.settings.competitions$
         this._subscribers.push(
             this.competitions$.subscribe((values: Array<Competition>) => {
+                console.log(
+                    'values', values
+                )
                 this.competitions = [...values]
             })
         )
@@ -34,6 +42,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        console.log(
+            'destroy'
+        )
         this._subscribers.forEach((func: Subscription) => {
             func.unsubscribe()
         })

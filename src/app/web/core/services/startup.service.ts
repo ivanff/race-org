@@ -27,7 +27,9 @@ export class StartupService {
                 switchMap((user) => {
                     if (user) {
                         const settings: SettingsService = this.injector.get<any>(SettingsService)
-                        return settings.competitions$.pipe(first())
+                        return settings.competitions$.pipe(
+                            first()
+                        )
                     } else {
                         return of(null)
                     }

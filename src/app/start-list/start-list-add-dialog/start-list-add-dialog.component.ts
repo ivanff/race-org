@@ -5,7 +5,13 @@ import {ModalDialogParams} from "nativescript-angular"
 import {TextField} from "@nativescript/core/ui/text-field"
 import {DialogComponent} from "@src/app/shared/dialog.component"
 import {groupNumberMatch, sortNumber} from "@src/app/shared/helpers"
+import {CompetitionService} from "@src/app/mobile/services/competition.service"
+import {Competition} from "@src/app/shared/interfaces/competition"
+import {firestore} from "nativescript-plugin-firebase"
 
+const firebase = require('nativescript-plugin-firebase/app')
+import * as _ from "lodash"
+import {hasOwnProperty} from "tslint/lib/utils"
 
 @Component({
     selector: 'app-start-list-add-dialog',
@@ -14,7 +20,8 @@ import {groupNumberMatch, sortNumber} from "@src/app/shared/helpers"
 export class StartListAddDialogComponent extends DialogComponent {
     size: number
 
-    constructor(public params: ModalDialogParams) {
+    constructor(public params: ModalDialogParams,
+                private _competition: CompetitionService) {
         super(params)
     }
 
@@ -31,10 +38,82 @@ export class StartListAddDialogComponent extends DialogComponent {
     }
 
     onSplitByStage(): void {
-        this.onClose({
-            action: 'stage',
-            value: this.size
+        const promises: Array<Promise<firestore.QuerySnapshot>> = []
+        if (this._competition.selected_competition.parent_id)
+            promises.push(
+                firebase.firestore().collection('competitions')
+                    .where('id', '==', this._competition.selected_competition.parent_id)
+                    .where('lock_results', '==', true)
+                    .get()
+            )
+            promises.push(
+                firebase.firestore().collection('competitions')
+                    .doc(this._competition.selected_competition.parent_id)
+                    .collection('stages')
+                    .where('lock_results', '==', true)
+                    .get()
+            )
+
+        Promise.all(promises).then((collections: Array<firestore.QuerySnapshot>) => {
+            const competitions = _.orderBy(
+                _.flatten(collections.map((collection: firestore.QuerySnapshot) => {
+                    const results: Array<Competition> = []
+                    collection.forEach((doc: firestore.DocumentSnapshot) => {
+                        const id = doc.id
+                        const competition = {id, ...doc.data()} as Competition
+                        if ((competition.results || {}).hasOwnProperty(this.params.context['_class'])) {
+                            results.push(competition)
+                        }
+                    })
+                    return results
+                })
+            ), 'created')
+
+            if (competitions.length) {
+                const placeMap:{[key:number]: number} = {}
+
+                competitions.forEach((competition: Competition, index: number) => {
+
+                    if (true) {
+                        if (index < (competitions.length - 1)) {
+                            return
+                        }
+                    }
+
+                    (competition.results[this.params.context['_class']].data || []).map((item) => {
+                        let score = item.score
+
+                        if (!score) {
+                            score = index / 1000
+                        }
+
+                        if (!placeMap.hasOwnProperty(item.athlet.id)) {
+                            placeMap[item.athlet.id] = score
+                        } else {
+                            placeMap[item.athlet.id] += score
+                        }
+                    })
+                })
+
+                this.onClose({
+                    action: 'stage',
+                    value: this.size,
+                    results: placeMap
+                })
+            } else {
+                this.onClose({
+                    action: 'stage',
+                    value: this.size,
+                    results: null
+                })
+            }
+
         })
+
+        // this.onClose({
+        //     action: 'stage',
+        //     value: this.size
+        // })
     }
 
     onAddGroup(): void {

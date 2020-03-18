@@ -111,8 +111,8 @@
             <div fxFlex="40" fxFlex.lt-sm="100" class="p-r-4">
                 <mat-card>
                     <mat-card-header>
-                        <mat-card-title>Соревнование</mat-card-title>
-                        <mat-card-subtitle>Этапы проведения</mat-card-subtitle>
+                        <mat-card-title>Этапы проведения</mat-card-title>
+                        <mat-card-subtitle>В порядке фиксации результатов</mat-card-subtitle>
                     </mat-card-header>
                     <mat-card-content>
                         <form [formGroup]="selectCompetition">
@@ -126,8 +126,11 @@
                                             </mat-radio-button>
                                         </h4>
                                         <p mat-line>
-                                            {{ competition.start_date.toDate()|date:"yyyy-dd-MM (z)":getTzOffset(competition.timezone) }}
+                                            {{ competition|tzdateStart }}
                                         </p>
+                                        <a *ngIf="competition.lock_results" [routerLink]="['/cabinet', 'results', competition.id]" mat-line>
+                                            Результат зафиксирован
+                                        </a>
                                         <button (click)="onDelete(competition)" mat-icon-button type="button"
                                                 color="warn">
                                             <mat-icon>
@@ -136,14 +139,17 @@
                                         </button>
                                     </mat-list-item>
                                     <mat-divider *ngIf="competition.stages?.length"></mat-divider>
-                                    <div *ngFor="let item of competition.stages; let i = index; let l = last;">
+                                    <div *ngFor="let item of competition.stages|orderBy:'created'; let i = index; let l = last;">
                                         <mat-list-item>
                                             <h4 mat-line class="p-16">
                                                 <mat-radio-button [value]="item.id">{{item.title}}</mat-radio-button>
                                             </h4>
                                             <p mat-line>
-                                                {{ item.start_date.toDate()|date:"yyyy-dd-MM (z)":getTzOffset(competition.timezone) }}
+                                                {{ item|tzdateStart }}
                                             </p>
+                                            <a *ngIf="item.lock_results" [routerLink]="['/cabinet', 'results', item.id, item.parent_id]" mat-line>
+                                                Результат зафиксирован
+                                            </a>
                                             <button (click)="onDelete(item, 'stages')"
                                                     mat-icon-button type="button" color="warn">
                                                 <mat-icon>delete</mat-icon>

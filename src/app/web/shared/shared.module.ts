@@ -33,6 +33,7 @@ import {AthletAddComponent} from "@src/app/web/shared/components/athlet/athlet-a
 import {TzDateFinishPipe, TzDatePipe, TzDateStartPipe} from "@src/app/shared/pipes/tzdate.pipe"
 import {ResultsComponent} from "@src/app/web/routes/results/results.component"
 import {ResultsLockComponent} from "@src/app/web/routes/results/results-lock.component"
+import {OrderModule} from "ngx-order-pipe"
 
 const THIRD_MODULES = [
     DemoMaterialModule,
@@ -45,9 +46,9 @@ const THIRD_MODULES = [
     RecaptchaFormsModule,
     QRCodeModule,
     ChartsModule,
+    OrderModule,
 ];
 const COMPONENTS = [
-
     ResultsComponent,
     ResultsLockComponent,
     BreadcrumbComponent,

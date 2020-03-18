@@ -1,7 +1,8 @@
-import {Injectable, OnDestroy} from '@angular/core';
+import {Injectable, Injector, OnDestroy} from '@angular/core';
 import * as firebase from 'firebase/app'
 import {AngularFireAuth} from "@angular/fire/auth"
 import UserCredential = firebase.auth.UserCredential
+import {SettingsService} from "@src/app/web/core"
 
 @Injectable({
     providedIn: 'root',
@@ -10,14 +11,13 @@ export class AuthService implements OnDestroy {
     public user: firebase.User | null
     readonly unsubscribe: any
 
-    constructor(public afAuth: AngularFireAuth){
-        this.unsubscribe = this.currentUserObservable.subscribe((user: firebase.User | null) => {
+    constructor(private afAuth: AngularFireAuth,
+                private injector: Injector){
+        this.unsubscribe = this.afAuth.authState.subscribe((user: firebase.User | null) => {
             this.user = user
+            const settings: SettingsService = this.injector.get<any>(SettingsService)
+            settings.updateCompetitions()
         })
-    }
-
-    get currentUserObservable(): any {
-        return this.afAuth.authState
     }
 
     ngOnDestroy(): void {

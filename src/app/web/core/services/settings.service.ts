@@ -1,9 +1,9 @@
 import {Injectable, OnDestroy} from '@angular/core'
-import {combineLatest, Observable, of, ReplaySubject, Subject} from 'rxjs'
+import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subject} from 'rxjs'
 import {AppSettings, defaults} from '../settings'
 import timezones from 'google-timezones-json'
 import {Competition} from "@src/app/shared/interfaces/competition"
-import {first, map, shareReplay, switchMap, takeUntil} from "rxjs/operators"
+import {map, shareReplay, switchMap, takeUntil} from "rxjs/operators"
 import {AngularFirestore} from "@angular/fire/firestore"
 import {AuthService} from "@src/app/web/core/services/auth.service"
 
@@ -11,7 +11,8 @@ import {AuthService} from "@src/app/web/core/services/auth.service"
     providedIn: 'root',
 })
 export class SettingsService implements OnDestroy {
-    competitions$: Observable<Array<Competition>>
+    competitions$ = new BehaviorSubject<Array<Competition>>([])
+
     protected _onDestroy = new ReplaySubject<any>(1)
     private notice$ = new Subject<any>()
     private options = defaults;
@@ -23,32 +24,41 @@ export class SettingsService implements OnDestroy {
 
     constructor(private afs: AngularFirestore,
                 private auth: AuthService) {
-        this.competitions$ = this.afs.collection<Competition>('competitions', ref => ref.where('user', '==', this.auth.user.uid)
-            .orderBy('created', 'desc'))
-            .valueChanges({idField: 'id'})
-            .pipe(
-                switchMap((values: Array<any>) => {
-                    if (values.length) {
-                        return combineLatest(
-                            values.map((doc) => {
-                                return this.afs.collection('competitions').doc(doc.id)
-                                    .collection('stages')
-                                    .valueChanges({idField: 'id'})
-                                    .pipe(
-                                        map((stages) => {
-                                            return Object.assign(doc, {stages})
-                                        })
-                                    )
-                            })
-                        )
-                    } else {
-                        return of(null)
-                    }
-                }),
-                shareReplay(1),
-                takeUntil(this._onDestroy)
-            )
-        this.competitions$.subscribe()
+    }
+
+    updateCompetitions() {
+        if (this.auth.user) {
+            this.afs.collection<Competition>('competitions', ref => ref.where('user', '==', this.auth.user.uid)
+                .orderBy('created', 'desc'))
+                .valueChanges({idField: 'id'})
+                .pipe(
+                    switchMap((values: Array<any>) => {
+                        if (values.length) {
+                            return combineLatest(
+                                values.map((doc) => {
+                                    return this.afs.collection('competitions').doc(doc.id)
+                                        .collection('stages')
+                                        .valueChanges({idField: 'id'})
+                                        .pipe(
+                                            map((stages) => {
+                                                return Object.assign(doc, {stages})
+                                            })
+                                        )
+                                })
+                            )
+                        } else {
+                            return of(null)
+                        }
+                    }),
+                    shareReplay(1),
+                    takeUntil(this._onDestroy)
+                ).subscribe((competitions: Array<Competition>) => {
+                    this.competitions$.next(competitions)
+            })
+        } else {
+            this.competitions$.next([])
+        }
+
     }
 
     ngOnDestroy(): void {

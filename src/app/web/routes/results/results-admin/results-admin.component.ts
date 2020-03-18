@@ -87,10 +87,6 @@ export class ResultsAdminComponent implements OnInit, OnDestroy {
   toggleLockResults(): void {
     const lock_results: boolean = !this.competition.lock_results
     if (lock_results) {
-      let data = {}
-      data[`stages.${this.competition.id}.results`] = [{test: 123}]
-      data[`stages.${this.competition.id}.lock_results`] = true
-
       this.$competition.update({
         lock_results: true,
         results: this.lockResultsData
@@ -154,9 +150,7 @@ export class ResultsAdminComponent implements OnInit, OnDestroy {
   onActivate($event): void {
     this.csv_export_options.keys = $event.displayedColumns
     this.csv_export_options.headers = $event.displayedColumns
-    console.log(
-        $event
-    )
+
     $event.dataSource.connect().subscribe((rows) => {
       this.filteredData = rows
       this.lockResultsData[$event.classes] = {

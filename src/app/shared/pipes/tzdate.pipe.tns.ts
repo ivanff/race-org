@@ -37,7 +37,7 @@ export class TzDatePipe extends DatePipe {
 export class TzDateStartPipe extends DatePipe {
     transform(competition: Competition, timezone?: string, locale?: string): string {
         const date = moment.tz(
-            `${moment(competition.end_date).format('YYYY-MM-DD')}T00:00:00`, competition.timezone
+            `${moment(competition.start_date).format('YYYY-MM-DD')}T00:00:00`, competition.timezone
         ).add(competition.start_time, 's')
 
         const format = getLocale(locale) == 'ru' ? "dd.MM.yyyy HH:mm:ss z" : "yyyy-MM-dd HH:mm:ss z"

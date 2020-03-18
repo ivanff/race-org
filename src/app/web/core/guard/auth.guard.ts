@@ -1,12 +1,14 @@
 import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '@angular/router';
 import {Observable} from 'rxjs/Observable';
-import {AuthService} from "@src/app/web/core/services/auth.service"
 import {first, map, tap} from "rxjs/operators"
+import {AngularFireAuth} from "@angular/fire/auth"
+import {AuthService} from "@src/app/web/core"
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-    constructor(private auth: AuthService,
+    constructor(private afAuth: AngularFireAuth,
+                private auth: AuthService,
                 private router: Router) {
     }
 
@@ -18,7 +20,7 @@ export class AuthGuard implements CanActivate {
             return true
         }
 
-        return this.auth.currentUserObservable.pipe(
+        return this.afAuth.authState.pipe(
             first(),
             map(user => !!user),
             tap(loggedIn => {
