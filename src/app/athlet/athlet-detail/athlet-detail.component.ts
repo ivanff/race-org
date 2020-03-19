@@ -1,4 +1,4 @@
-import {Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core'
+import {Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild, ViewContainerRef} from '@angular/core'
 import {NfcTagData} from 'nativescript-nfc'
 import {RouterExtensions} from 'nativescript-angular'
 import {firestore} from 'nativescript-plugin-firebase'
@@ -11,9 +11,12 @@ import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
 import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
 import {localize as L} from "nativescript-localize"
+import {CompetitionDetailQrComponent} from "@src/app/home/competition/competition-detail/competition-detail-qr/competition-detail-qr.component"
+import {ModalDialogOptions, ModalDialogService} from "nativescript-angular"
 
 const firebase = require('nativescript-plugin-firebase/app')
 const phone = require("nativescript-phone")
+
 
 @Component({
     selector: 'app-athlet-detail',
@@ -34,6 +37,8 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
                 private snackbar: SnackbarService,
                 private zone: NgZone,
                 private activeRoute: ActivatedRoute,
+                private _modalService: ModalDialogService,
+                private _vcRef: ViewContainerRef,
                 public nfc: NfcService,
                 public _competition: CompetitionService
     ) {
@@ -181,5 +186,17 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
 
     onSms(): void {
         phone.sms('+7' + this.athlet.phone)
+    }
+
+    onTapQr(): void {
+        const options: ModalDialogOptions = {
+            viewContainerRef: this._vcRef,
+            context: {
+                athlet: this.athlet,
+            },
+            fullscreen: true
+        };
+
+        this._modalService.showModal(CompetitionDetailQrComponent, options)
     }
 }

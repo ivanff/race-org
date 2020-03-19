@@ -9,6 +9,10 @@
                 (tap)="onSms()"
                 ios.position="right"
                 android.position="popup"></ActionItem>
+    <ActionItem [text]="'QR code'|L"
+                (tap)="onTapQr()"
+                ios.position="right"
+                android.position="popup"></ActionItem>
 </ActionBar>
 <GridLayout rows="auto, auto, *" columns="*" class="p-l-10 p-r-10">
     <StackLayout row="0" col="0">

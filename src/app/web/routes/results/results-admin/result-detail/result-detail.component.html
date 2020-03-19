@@ -1,4 +1,4 @@
-<div fxLayout="row wrap" fxLayoutGap="20px" fxFlexAlign="start start">
+<div fxLayout="row wrap" fxLayoutGap="20px" fxLayoutAlign="start start">
     <mat-card >
         <mat-card-content>
             <mat-card-title>
@@ -51,8 +51,11 @@
     </mat-card>
 
     <mat-card>
-        <mat-card-content>
-
+        <mat-card-title class="text-center m-b-24">
+            Qr код участника
+        </mat-card-title>
+        <mat-card-content class="text-center">
+            <qr-code [value]="getQrData()" [size]="150"></qr-code>
         </mat-card-content>
     </mat-card>
 

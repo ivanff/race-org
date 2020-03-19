@@ -28,7 +28,7 @@ import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
 import {Msg} from "@src/app/shared/interfaces/msg"
 import {keepAwake, allowSleepAgain} from "nativescript-insomnia";
 import {BarcodeService} from "@src/app/mobile/services/barcode.service"
-import {Qr} from "@src/app/shared/interfaces/qr"
+import {QrAthlet} from "@src/app/shared/interfaces/qr"
 import {localize as L} from "nativescript-localize"
 
 const firebase = require('nativescript-plugin-firebase/app')
@@ -146,7 +146,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
     onScan(): void {
         this.barcode.scan().then((result) => {
             try {
-                const data: Qr = JSON.parse(result.text)
+                const data: QrAthlet = JSON.parse(result.text)
                 setTimeout(() => {
                     this.input_number = data.number.toString()
                 }, 100)

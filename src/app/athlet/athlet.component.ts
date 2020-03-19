@@ -11,7 +11,7 @@ import {Athlet} from "@src/app/shared/interfaces/athlet"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
 import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
 import {BarcodeService} from "@src/app/mobile/services/barcode.service"
-import {Qr} from "@src/app/shared/interfaces/qr"
+import {QrAthlet} from "@src/app/shared/interfaces/qr"
 import {localize as L} from "nativescript-localize"
 import {ListView} from "@nativescript/core/ui/list-view"
 
@@ -72,7 +72,7 @@ export class AthletComponent extends BaseComponent implements OnInit, OnDestroy 
 
         this.barcode.scan().then((result) => {
             try {
-                const data: Qr = JSON.parse(result.text)
+                const data: QrAthlet = JSON.parse(result.text)
                 setTimeout(() => {
                     this.searchPhrase = data.number.toString()
                 }, 100)
@@ -130,7 +130,7 @@ export class AthletComponent extends BaseComponent implements OnInit, OnDestroy 
         }
     }
 
-    searchAthlet(nfc_id?: NfcTagData, qr_data?: Qr) {
+    searchAthlet(nfc_id?: NfcTagData, qr_data?: QrAthlet) {
         const collection = firebase.firestore().collection(this._competition.getAthletsCollectionPath())
         let athlets: Promise<firestore.QuerySnapshot> | null
 

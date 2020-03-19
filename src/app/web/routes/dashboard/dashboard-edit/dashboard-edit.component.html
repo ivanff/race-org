@@ -1,12 +1,20 @@
 <page-header [title]="athlet.fio"></page-header>
-<div>
-    <mat-card class="mat-elevation-z4 m-b-0" fxFlex="400px" fxFlex.xs="90%">
+<div fxLayout="row" fxLayoutGap="20px" fxLayoutAlign="start start">
+    <mat-card fxFlex="400px" fxFlex.xs="90%">
         <mat-card-title class="text-center m-b-24">{{competition.title}}</mat-card-title>
         <mat-card-subtitle class="text-center m-b-24">Изменение участника</mat-card-subtitle>
         <mat-card-content>
             <athlet-change [competition]="competition"
                            [athlet]="athlet"
                            (onCreated)="onCreated($event)"></athlet-change>
+        </mat-card-content>
+    </mat-card>
+    <mat-card>
+        <mat-card-title class="text-center m-b-24">
+            Qr код участника
+        </mat-card-title>
+        <mat-card-content class="text-center">
+            <qr-code [value]="getQrData()" [size]="150"></qr-code>
         </mat-card-content>
     </mat-card>
 </div>

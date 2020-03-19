@@ -19,6 +19,7 @@ export class ResultsAdminComponent implements OnInit, OnDestroy {
   active_tab: number = 0
   start_time: moment
   now: Date = new Date()
+  filterAthlets: FormGroup
   protected _onDestroy = new ReplaySubject<any>(1)
   private $competition: AngularFirestoreDocument
   private csv_export_options = {
@@ -33,7 +34,6 @@ export class ResultsAdminComponent implements OnInit, OnDestroy {
     removeNewLines: true,
     keys: [],
   }
-  filterAthlets: FormGroup
   private filteredData: Array<any> = []
   private lockResultsData: any = {}
   private active_tab_key: string

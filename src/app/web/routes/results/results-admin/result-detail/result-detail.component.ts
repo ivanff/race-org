@@ -12,6 +12,7 @@ import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 import {Competition} from "@src/app/shared/interfaces/competition"
 import {Athlet, athletBuiltInKeys} from "@src/app/shared/interfaces/athlet"
 import {calcCircles} from "@src/app/web/shared/utils/tools"
+import {QrAthlet} from "@src/app/shared/interfaces/qr"
 
 @Component({
     selector: 'app-result-detail',
@@ -171,4 +172,13 @@ export class ResultDetailComponent implements OnInit {
     getTzOffset(timezone: string) {
         return moment.tz(timezone).format('z')
     }
+
+    getQrData(): string {
+        return JSON.stringify({
+            id: this.athlet.id,
+            number: this.athlet.number,
+            competition_id: this.competition.parent_id || this.competition.id
+        } as QrAthlet)
+    }
+
 }

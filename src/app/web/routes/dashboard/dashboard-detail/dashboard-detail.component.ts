@@ -298,13 +298,6 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
         }
     }
 
-    getQr(athlet: Athlet): string {
-        return JSON.stringify({
-            number: athlet.number,
-            competition_id: this.competition.parent_id || this.competition.id
-        })
-    }
-
     actions($event: MatButtonToggleChange, id): void {
         //TODO confirm dialog
         this.afs.collection<Athlet>(`athlets_${this.competition.id}`).doc(id).delete()
