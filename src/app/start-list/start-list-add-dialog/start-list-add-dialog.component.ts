@@ -12,6 +12,8 @@ import {firestore} from "nativescript-plugin-firebase"
 const firebase = require('nativescript-plugin-firebase/app')
 import * as _ from "lodash"
 import {hasOwnProperty} from "tslint/lib/utils"
+import GetOptions = firestore.GetOptions
+import {DocumentSnapshot} from "firebase"
 
 @Component({
     selector: 'app-start-list-add-dialog',
@@ -39,32 +41,42 @@ export class StartListAddDialogComponent extends DialogComponent {
 
     onSplitByStage(): void {
         const promises: Array<Promise<firestore.QuerySnapshot>> = []
-        if (this._competition.selected_competition.parent_id)
+        if (this._competition.selected_competition.parent_id) {
             promises.push(
                 firebase.firestore().collection('competitions')
-                    .where('id', '==', this._competition.selected_competition.parent_id)
-                    .where('lock_results', '==', true)
-                    .get()
+                    .doc(this._competition.selected_competition.parent_id)
+                    .get({source: 'server'} as GetOptions).then((doc: firestore.DocumentSnapshot) => {
+                        if (doc.exists) {
+                            return [doc]
+                        }
+                        return []
+                    })
             )
             promises.push(
                 firebase.firestore().collection('competitions')
                     .doc(this._competition.selected_competition.parent_id)
                     .collection('stages')
                     .where('lock_results', '==', true)
-                    .get()
+                    .get({source: 'server'} as GetOptions)
             )
+        }
 
-        Promise.all(promises).then((collections: Array<firestore.QuerySnapshot>) => {
+        Promise.all(promises).then((collections: Array<firestore.QuerySnapshot | Array<firestore.DocumentSnapshot>>) => {
             const competitions = _.orderBy(
-                _.flatten(collections.map((collection: firestore.QuerySnapshot) => {
+                _.flatten(collections.map((collection: firestore.QuerySnapshot | Array<firestore.DocumentSnapshot>) => {
                     const results: Array<Competition> = []
                     collection.forEach((doc: firestore.DocumentSnapshot) => {
                         const id = doc.id
                         const competition = {id, ...doc.data()} as Competition
-                        if ((competition.results || {}).hasOwnProperty(this.params.context['_class'])) {
+                        if (
+                            (competition.results || {}).hasOwnProperty(this.params.context['_class']) &&
+                            competition.lock_results &&
+                            competition.id != this._competition.selected_competition.id
+                        ) {
                             results.push(competition)
                         }
                     })
+
                     return results
                 })
             ), 'created')
