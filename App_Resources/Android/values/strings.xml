@@ -3,6 +3,9 @@
   <string name="_app_name_1k3Sbz">"RaceOrg"</string>
   <string name="app_name">"RaceOrg"</string>
   <string name="title_activity_kimera">"RaceOrg"</string>
+  <string name="Canceled">"Canceled"</string>
+  <string name="_No_results_previous_stage_2exrz7">"No results previous stage"</string>
+  <string name="_This_nfc_tag_is_already_assigned_to__s___s__iTLR">"This nfc tag is already assigned to %1$s (%2$s)"</string>
   <string name="Countdown">"Countdown"</string>
   <string name="_Athletes_in_group___J6bg8">"Athletes in group: "</string>
   <string name="_Athletes_not_in_groups___22MRRO">"Athletes not in groups: "</string>

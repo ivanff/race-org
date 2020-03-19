@@ -2,9 +2,8 @@ import {Injectable, OnDestroy} from '@angular/core';
 import {AbstractControl, AsyncValidatorFn, ValidationErrors} from "@angular/forms"
 import {Observable, of} from "rxjs"
 import {environment} from "@src/environments/environment"
-import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http"
+import {HttpClient, HttpHeaders} from "@angular/common/http"
 import {catchError, debounceTime, map, take} from "rxjs/operators"
-import {Check} from "@src/app/web/shared/components/athlet/athlet-register.component"
 
 
 @Injectable({
@@ -25,12 +24,6 @@ export class BackendService implements OnDestroy {
     checkSmsCodeValidator(data: any): AsyncValidatorFn {
         return (control: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null> => {
             if (control.value === 123456 && !environment.production) {
-                return new Promise((resolve => {
-                    resolve(null)
-                }))
-            }
-            //TODO remove
-            if (control.value === 111111) {
                 return new Promise((resolve => {
                     resolve(null)
                 }))

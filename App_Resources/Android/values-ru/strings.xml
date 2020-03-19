@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <string name="Canceled">"Отменено"</string>
+  <string name="_No_results_previous_stage_2exrz7">"Нет результатов предыдущего этапа"</string>
+  <string name="_This_nfc_tag_is_already_assigned_to__s___s__iTLR">"Эта nfc метка уже назначена %1$s (%2$s)"</string>
   <string name="Countdown">"Обратный отсчет"</string>
   <string name="_Athletes_in_group___J6bg8">"Атлеты в группе: "</string>
   <string name="_Athletes_not_in_groups___22MRRO">"Атлеты не в группах: "</string>

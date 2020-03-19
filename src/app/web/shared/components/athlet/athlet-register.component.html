@@ -15,6 +15,7 @@
             Стартовый номер {{ registerForm.controls['number'].errors['used_value'].value }} уже зарегистрирован
         </mat-error>
     </mat-form-field>
+
     <mat-form-field class="full-width">
         <mat-label>Класс участника</mat-label>
         <mat-select formControlName="class" required>
@@ -23,6 +24,19 @@
                 {{item|titlecase}}
             </mat-option>
         </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="full-width">
+        <mat-label>Метка схода</mat-label>
+        <mat-select formControlName="get_off">
+            <mat-option value="">--</mat-option>
+            <mat-option *ngFor="let item of get_off_map|keyvalue" [value]="item.key">
+                {{ item.value }} ({{item.key}})
+            </mat-option>
+        </mat-select>
+        <mat-hint>
+            Если зарегистрированный атлет не учавствует, установить метку
+        </mat-hint>
     </mat-form-field>
 
     <mat-form-field class="full-width" *ngFor="let field of competition.athlet_extra_fields;">

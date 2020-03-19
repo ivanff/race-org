@@ -16,8 +16,12 @@ export class AthletChangeComponent extends AthletRegisterComponent implements On
     @Input() athlet: Athlet
 
     ngOnInit() {
+        console.log(
+            this.athlet
+        )
         this.allowed.push(this.athlet.number)
         super.ngOnInit()
+        this.registerForm.addControl('get_off', new FormControl(this.athlet.get_off))
         this.registerForm.removeControl('phone')
         this.registerForm.removeControl('code')
         this.registerForm.removeControl('captcha')

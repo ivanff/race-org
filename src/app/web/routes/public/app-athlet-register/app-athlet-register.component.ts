@@ -41,7 +41,6 @@ export class SuccessDialogComponent implements OnDestroy {
     }
 
     ngOnDestroy(): void {
-        console.log(123)
         this._onDestroy.next(null)
         this._onDestroy.complete()
     }

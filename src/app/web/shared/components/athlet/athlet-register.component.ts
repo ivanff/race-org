@@ -33,6 +33,11 @@ export class AthletRegisterComponent implements OnInit {
     athlet: Athlet
     hasSubmitButton = true
     allowed: Array<number> = []
+    get_off_map = {
+        'DNS': "Не вышел на старт",
+        'DNF': "Сход",
+        'DSQ': "Дисквалификация",
+    }
 
     $formDelayValid = new Subject()
 
@@ -56,6 +61,7 @@ export class AthletRegisterComponent implements OnInit {
             fio: ['', [<any>Validators.required]],
             number: ['', [<any>Validators.required, <any>Validators.min(1), <any>Validators.max(999)], [AthletRegisterComponent.usedValue(this.athlet_collection, 'number', false, this.allowed)]],
             class: ['', [<any>Validators.required]],
+            get_off: [null,[]],
             phone: ['', [<any>Validators.minLength(10), <any>Validators.maxLength(10), Validators.pattern("^[0-9]*$")], [AthletRegisterComponent.usedValue(this.athlet_collection, 'phone')]],
             code: [{
                 value: '',
@@ -158,10 +164,6 @@ export class AthletRegisterComponent implements OnInit {
 
     static usedValue(collection, field: string, inverse: boolean = false, allowed: Array<any> = []): AsyncValidatorFn {
         return (control: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null> => {
-            console.log(
-                control.value,
-                control
-            )
             return collection.afs.collection(collection.ref.path, ref => ref.where(field, '==', parseInt(control.value))).valueChanges().pipe(
                 debounceTime(300),
                 take(1),

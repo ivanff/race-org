@@ -29,7 +29,8 @@
                                     <input (input)="onPhoneInput()" type="tel" matInput placeholder="Телефон"
                                            formControlName="phone"
                                            required>
-                                    <mat-hint>Убедитесь, что вводите номер телефона без пробелов, только 10 цифр
+                                    <mat-hint>
+                                        Убедитесь, что вводите номер телефона без пробелов, только 10 цифр
                                     </mat-hint>
                                     <div matSuffix>
                                         <mat-spinner *ngIf="getAthletForm.controls['phone'].pending"

@@ -14,6 +14,7 @@ export interface Athlet {
     }
     marks?: Array<Mark>
     [key: string]: any
+    get_off: "DNS" | "DNF" | "DSQ" | null
     start_time?: firebase.firestore.Timestamp
     created: firebase.firestore.Timestamp
 }
