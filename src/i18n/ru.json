@@ -144,5 +144,8 @@
   "Remove all groups": "Удалить все группы",
   "Athletes not in groups: ": "Атлеты не в группах: ",
   "Athletes in group: ": "Атлеты в группе: ",
-  "Countdown": "Обратный отсчет"
+  "Countdown": "Обратный отсчет",
+  "This nfc tag is already assigned to %s (%s)": "Эта nfc метка уже назначена %s (%s)",
+  "No results previous stage": "Нет результатов предыдущего этапа",
+  "Canceled": "Отменено"
 }

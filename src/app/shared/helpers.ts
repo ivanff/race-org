@@ -21,6 +21,39 @@ export function sortNumber(a: number, b: number) {
 }
 
 
+// Кабан
+export function scoreCaban(total: number) {
+    const offset_map ={
+        1: 25,
+        2: 20,
+        3: 16,
+        4: 13,
+        5: 11,
+        6: 9,
+        7: 7,
+        8: 5,
+        9: 3,
+        10: 1,
+        11: -1,
+        12: -2,
+    }
+
+    let map: {[key: number]: number} = {}
+
+    for (let _i = 1; _i < (total + 1); _i++) {
+
+        if (offset_map.hasOwnProperty(_i)) {
+            map[_i] = total + offset_map[_i]
+        } else {
+            map[_i] = map[_i-1] - 1
+        }
+
+    }
+
+    return map
+}
+
+// Хвалынск
 export const SCORE_MAP = {
     1: 100,
     2: 90,
@@ -73,3 +106,4 @@ export const SCORE_MAP = {
     49: 3,
     50: 2,
 }
+

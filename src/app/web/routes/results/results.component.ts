@@ -13,7 +13,7 @@ import {ReplaySubject} from "rxjs"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
 import {calcCircles} from "@src/app/web/shared/utils/tools"
 import {StartListGroup} from "@src/app/shared/interfaces/start-list"
-import {SCORE_MAP} from "@src/app/shared/helpers"
+import {SCORE_MAP, scoreCaban} from "@src/app/shared/helpers"
 
 
 export interface ResultMark extends Mark {
@@ -43,6 +43,7 @@ export interface TableRow {
 export class ResultsComponent implements OnInit, AfterViewInit, OnDestroy {
     protected _onDestroy = new ReplaySubject<any>(1)
 
+    SCORE_MAP: {[key: number]: number} = {}
     dataSource = new MatTableDataSource<TableRow>([])
     displayedColumns: string[] = ['place', 'score', 'number', 'class', 'athlet']
 
@@ -132,8 +133,11 @@ export class ResultsComponent implements OnInit, AfterViewInit, OnDestroy {
 
                 if (this.competition.group_start) {
                     const start_time: firebase.firestore.Timestamp = _.min(
-                        athlets.filter(athlet => athlet.group ? athlet.group.hasOwnProperty(this.competition.id) : false)
-                            .map((athlet: Athlet) => athlet.group[this.competition.id].start_time)
+                        athlets.filter(athlet => {
+                            return athlet.group ? athlet.group.hasOwnProperty(this.competition.id) : false
+                        }).map((athlet: Athlet) => {
+                            return athlet.group[this.competition.id].start_time
+                        })
                     )
                     if (start_time) {
                         this.start_time = moment(start_time.toMillis())
@@ -143,6 +147,7 @@ export class ResultsComponent implements OnInit, AfterViewInit, OnDestroy {
                 // this.athlets = athlets.filter((athlet) => {
                 //     return [888].indexOf(athlet.number) >= 0
                 // })
+                this.SCORE_MAP = scoreCaban(this.athlets.length)
                 this.circles = this.buildHeader(this.athlets)
                 this.buildRows()
             })
@@ -278,7 +283,7 @@ export class ResultsComponent implements OnInit, AfterViewInit, OnDestroy {
         })
         rows.map((row: TableRow, i: number) => {
             row.place = i + 1
-            row.score = SCORE_MAP[row.place] || 0
+            row.score = this.SCORE_MAP[row.place] || 0
         })
         this.dataSource.data = rows
     }

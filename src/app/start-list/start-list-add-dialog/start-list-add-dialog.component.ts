@@ -1,6 +1,4 @@
-import {
-    Component
-} from '@angular/core'
+import {Component} from '@angular/core'
 import {ModalDialogParams} from "nativescript-angular"
 import {TextField} from "@nativescript/core/ui/text-field"
 import {DialogComponent} from "@src/app/shared/dialog.component"
@@ -11,9 +9,8 @@ import {firestore} from "nativescript-plugin-firebase"
 
 const firebase = require('nativescript-plugin-firebase/app')
 import * as _ from "lodash"
-import {hasOwnProperty} from "tslint/lib/utils"
 import GetOptions = firestore.GetOptions
-import {DocumentSnapshot} from "firebase"
+
 
 @Component({
     selector: 'app-start-list-add-dialog',

@@ -80,18 +80,7 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
     setNfcId(data: NfcTagData) {
         let batch = firebase.firestore().batch()
         const athlets = this.collection.where('nfc_id', '==', data.id).get()
-
-        athlets.then((snapshot: firestore.QuerySnapshot) => {
-            snapshot.forEach((doc: firestore.DocumentSnapshot) => {
-                batch = batch.update(this.collection.doc(doc.id), {
-                    nfc_id: null
-                })
-            })
-            batch.update(this.collection.doc(this.athlet.id), {
-                nfc_id: data.id
-            })
-
-            this.activityIndicatorRef.nativeElement.busy = false
+        const batchCommit = () => {
             batch.commit().then(() => {
                 this.snackbar.success(
                     L('NFC tag is assigned')
@@ -102,6 +91,37 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
                     L('Batch commit error: %s', error)
                 )
             })
+        }
+
+        athlets.then((snapshot: firestore.QuerySnapshot) => {
+            let replacedAthlet: Athlet | null = null
+
+            snapshot.forEach((doc: firestore.DocumentSnapshot) => {
+                if (doc.exists) {
+                    const id = doc.id
+                    replacedAthlet = {id, ...doc.data()} as Athlet
+                    batch = batch.update(this.collection.doc(doc.id), {
+                        nfc_id: null
+                    })
+                }
+            })
+            batch.update(this.collection.doc(this.athlet.id), {
+                nfc_id: data.id
+            })
+
+            this.activityIndicatorRef.nativeElement.busy = false
+
+            if (replacedAthlet) {
+                this.snackbar.confirm(L("This nfc tag is already assigned to %s (%s)", replacedAthlet.fio, replacedAthlet.phone.toString())).then((result: boolean) => {
+                    if (result) {
+                        batchCommit()
+                    } else {
+                        this.snackbar.warning(L("Canceled"))
+                    }
+                })
+            } else {
+                batchCommit()
+            }
         })
     }
 

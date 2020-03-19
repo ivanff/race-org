@@ -1,19 +1,12 @@
 import {AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core'
-import {AngularFirestore} from '@angular/fire/firestore'
 import {MatSort, MatTableDataSource} from '@angular/material'
 import * as moment from 'moment-timezone'
-import {NgxTimepickerFieldComponent} from 'ngx-material-timepicker'
 import {Mark} from "@src/app/shared/interfaces/mark"
 import {ActivatedRoute} from "@angular/router"
-import * as _ from "lodash"
 import {Competition} from "@src/app/shared/interfaces/competition"
 import {Athlet} from "@src/app/shared/interfaces/athlet"
-import {map, takeUntil} from "rxjs/operators"
-import {ReplaySubject} from "rxjs"
 import {Checkpoint} from "@src/app/shared/interfaces/checkpoint"
-import {calcCircles} from "@src/app/web/shared/utils/tools"
 import {StartListGroup} from "@src/app/shared/interfaces/start-list"
-import {SCORE_MAP} from "@src/app/shared/helpers"
 
 
 export interface ResultMark extends Mark {

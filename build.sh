@@ -41,15 +41,17 @@ b() {
 
 export -f a
 export -f b
-#parallel --citation ::: a b
 
-a &
+a
+b
 
-P1=$!
-
-b &
-
-P2=$!
-
-wait $P1 $P2
+#a &
+#
+#P1=$!
+#
+#b &
+#
+#P2=$!
+#
+#wait $P1 $P2
 
