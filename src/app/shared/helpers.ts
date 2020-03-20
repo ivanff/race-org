@@ -107,3 +107,9 @@ export const SCORE_MAP = {
     50: 2,
 }
 
+export const GET_OFF = {
+    '': "",
+    'DNS': "Did Not Start",
+    'DNF': "Did Not Finish",
+    'DSQ': "Disqualified",
+}

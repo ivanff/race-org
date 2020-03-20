@@ -3,6 +3,13 @@
   <string name="_app_name_1k3Sbz">"RaceOrg"</string>
   <string name="app_name">"RaceOrg"</string>
   <string name="title_activity_kimera">"RaceOrg"</string>
+  <string name="_Disqualified__DSQ__18LVQU">"Disqualified (DSQ)"</string>
+  <string name="_Did_Not_Finish__DNF__ZlB8db">"Did Not Finish (DNF)"</string>
+  <string name="_Did_Not_Start__DNS__ZsRWA1">"Did Not Start (DNS)"</string>
+  <string name="_Allowed__AAA__1G3noH">"Allowed (AAA)"</string>
+  <string name="Allowed">"Allowed"</string>
+  <string name="_Reason_for_the_absence_D54yJ">"Reason for the absence"</string>
+  <string name="_Is_missing_2wzENO">"Is missing"</string>
   <string name="Canceled">"Canceled"</string>
   <string name="_No_results_previous_stage_2exrz7">"No results previous stage"</string>
   <string name="_This_nfc_tag_is_already_assigned_to__s___s__iTLR">"This nfc tag is already assigned to %1$s (%2$s)"</string>
@@ -93,6 +100,7 @@
   <string name="_A_prototype_application_for_the_organization_of_competitions__the_process_of_which_is_associated_with_the_time_stamps_on_the_control_points___The_winners_are_the_athletes_who_have_passed_the_greater__all__number_of_control_points_for_a_smaller_number_of_time__in_the_order_of_points__ZcHRN2">"A prototype application for the organization of competitions, the process of which is associated with the time stamps on the control points.\n\nThe winners are the athletes who have passed the greater (all) number of control points for a smaller number of time, in the order of points."</string>
   <string name="_or_to_the_telegram_1VFifw">"or to the telegram"</string>
   <string name="_Suggestions_and_suggestions_send_to_the_address__1S3RT9">"Suggestions and suggestions send to the address "</string>
+  <string name="_Status___1CTusU">"Status: "</string>
   <string name="_Phone_no____Z10hbEO">"Phone no.: "</string>
   <string name="_Number___Z29zcyF">"Number: "</string>
   <string name="_Class___Z26juIV">"Class: "</string>
@@ -139,6 +147,7 @@
   <string name="_Enter_with_Social_account_1FNIa3">"Enter with Social account"</string>
   <string name="_Set_this_device_to_admin_zj7DQ">"Set this device to admin"</string>
   <string name="_Scan_QR_code_Z1UmHjW">"Scan QR code"</string>
+  <string name="_QR_code_1twIWk">"QR code"</string>
   <string name="Mark">"Mark"</string>
   <string name="Cancel">"Cancel"</string>
   <string name="_Athlete_number_1qzOcS">"Athlete number"</string>

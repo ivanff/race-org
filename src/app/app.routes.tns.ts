@@ -108,6 +108,9 @@ export const routes: Routes = [
                 resolve: {
                     athlet: AthletResolve
                 },
+                data: {
+                    actions: false
+                },
                 outlet: 'startList'
             },
         ]
@@ -121,7 +124,10 @@ export const routes: Routes = [
         component: AthletDetailComponent,
         resolve: {
             athlet: AthletResolve
-        }
+        },
+        data: {
+            actions: true
+        },
     },
     {
         path: "scan",

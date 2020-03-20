@@ -13,6 +13,8 @@ import {SnackbarService} from "@src/app/mobile/services/snackbar.service"
 import {localize as L} from "nativescript-localize"
 import {CompetitionDetailQrComponent} from "@src/app/home/competition/competition-detail/competition-detail-qr/competition-detail-qr.component"
 import {ModalDialogOptions, ModalDialogService} from "nativescript-angular"
+import {action} from "@nativescript/core/ui/dialogs"
+import {GET_OFF} from "@src/app/shared/helpers"
 
 const firebase = require('nativescript-plugin-firebase/app')
 const phone = require("nativescript-phone")
@@ -28,6 +30,7 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
     tap_remove_index: number | null
     current_checkpoint: Checkpoint
     checkpoints: { [key: number]: Checkpoint } = {}
+    actions = false
     private unsubscribe: any
     private collection: firestore.CollectionReference
 
@@ -43,6 +46,7 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
                 public _competition: CompetitionService
     ) {
         super(routerExtensions)
+        this.actions = this.activeRoute.snapshot.data['actions']
         this.collection = firebase.firestore().collection(this._competition.getAthletsCollectionPath())
         this.current_checkpoint = {...this._competition.current_checkpoint}
         this._competition.selected_competition.checkpoints.forEach((item: Checkpoint) => {
@@ -186,6 +190,40 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
 
     onSms(): void {
         phone.sms('+7' + this.athlet.phone)
+    }
+
+    onGetOff(): void {
+        action({
+            message: L("Reason for the absence"),
+            cancelButtonText: L("Cancel"),
+            actions: [
+                L('Allowed (AAA)'),
+                L("Did Not Start (DNS)"),
+                L("Did Not Finish (DNF)"),
+                L("Disqualified (DSQ)"),
+            ]
+        }).then((result: string | null) => {
+            let get_off = undefined
+            if (result.indexOf('DNS') >= 0) {
+                get_off = 'DNS'
+            } else if (result.indexOf('DNF') >= 0) {
+                get_off = 'DNF'
+            } else if (result.indexOf('DSQ') >= 0) {
+                get_off = 'DSQ'
+            } else if (result.indexOf('AAA') >= 0) {
+                get_off = null
+            }
+
+            if (get_off !== undefined) {
+                this.collection.doc(this.athlet.id).update({
+                    get_off: get_off
+                })
+            }
+        })
+    }
+
+    getOffStatus(): string {
+        return this.athlet.get_off ? GET_OFF[this.athlet.get_off] : L("Allowed")
     }
 
     onTapQr(): void {

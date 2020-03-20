@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <string name="_Disqualified__DSQ__18LVQU">"Дисквалификация (DSQ)"</string>
+  <string name="_Did_Not_Finish__DNF__ZlB8db">"Не финишировал (DNF)"</string>
+  <string name="_Did_Not_Start__DNS__ZsRWA1">"Не стартовал (DNS)"</string>
+  <string name="_Allowed__AAA__1G3noH">"Допущен (ААА)"</string>
+  <string name="Allowed">"Допущен"</string>
+  <string name="_Reason_for_the_absence_D54yJ">"Причина отсутствия"</string>
+  <string name="_Is_missing_2wzENO">"Отсутсвует"</string>
   <string name="Canceled">"Отменено"</string>
   <string name="_No_results_previous_stage_2exrz7">"Нет результатов предыдущего этапа"</string>
   <string name="_This_nfc_tag_is_already_assigned_to__s___s__iTLR">"Эта nfc метка уже назначена %1$s (%2$s)"</string>
@@ -31,7 +38,7 @@
   <string name="Start">"Старт"</string>
   <string name="_Size_of_group_is_more_than_athletes_count___s__in_class_gNSUF">"Размер группы больше кол-ва атлетов (%1$s) в классе"</string>
   <string name="_Athlete___ZfJs5e">"Атлет: "</string>
-  <string name="_Start_group___1hJ7A5">"Старотовая группа"</string>
+  <string name="_Start_group___1hJ7A5">"Старотовая группа: "</string>
   <string name="_Start_lists_Z1XjT8X">"Стартовые листы"</string>
   <string name="About">"О нас"</string>
   <string name="_Private_Policy_2ri4RH">"Политика конфиденциальности"</string>
@@ -90,6 +97,7 @@
   <string name="_A_prototype_application_for_the_organization_of_competitions__the_process_of_which_is_associated_with_the_time_stamps_on_the_control_points___The_winners_are_the_athletes_who_have_passed_the_greater__all__number_of_control_points_for_a_smaller_number_of_time__in_the_order_of_points__ZcHRN2">"Прототип приложения для организации соревнований, процесс прохождения которого связан с отметками времени на контрольных точках.\nПобедителями считаются атлеты прошедшие большее (все) кол-во контрольных точек за за меньшее кол-во времени, в порядке следования точек."</string>
   <string name="_or_to_the_telegram_1VFifw">"либо в telegram"</string>
   <string name="_Suggestions_and_suggestions_send_to_the_address__1S3RT9">"Предложения и пожелания отправляйте на адрес "</string>
+  <string name="_Status___1CTusU">"Статус: "</string>
   <string name="_Phone_no____Z10hbEO">"Телефон: +7"</string>
   <string name="_Number___Z29zcyF">"Номер: "</string>
   <string name="_Class___Z26juIV">"Класс: "</string>
@@ -103,7 +111,7 @@
   <string name="_Stop_scanning_NFC_1LOR0n">"Прекратить сканирование NFC"</string>
   <string name="_Clear_NFC_tag_Z27kkG3">"Очистить метку NFC"</string>
   <string name="_Set_NFC_tag_28ppl6">"Назначить метку NFC"</string>
-  <string name="_Send_sms_1xDPRk">"Отправить"</string>
+  <string name="_Send_sms_1xDPRk">"Отправить смс"</string>
   <string name="_By_NFC_tag_Z1NwGum">"По метке NFC"</string>
   <string name="wait">"ожидание"</string>
   <string name="fio">"фио"</string>
@@ -136,6 +144,7 @@
   <string name="_Enter_with_Social_account_1FNIa3">"Вход через социальные сети"</string>
   <string name="_Set_this_device_to_admin_zj7DQ">"Установить это устройство как административное"</string>
   <string name="_Scan_QR_code_Z1UmHjW">"Сканировать QR код"</string>
+  <string name="_QR_code_1twIWk">"QR код"</string>
   <string name="Mark">"Отметить"</string>
   <string name="Cancel">"Отменить"</string>
   <string name="_Athlete_number_1qzOcS">"Номер атлета"</string>

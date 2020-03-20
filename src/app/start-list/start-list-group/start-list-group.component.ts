@@ -6,14 +6,13 @@ import {
     ModalDialogOptions,
     ModalDialogService,
     RouterExtensions,
-    NSLocationStrategy
 } from "nativescript-angular"
 import {Athlet} from "@src/app/shared/interfaces/athlet"
 import {ActivatedRoute} from "@angular/router"
 import {Switch} from "@nativescript/core/ui/switch"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
 import {RadListSwipeComponent} from "@src/app/shared/rad-list-swipe.component"
-import {ListViewEventData, SwipeActionsEventData,} from "nativescript-ui-listview"
+import {SwipeActionsEventData} from "nativescript-ui-listview"
 import {Page} from "@nativescript/core/ui/page"
 import * as _ from "lodash"
 import {StartListGroup} from "@src/app/shared/interfaces/start-list"
@@ -49,7 +48,6 @@ export class StartListGroupComponent extends RadListSwipeComponent implements On
     checked = true
 
     constructor(public routerExtensions: RouterExtensions,
-                public locationStrategy: NSLocationStrategy,
                 private page: Page,
                 private vcRef: ViewContainerRef,
                 private datePipe: DatePipe,
@@ -257,30 +255,38 @@ export class StartListGroupComponent extends RadListSwipeComponent implements On
 
     }
 
-    onStart(): Promise<any> {
+    onStart(): void {
+        this._onStart().then((groupAthlets: Array<Athlet>) => {
+            this.routerExtensions.navigate(['/start-list', {outlets: {startList: ['list']}}], {
+                replaceUrl: true
+            })
+        })
+    }
+
+    _onStart(): Promise<any> {
         return new Promise<any>((resolve, reject) => {
             this.modalService.showModal(StartListGoDialogComponent, {
                 viewContainerRef: this.vcRef,
-            } as ModalDialogOptions).then((result: { start_time: Date } | null) => {
-                if (result) {
+            } as ModalDialogOptions).then((go_time: Date | null) => {
+                if (go_time) {
                     this._onSave().then(() => {
-
                         const groupAthlets = this.classAthlets.filter((athlet: Athlet) => athlet.group[this._competition.selected_competition.id].id == this.group)
 
                         let batch = firebase.firestore().batch()
                         const collection: firestore.CollectionReference = firebase.firestore().collection(this._competition.getAthletsCollectionPath())
 
                         groupAthlets.forEach((athlet: Athlet) => {
-                            athlet.group[this._competition.selected_competition.id].start_time = result.start_time
+                            athlet.group[this._competition.selected_competition.id].start_time = go_time
                             batch.update(collection.doc(athlet.id), {
                                 group: athlet.group
                             })
                         })
 
                         batch.commit().then(() => {
-                            this.snackbar.success(L('Group %s is started\nat %s', this.group, result.start_time.toISOString())).then(() => {
+                            this.snackbar.success(L('Group %s is started\nat %s', this.group, go_time.toISOString())).then(() => {
                                 resolve(groupAthlets)
                             })
+                            return groupAthlets
                         }, (err) => {
                             this.snackbar.alert(err).then(() => {
                                 reject(err)

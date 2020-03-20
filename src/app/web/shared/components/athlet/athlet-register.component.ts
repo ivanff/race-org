@@ -34,8 +34,8 @@ export class AthletRegisterComponent implements OnInit {
     hasSubmitButton = true
     allowed: Array<number> = []
     get_off_map = {
-        'DNS': "Не вышел на старт",
-        'DNF': "Сход",
+        'DNS': "Не стартовал",
+        'DNF': "Не финишировал",
         'DSQ': "Дисквалификация",
     }
 
