@@ -181,4 +181,7 @@ export class ResultDetailComponent implements OnInit {
         } as QrAthlet)
     }
 
+    onCreated($event): void {
+
+    }
 }

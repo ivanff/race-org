@@ -214,7 +214,14 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
                 get_off = null
             }
 
+            console.log(
+                get_off
+            )
+
             if (get_off !== undefined) {
+                console.log(
+                    123
+                )
                 this.collection.doc(this.athlet.id).update({
                     get_off: get_off
                 })

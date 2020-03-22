@@ -131,9 +131,6 @@ export class StartListTabItemComponent implements OnInit, OnDestroy {
                         })
                         return
                     case 'stage':
-                        console.log(
-                            resp.results
-                        )
                         if (!Object.keys(resp.results || {}).length) {
                             this.snackbar.warning(
                                 L("No results previous stage")

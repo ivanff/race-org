@@ -159,8 +159,6 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
     }
 
     onFound(athlet: Athlet, msg: string, error?: boolean): void {
-        this.foundedNumbers$.next(athlet.number)
-
         this.snackbar.snackbar$.next({
             level: error ? 'alert' : 'success',
             msg: `<${athlet.number}> ${msg}`,
@@ -198,6 +196,7 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
         // }
 
         this.onFound(this.last_athlet, L('THE PASSAGE MARK RECORDED'))
+        this.foundedNumbers$.next(this.last_athlet.number)
 
         this.collection.doc(this.last_athlet.id).update({marks: [...this.last_athlet.marks, mark]}).then(() => {
         }).catch((err) => {
@@ -271,6 +270,9 @@ export class ScanComponent extends BaseComponent implements AfterViewInit, OnIni
     }
 
     onReturnPress(textField: TextField): void {
+        console.log(
+            'onReturnPress'
+        )
         this.$lastAthlet.pipe(
             take(1)
         ).subscribe((last_athlet) => {

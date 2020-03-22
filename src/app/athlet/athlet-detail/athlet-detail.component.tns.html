@@ -2,24 +2,12 @@
            [title]="('Athlete: '|L) + athlet.number">
     <NavigationButton icon="res://round_menu_black_24"
                       (tap)="onDrawerButtonTap()"></NavigationButton>
-    <ActionItem [text]="'Call'|L"
-                (tap)="onPhone()"
-                ios.position="right"
-                android.position="popup"></ActionItem>
-    <ActionItem [text]="'Send sms'|L"
-                (tap)="onSms()"
-                ios.position="right"
-                android.position="popup"></ActionItem>
     <ActionItem [text]="'QR code'|L"
                 (tap)="onTapQr()"
                 ios.position="right"
                 android.position="popup"></ActionItem>
-    <ActionItem [text]="'Is missing'|L"
-                (tap)="onGetOff()"
-                ios.position="right"
-                android.position="popup"></ActionItem>
 </ActionBar>
-<GridLayout rows="auto, auto, *" columns="*" class="p-l-10 p-r-10">
+<GridLayout rows="auto,auto, auto, *" columns="*" class="p-l-10 p-r-10">
     <StackLayout row="0" col="0">
         <Label [text]="('Status: '|L) + getOffStatus()"
                [class.-warning]="athlet.get_off"
@@ -43,10 +31,10 @@
                 (tap)="onClearNfc()"
                 class="btn -outline"></Button>
     </StackLayout>
-    <GridLayout *ngIf="!actions" row="1" col="0" columns="*, *, *" class="font-small ">
-        <Button [text]="'Call'|L" (tap)="onPhone()" col="0" class="-grey" textWrap="true"></Button>
-        <Button [text]="'Send sms'|L" (tap)="onSms()" col="1" class="-grey" textWrap="true"></Button>
-        <Button [text]="'Is missing'|L" (tap)="onGetOff()" col="2" class="-warning" textWrap="true"></Button>
+    <GridLayout row="1" col="0" columns="*, *, *" class="font-small ">
+        <Button [text]="'Call'|L" (tap)="onPhone()" col="0" class="-grey p-8" textWrap="true"></Button>
+        <Button [text]="'Send sms'|L" (tap)="onSms()" col="1" class="-grey p-8" textWrap="true"></Button>
+        <Button [text]="'Is missing'|L" (tap)="onGetOff()" col="2" class="-warning p-8" textWrap="true"></Button>
     </GridLayout>
     <StackLayout row="2" col="0">
         <Button [text]="activityIndicator.busy ? ('Stop scan'|L) :('Set NFC tag'|L) "
@@ -70,7 +58,7 @@
                                class="activity-indicator m-15"></ActivityIndicator>
         </StackLayout>
     </StackLayout>
-    <StackLayout row="2" col="0">
+    <StackLayout row="3" col="0">
         <ListView height="100%" [items]="getMarks()">
             <ng-template let-mark="item" let-i="index" let-odd="odd" let-even="even">
                 <GridLayout columns="*, auto" rows="*, *" class="p-l-5 p-r-5">

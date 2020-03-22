@@ -28,10 +28,9 @@ export class SqliteService implements OnInit, OnDestroy {
             "Content-Type": "application/octet-stream",
             "File-Name": this.sqlite_db_name
         },
-        description: L("Uploading... %s", this.sqlite_db_name),
+        description: L("Uploading... %s"),
         utf8: true,
         androidDisplayNotificationProgress: true,
-        androidNotificationTitle: L("Uploading... %s", this.sqlite_db_name),
         androidMaxRetries: 1,
         androidAutoClearNotification: true,
         androidRingToneEnabled: true
@@ -79,6 +78,8 @@ export class SqliteService implements OnInit, OnDestroy {
                 private snackbar: SnackbarService,
                 private auth: AuthService) {
         this.sqlite_db_name = `race_org_local_${this._competition.selected_competition.parent_id || this._competition.selected_competition.id}.db`
+        this.upload_params.description = L("Uploading... %s", this.sqlite_db_name)
+        this.upload_params.androidNotificationTitle = L("Uploading... %s", this.sqlite_db_name)
         new Sqlite(this.sqlite_db_name).then(db => {
             db.execSQL(`CREATE TABLE IF NOT EXISTS ${this.tableName} (${_.map(this.dbFields, (value: any, key: string) => key + ' ' + value.create_string).join(', ')})`).then(id => {
                 this.database = db;
@@ -217,8 +218,19 @@ export class SqliteService implements OnInit, OnDestroy {
                     {name: 'user_uid', value: this.auth.user.uid},
                     {name: 'fileToUpload', filename: db_file.path, mimeType: "application/x-sqlite3"},
                 ], this.upload_params)
+                console.log(
+                    [
+                        {name: 'device_uuid', value: device.uuid},
+                        {name: 'competition_id', value: this._competition.selected_competition.id},
+                        {name: 'user_uid', value: this.auth.user.uid},
+                        {name: 'fileToUpload', filename: db_file.path, mimeType: "application/x-sqlite3"},
+                    ],
+                    this.upload_params
+                )
                 task.on("error", (err) => console.log(err))
-                task.on("responded", (err) => console.log(err))
+                task.on("responded", (e) => {
+                    alert("received " + e.responseCode + " code. Server sent: " + e.data)
+                })
             } else {
                 this.snackbar.alert(
                     L("File size is zero")

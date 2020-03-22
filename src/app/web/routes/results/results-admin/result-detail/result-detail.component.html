@@ -34,19 +34,15 @@
                         {{ athlet.created.toDate()|date:"HH:mm:ss":getTzOffset(competition.timezone) }}
                     </p>
                 </mat-list-item>
-                <mat-divider></mat-divider>
-                <div *ngFor="let param of athlet|keyvalue|filter:'key':{key: athletBuiltInKeysExcluded}; let l = last">
-                    <mat-list-item>
-                        <h4 class="m-r-16">
-                            {{param.key|titlecase}}:
-                        </h4>
-                        <p>
-                            {{param.value}}
-                        </p>
-                    </mat-list-item>
-                    <mat-divider *ngIf="!l"></mat-divider>
-                </div>
             </mat-list>
+        </mat-card-content>
+    </mat-card>
+
+    <mat-card fxFlex="400px">
+        <mat-card-content>
+            <athlet-change [competition]="competition"
+                           [athlet]="athlet"
+                           (onCreated)="onCreated($event)"></athlet-change>
         </mat-card-content>
     </mat-card>
 

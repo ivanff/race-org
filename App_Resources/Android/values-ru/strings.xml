@@ -3,7 +3,7 @@
   <string name="_Disqualified__DSQ__18LVQU">"Дисквалификация (DSQ)"</string>
   <string name="_Did_Not_Finish__DNF__ZlB8db">"Не финишировал (DNF)"</string>
   <string name="_Did_Not_Start__DNS__ZsRWA1">"Не стартовал (DNS)"</string>
-  <string name="_Allowed__AAA__1G3noH">"Допущен (ААА)"</string>
+  <string name="_Allowed__AAA__1G3noH">"Допущен (AAA)"</string>
   <string name="Allowed">"Допущен"</string>
   <string name="_Reason_for_the_absence_D54yJ">"Причина отсутствия"</string>
   <string name="_Is_missing_2wzENO">"Отсутсвует"</string>
@@ -126,7 +126,7 @@
   <string name="_The_group__s_will_not_be_deleted__2dmi2b">"Группа %1$s будет удалена!"</string>
   <string name="_All_groups_of_this_class_will_be_deleted__1zqki5">"Все группы этого класса будут удалены!"</string>
   <string name="_Drop_Local_log_2440Ao">"Удалить локальный лог"</string>
-  <string name="_Upload_to_server_LkhLW">"Загрузи данные на сервер"</string>
+  <string name="_Upload_to_server_LkhLW">"Загрузить данные на сервер"</string>
   <string name="_Local_log_VzeW7">"Локальный лог"</string>
   <string name="Join">"Присоединиться"</string>
   <string name="visible">""</string>

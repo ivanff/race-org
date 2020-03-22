@@ -63,6 +63,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     ngAfterViewInit(): void {
         //check ngDestroy
+
         this.drawer = this.drawerComponent.nativeElement as RadSideDrawer
         this.routerExtensions.router.events
             .pipe(
@@ -109,7 +110,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             args.cancel = true
             if (!args.stopEvent) {
                 this.zone.run(() => {
-                      if (this._activatedUrl.startsWith('/start-list/(startList:list/')) {
+                    if (this._activatedUrl.startsWith('/start-list/(startList:list/')) {
                         this.routerExtensions.navigate(['/start-list', {outlets: {startList: ['list']}}], {
                             relativeTo: this.activeRoute,
                             replaceUrl: true
@@ -120,7 +121,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                             replaceUrl: true
                         })
                     } else if (this._activatedUrl.startsWith('/start-list/(startList:athlet/') && this._activatedParams.hasOwnProperty('back')) {
-                        this.routerExtensions.navigate(['/start-list', {outlets: {startList: this._activatedParams['back']}}], {
+                        const list: Array<string> = this._activatedParams['back'].map((item) => {
+                            return decodeURI(item)
+                        })
+                        this.routerExtensions.navigate(['/start-list', {outlets: {startList: list}}], {
                           relativeTo: this.activeRoute,
                           replaceUrl: true
                         })

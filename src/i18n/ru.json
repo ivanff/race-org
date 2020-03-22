@@ -30,7 +30,7 @@
   "visible": "",
   "Join": "Присоединиться",
   "Local log": "Локальный лог",
-  "Upload to server": "Загрузи данные на сервер",
+  "Upload to server": "Загрузить данные на сервер",
   "Drop Local log": "Удалить локальный лог",
   "All groups of this class will be deleted!": "Все группы этого класса будут удалены!",
   "The group %s will not be deleted!": "Группа %s будет удалена!",
@@ -153,7 +153,7 @@
   "Is missing": "Отсутсвует",
   "Reason for the absence": "Причина отсутствия",
   "Allowed": "Допущен",
-  "Allowed (AAA)": "Допущен (ААА)",
+  "Allowed (AAA)": "Допущен (AAA)",
   "Did Not Start (DNS)": "Не стартовал (DNS)",
   "Did Not Finish (DNF)": "Не финишировал (DNF)",
   "Disqualified (DSQ)": "Дисквалификация (DSQ)"

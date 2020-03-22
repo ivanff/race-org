@@ -283,7 +283,10 @@ export class ResultsComponent implements OnInit, AfterViewInit, OnDestroy {
         })
         rows.map((row: TableRow, i: number) => {
             row.place = i + 1
-            row.score = this.SCORE_MAP[row.place] || 0
+            row.score = row.athlet.get_off ? 0 : (this.SCORE_MAP[row.place] || 0)
+        })
+        _.orderBy(rows, 'score', 'desc').map((row: TableRow, i: number) => {
+            row.place = i
         })
         this.dataSource.data = rows
     }

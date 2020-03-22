@@ -8,7 +8,7 @@ import {
     RouterExtensions,
 } from "nativescript-angular"
 import {Athlet} from "@src/app/shared/interfaces/athlet"
-import {ActivatedRoute} from "@angular/router"
+import {ActivatedRoute, Router} from "@angular/router"
 import {Switch} from "@nativescript/core/ui/switch"
 import {CompetitionService} from "@src/app/mobile/services/competition.service"
 import {RadListSwipeComponent} from "@src/app/shared/rad-list-swipe.component"
@@ -54,9 +54,13 @@ export class StartListGroupComponent extends RadListSwipeComponent implements On
                 private _competition: CompetitionService,
                 private modalService: ModalDialogService,
                 private router: ActivatedRoute,
+                private route: Router,
                 private snackbar: SnackbarService) {
         super(routerExtensions)
+
+        // this.route.routeReuseStrategy.shouldDetach = () => false
         this.group = this.router.snapshot.params['group']
+
         this._class = this.router.snapshot.params['class']
         this.order = groupNumberMatch(this.group)
         this.classAthlets = this.router.snapshot.data['athlets'].sort((a: Athlet, b: Athlet) => a.number > b.number ? 1 : -1)
@@ -149,6 +153,9 @@ export class StartListGroupComponent extends RadListSwipeComponent implements On
     onRightSwipeClick(args: SwipeActionsEventData): void {
         const athlet = args.object.bindingContext as Athlet
         super.onRightSwipeClick(args)
+        console.log(
+            this.router.snapshot.url
+        )
         this.routerExtensions.navigate([{outlets: {startList: ['athlet', athlet.id]}}], {
             queryParams: {back: this.router.snapshot.url},
             relativeTo: this.router.parent,

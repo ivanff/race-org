@@ -8,7 +8,7 @@
 
     <ng-container *ngIf="!hide_place" matColumnDef="score">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Очки</th>
-        <td mat-cell *matCellDef="let element"> {{ element.score || "" }} </td>
+        <td mat-cell *matCellDef="let element"> {{ element.score }} </td>
     </ng-container>
 
     <ng-container matColumnDef="number">
