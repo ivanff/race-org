@@ -121,10 +121,15 @@ export class CompetitionComponent implements OnInit, OnChanges, OnDestroy {
 
             const start_time = this.getTime(next.start_time)
             const duration = this.getTime(next.duration)
-            const end_date = next.start_date.clone().add(
-                start_time + duration, 's'
-            )
-            this.firstFormGroup.controls['end_date'].patchValue(end_date,{emitEvent: false})
+
+            let end_date = null
+            if (next.start_date && duration) {
+                end_date = next.start_date.clone().add(
+                    start_time + duration, 's'
+                )
+                this.firstFormGroup.controls['end_date'].patchValue(end_date,{emitEvent: false})
+            }
+
 
             Object.assign(this.competition, {
                 title: next.title,
