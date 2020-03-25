@@ -56,6 +56,7 @@ import {AthletListResolve} from "@src/app/shared/resolvers/athlet-list.resolver"
 import {StartListGoDialogComponent} from "@src/app/start-list/start-list-go-dialog/start-list-go-dialog.component"
 
 import localeRu from "@angular/common/locales/ru"
+import {AthletDetailQrComponent} from "@src/app/athlet/athlet-detail/athlet-detail-qr/athlet-detail-qr.component"
 
 registerLocaleData(localeRu)
 
@@ -63,6 +64,7 @@ registerLocaleData(localeRu)
 @NgModule({
     entryComponents: [
         RootComponent,
+        AthletDetailQrComponent,
         CompetitionDetailQrComponent,
         StartListTabItemComponent,
         StartListAddDialogComponent,
@@ -84,6 +86,7 @@ registerLocaleData(localeRu)
 
         AthletComponent,
         AthletDetailComponent,
+        AthletDetailQrComponent,
 
         ScanComponent,
         LocalLogComponent,

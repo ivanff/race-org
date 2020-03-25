@@ -1,25 +1,33 @@
 import {Component, OnDestroy, OnInit} from '@angular/core'
 import {ModalDialogParams} from "nativescript-angular"
-import {ImageSource} from "@nativescript/core/image-source"
 import {QRCode} from "qrcode-generator-ts"
 import * as application from "@nativescript/core/application"
+import {Athlet} from "@src/app/shared/interfaces/athlet"
+import {Competition} from "@src/app/shared/interfaces/competition"
+import {QrAthlet} from "@src/app/shared/interfaces/qr"
+import {ImageSource} from "@nativescript/core/image-source"
 
 @Component({
-    selector: 'app-competition-detail-qr',
-    templateUrl: './competition-detail-qr.component.html',
+    selector: 'app-athlet-detail-qr',
+    templateUrl: './athlet-detail-qr.component.html',
 })
-export class CompetitionDetailQrComponent implements OnInit, OnDestroy {
-    code: number
-    role: string
+export class AthletDetailQrComponent implements OnInit, OnDestroy {
+    athlet: Athlet
+    competition: Competition
     imageFromBase64 = null
 
     constructor(private _params: ModalDialogParams) {
-        this.role = _params.context.role
-        this.code = _params.context.code
+        this.athlet = _params.context.athlet
+        this.competition = _params.context.competition
         const qr = new QRCode()
-        qr.setTypeNumber(2)
-        qr.addData(this.code.toString())
+        qr.setTypeNumber(5)
+        qr.addData(JSON.stringify({
+            id: this.athlet.id,
+            number: this.athlet.number,
+            competition_id: this.competition.parent_id || this.competition.id
+        } as QrAthlet))
         qr.make()
+
         this.imageFromBase64 = ImageSource.fromBase64Sync(qr.toDataURL(10).replace('data:image/gif;base64,', ''))
     }
 

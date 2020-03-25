@@ -1,0 +1,7 @@
+<StackLayout margin="24" horizontalAlignment="center" verticalAlignment="center">
+    <Label [text]="('Name: '|L) + athlet.fio" class="h2"></Label>
+    <Label [text]="('Competition: '|L) + competition.title"></Label>
+    <Label [text]="('Number: '|L) + athlet.number"></Label>
+    <Image [src]="imageFromBase64" stretch="aspectFit"></Image>
+    <Button [text]="'Close'|L" (tap)="onClose()"></Button>
+</StackLayout>

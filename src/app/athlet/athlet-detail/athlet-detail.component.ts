@@ -15,6 +15,7 @@ import {CompetitionDetailQrComponent} from "@src/app/home/competition/competitio
 import {ModalDialogOptions, ModalDialogService} from "nativescript-angular"
 import {action} from "@nativescript/core/ui/dialogs"
 import {GET_OFF} from "@src/app/shared/helpers"
+import {AthletDetailQrComponent} from "@src/app/athlet/athlet-detail/athlet-detail-qr/athlet-detail-qr.component"
 
 const firebase = require('nativescript-plugin-firebase/app')
 const phone = require("nativescript-phone")
@@ -238,10 +239,11 @@ export class AthletDetailComponent extends BaseComponent implements OnInit, OnDe
             viewContainerRef: this._vcRef,
             context: {
                 athlet: this.athlet,
+                competition: this._competition.selected_competition
             },
             fullscreen: true
         };
 
-        this._modalService.showModal(CompetitionDetailQrComponent, options)
+        this._modalService.showModal(AthletDetailQrComponent, options)
     }
 }
