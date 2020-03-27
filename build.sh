@@ -27,7 +27,8 @@ a() {
   cp $filename race_org.latest.apk
   cp $filename.aab race_org.latest.aab
   adb devices | tail -n +2 | cut -sf 1 | grep  -v -E emu | xargs -iX adb -s X uninstall org.nativescript.raceorg
-  adb devices | tail -n +2 | cut -sf 1 | grep  -v -E emu | xargs -iX adb -s X install -r race_org.latest.aab
+  #push install allow only apk
+  adb devices | tail -n +2 | cut -sf 1 | grep  -v -E emu | xargs -iX adb -s X install -r race_org.latest.apk
 
   #gsutil cp race_org.latest.apk gs://race-org.appspot.com/android_builds/
   cp race_org.latest.apk ./src/assets/data/
@@ -43,7 +44,7 @@ export -f a
 export -f b
 
 a
-b
+#b
 
 #a &
 #

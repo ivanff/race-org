@@ -46,19 +46,31 @@
               [items]="athlets|filter:['fio', 'number', 'phone']:{search: searchPhrase}"
               (itemTap)="onItemTap($event)">
         <ng-template let-athlet="item" let-i="index" let-odd="odd" let-even="even">
-            <GridLayout columns="60, *" rows="*, *, *"
-                        [class.odd]="odd"
-                        [class.even]="even">
-                <Label [text]="athlet.number" col="0" rowSpan="2"
-                       verticalAlignment="top"
-                       horizontalAlignment="center" class="number"></Label>
-                <Label [text]="athlet.class" col="0" row="3" class="option" horizontalAlignment="center"></Label>
+            <GridLayout columns="60, *" rows="*, *" [class.odd]="odd" [class.even]="even">
+                <Label [text]="athlet.number"
+                       col="0"
+                       row="0"
+                       verticalAlignment="center"
+                       horizontalAlignment="center"
+                       class="number"
+                       [class.-warning]="athlet.get_off"></Label>
 
-                <Label [text]="athlet.fio" col="1" row="0" class="option"></Label>
-                <Label [text]="'NFC: ' + (athlet.nfc_id ? ('assigned'|L) : ('not assigned'|L))" col="1" row="1"
-                       [class.-warning]="!athlet.nfc_id" class="option font-weight-bold"></Label>
-                <Label [text]="('Passed marks: '|L) + athlet.marks.length" col="1" row="2"
-                       class="font-weight-bold option"></Label>
+                <Label [text]="athlet.class"
+                       col="0"
+                       row="1"
+                       class="option p-r-4 p-l-4"
+                       horizontalAlignment="center"></Label>
+
+                <StackLayout col="1" row="0" rowSpan="2" orientation="vertical">
+                    <Label [text]="athlet.fio" class="option"></Label>
+                    <Label *ngIf="athlet.get_off"
+                           [text]="('Status: '|L) + athlet.get_off"
+                           class="option -warning"></Label>
+                    <Label [text]="'NFC: ' + (athlet.nfc_id ? ('assigned'|L) : ('not assigned'|L))"
+                           [class.-warning]="!athlet.nfc_id" class="option font-weight-bold"></Label>
+                    <Label [text]="('Passed marks: '|L) + athlet.marks.length"
+                           class="font-weight-bold option"></Label>
+                </StackLayout>
             </GridLayout>
         </ng-template>
     </ListView>
