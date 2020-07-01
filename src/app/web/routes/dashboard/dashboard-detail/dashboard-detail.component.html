@@ -252,8 +252,8 @@
 
                     <ng-container matColumnDef="fio">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header> Имя</th>
-                        <td mat-cell *matCellDef="let element">
-                            <a [routerLink]="['detail', element.id]">{{element.fio}}</a>
+                        <td mat-cell *matCellDef="let element" >
+                            <a [routerLink]="['detail', element.id]" [class.text-red-500]="element.get_off">{{element.fio}}</a>
                         </td>
                     </ng-container>
 

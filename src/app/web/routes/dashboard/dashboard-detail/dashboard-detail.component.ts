@@ -98,7 +98,7 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
             this.edit_competition = {...this.route.snapshot.data.competition}
             this.pieChartLabels = this.competition.classes
 
-            this.athlets$ = this.afs.collection<Athlet>(`athlets_${this.competition.id}`, (ref => ref.orderBy('created', 'desc')))
+            this.athlets$ = this.afs.collection<Athlet>(`athlets_${this.competition.id}`)
                 .valueChanges({idField: 'id'})
                 .pipe(
                     debounceTime(1000),
@@ -109,7 +109,6 @@ export class DashboardDetailComponent implements OnInit, OnDestroy {
                             pieChartData[index] = athlets.filter((athlet) => athlet.class == item).length || 0
                         })
                         this.pieChartData = pieChartData
-                        return athlets
                     }),
                     tap((athlets: Array<Athlet>) => {
                         this.dataSource.data = [...athlets]

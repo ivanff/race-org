@@ -11,6 +11,9 @@ const routes: Routes = [
   {
     path: 'athlet/register/:id',
     component: AppAthletRegisterComponent,
+    data: {
+      public: true
+    },
     resolve: {
       competition: CompetitionResolve
     }

@@ -17,6 +17,7 @@ import {Athlet} from "@src/app/shared/interfaces/athlet"
 import {Competition} from "@src/app/shared/interfaces/competition"
 import * as firebase from "firebase"
 import {BackendService} from "@src/app/web/core"
+import { ActivatedRoute } from '@angular/router';
 
 export interface Check {
     success: boolean,
@@ -52,7 +53,8 @@ export class AthletRegisterComponent implements OnInit {
                 private _snackBar: MatSnackBar,
                 public afs: AngularFirestore,
                 private backend: BackendService,
-                private http: HttpClient) {
+                private http: HttpClient,
+                private route: ActivatedRoute) {
     }
 
     ngOnInit() {
@@ -61,13 +63,16 @@ export class AthletRegisterComponent implements OnInit {
             fio: ['', [<any>Validators.required]],
             number: ['', [<any>Validators.required, <any>Validators.min(1), <any>Validators.max(999)], [AthletRegisterComponent.usedValue(this.athlet_collection, 'number', false, this.allowed)]],
             class: ['', [<any>Validators.required]],
-            get_off: [null,[]],
             phone: ['', [<any>Validators.minLength(10), <any>Validators.maxLength(10), Validators.pattern("^[0-9]*$")], [AthletRegisterComponent.usedValue(this.athlet_collection, 'phone')]],
             code: [{
                 value: '',
                 disabled: true
             }, [<any>Validators.minLength(6), <any>Validators.required], [this.checkSmsCode.bind(this)]],
         })
+
+        if (!this.route.snapshot.data.public) {
+            this.registerForm.addControl('get_off', new FormControl(null, [<any>Validators.pattern(/(DNS|DNF|DSQ)/)]) )
+        }
 
         this.registerForm.markAsDirty({onlySelf: false})
         this.competition.athlet_extra_fields.forEach((item) => this.registerForm.addControl(item, new FormControl('', [])))
